@@ -5,7 +5,9 @@ import { CVSection } from "./components/sections/CVSection";
 import { SkillsSection } from "./components/sections/SkillsSection";
 import { ActivitySection } from "./components/sections/ActivitySection";
 import { ContactSection } from "./components/sections/ContactSection";
+import { PhotographySection } from "./components/sections/PhotographySection";
 import { MobileNav } from "./components/Mobilenav/Mobilenav";
+import { ProfileContent } from "./components/ProfileContent";
 
 export default function Home() {
   return (
@@ -46,10 +48,17 @@ export default function Home() {
       {/* Content */}
       <div className="pt-12">
         <HeroSection />
-        <ProjectSectionWrapper />
-        <SkillsSection />
-        <ActivitySection />
-        <CVSection />
+        <ProfileContent
+          analystContent={
+            <>
+              <ProjectSectionWrapper />
+              <SkillsSection />
+              <ActivitySection />
+              <CVSection />
+            </>
+          }
+          photographyContent={<PhotographySection />}
+        />
         <ContactSection />
       </div>
 
