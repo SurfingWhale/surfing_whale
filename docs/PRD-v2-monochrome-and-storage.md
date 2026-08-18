@@ -218,18 +218,34 @@ visible win.
 
 ---
 
-## 6. Open decisions
+## 6. Decisions taken
 
-- [ ] **Does orange survive anywhere?** §2 assumes fully monochrome chrome.
-      An alternative is monochrome + orange reserved solely for the single
-      primary CTA. Cheap to try after step 2.
-- [ ] **Does the Spline 3D scene stay?** Unresolved from v1. It is the loudest
-      remnant of the terminal aesthetic and the page's heaviest asset. A
-      monochrome editorial layout makes it harder to justify.
+- [x] **Orange is retired entirely.** No accent survives; black is the primary
+      action colour. Verified by a computed-style sweep over the rendered page —
+      zero orange-range values remain.
+- [x] **Spline 3D is archived.** Removed from `HeroSection` and `CVSection`,
+      along with the Three.js particle backdrop in `ProjectSection`. The
+      `@splinetool/runtime`, `three`, and `@types/three` dependencies were
+      dropped with them (12 packages removed). Git history holds the previous
+      implementations if they are ever wanted back.
+- [x] **Role labels avoid "photographer".** The toggle reads **Data Analyst /
+      Joie de Vivre**; the photography tagline is *"I love capturing moments —
+      joie de vivre."*
+
+### Still open
+
 - [ ] **Case study page or modal?** Existing projects use `Projectmodal` fed by
       Notion. A finance case study of the depth in §4.2 likely warrants its own
       route.
 - [ ] **Photography manifest vs Cloudinary API listing** (§3.5 step 2).
+- [ ] **Orphaned components.** `ScrollVelocity`, `RotatingText`, and `GooeyNav`
+      are no longer imported anywhere. They only depend on framer-motion, so
+      they are harmless, but they are dead code.
+- [ ] **Avatar assets.** `AvatarMorph` expects `/public/avatar-analyst.jpg` and
+      `/public/avatar-capture.jpg`. Until both exist it renders a labelled
+      placeholder rather than a broken image.
+- [ ] **Contact email.** `ContactSection` ships a `your-email@example.com`
+      placeholder — publishing a personal address is the owner's call.
 
 ---
 

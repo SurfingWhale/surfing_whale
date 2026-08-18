@@ -5,40 +5,36 @@ import { useEffect, useRef, useState } from "react";
 
 const SKILLS = [
     { category: "Data Analysis", items: [
-        { name: "Python", level: 90, color: "#ff6a00" },
-        { name: "SQL", level: 88, color: "#ff6a00" },
-        { name: "Pandas / NumPy", level: 85, color: "#ff6a00" },
-        { name: "Scikit-learn", level: 75, color: "#ffd500" },
+        { name: "Python", level: 90 },
+        { name: "SQL", level: 88 },
+        { name: "Pandas / NumPy", level: 85 },
+        { name: "Scikit-learn", level: 75 },
     ]},
     { category: "Visualization", items: [
-        { name: "Tableau", level: 85, color: "#ff6a00" },
-        { name: "Matplotlib / Seaborn", level: 80, color: "#ff6a00" },
-        { name: "Power BI", level: 70, color: "#ffd500" },
+        { name: "Tableau", level: 85 },
+        { name: "Matplotlib / Seaborn", level: 80 },
+        { name: "Power BI", level: 70 },
     ]},
     { category: "Engineering", items: [
-        { name: "Next.js / React", level: 72, color: "#ff6a00" },
-        { name: "PostgreSQL", level: 78, color: "#ff6a00" },
-        { name: "Git / GitHub", level: 82, color: "#ffd500" },
+        { name: "Next.js / React", level: 72 },
+        { name: "PostgreSQL", level: 78 },
+        { name: "Git / GitHub", level: 82 },
     ]},
     ];
 
-    function SkillBar({ name, level, color, animate }: {
-    name: string; level: number; color: string; animate: boolean;
+    function SkillBar({ name, level, animate }: {
+    name: string; level: number; animate: boolean;
     }) {
     return (
-        <div className="mb-4">
-        <div className="flex justify-between items-center mb-1">
-            <span className="font-mono text-xs text-white/70 tracking-widest uppercase">{name}</span>
-            <span className="font-mono text-xs text-white/30">{level}%</span>
+        <div className="mb-5">
+        <div className="flex justify-between items-baseline mb-2">
+            <span className="text-sm text-fg">{name}</span>
+            <span className="font-mono text-xs text-fg-muted">{level}%</span>
         </div>
-        <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
+        <div className="h-[3px] bg-bg-muted rounded-full overflow-hidden">
             <div
-            className="h-full rounded-full transition-all duration-1000 ease-out"
-            style={{
-                width: animate ? `${level}%` : "0%",
-                background: `linear-gradient(90deg, ${color}, #ffd500)`,
-                boxShadow: animate ? `0 0 8px ${color}66` : "none",
-            }}
+            className="h-full bg-fg rounded-full transition-all duration-1000 ease-out"
+            style={{ width: animate ? `${level}%` : "0%" }}
             />
         </div>
         </div>
@@ -59,28 +55,23 @@ const SKILLS = [
     }, []);
 
     return (
-        <section ref={ref} className="relative w-full py-24 bg-[#080808]">
-        {/* noise overlay */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{ backgroundImage: "url('/noise.png')", backgroundRepeat: "repeat" }} />
-
-        <div className="container mx-auto px-6 relative z-10">
-            {/* Header */}
-            <div className="mb-14">
-            <span className="font-mono text-[10px] text-[#ff6a00] tracking-[0.3em] uppercase">
-                [ TECH_STACK ]
-            </span>
-            <h2 className="font-black text-4xl md:text-5xl text-white mt-1 tracking-tight">
-                SKILLS_INDEX
+        <section ref={ref} id="skills" className="w-full py-24 border-t border-border">
+        <div className="container mx-auto px-6 max-w-[1120px]">
+            <div className="mb-12">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+                Skills
             </h2>
+            <p className="text-sm text-fg-secondary mt-1">
+                Tools I reach for most.
+            </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {SKILLS.map((group) => (
                 <div key={group.category}
-                className="border border-white/[0.06] p-6 rounded-sm bg-white/[0.02]">
-                <p className="font-mono text-[10px] text-[#ff6a00]/60 tracking-[0.25em] uppercase mb-6">
-                    // {group.category}
+                className="border border-border rounded-lg p-6 bg-bg-subtle">
+                <p className="text-xs text-fg-muted uppercase tracking-wider mb-6">
+                    {group.category}
                 </p>
                 {group.items.map((skill) => (
                     <SkillBar key={skill.name} {...skill} animate={animate} />

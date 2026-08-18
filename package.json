@@ -11,8 +11,6 @@
     "@netlify/plugin-nextjs": "^5.15.9",
     "@notionhq/client": "^5.14.0",
     "@sparticuz/chromium": "^143.0.4",
-    "@splinetool/runtime": "^1.12.70",
-    "@types/three": "^0.183.1",
     "cloudinary": "^2.9.0",
     "dotenv": "^17.3.1",
     "framer-motion": "^12.38.0",
@@ -20,8 +18,7 @@
     "puppeteer-core": "^24.40.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "swiper": "^11.2.10",
-    "three": "^0.183.2"
+    "swiper": "^11.2.10"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

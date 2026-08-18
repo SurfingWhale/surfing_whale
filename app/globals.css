@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
+/* Monochrome system — PRD v2 §2.2.
+   Light is the default. Dark inverts the same token names, so components
+   reference tokens and never literals. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
+  --bg: #ffffff;
+  --bg-subtle: #fafafa;
+  --bg-muted: #f2f2f2;
+  --fg: #000000;
+  --fg-secondary: #666666;
+  --fg-muted: #999999;
+  --border: #eaeaea;
+  --border-strong: #d4d4d4;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #000000;
+    --bg-subtle: #0a0a0a;
+    --bg-muted: #171717;
+    --fg: #ffffff;
+    --fg-secondary: #a1a1a1;
+    --fg-muted: #6f6f6f;
+    --border: #1f1f1f;
+    --border-strong: #333333;
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-muted: var(--bg-muted);
+  --color-fg: var(--fg);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--fg);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
 }
