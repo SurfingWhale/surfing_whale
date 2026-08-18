@@ -6,6 +6,7 @@ import { SkillsSection } from "./components/sections/SkillsSection";
 import { ActivitySection } from "./components/sections/ActivitySection";
 import { ContactSection } from "./components/sections/ContactSection";
 import { PhotographySection } from "./components/sections/PhotographySection";
+import { GuestNotesSection } from "./components/sections/GuestNotesSection";
 import { MobileNav } from "./components/Mobilenav/Mobilenav";
 import { ProfileContent } from "./components/ProfileContent";
 import { ProfileModeProvider } from "./components/ProfileMode";
@@ -16,6 +17,7 @@ const NAV_LINKS = [
   { label: "Skills", href: "#skills" },
   { label: "Activity", href: "#activity" },
   { label: "About", href: "#CV" },
+  { label: "Notes", href: "#guest-notes" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -57,6 +59,7 @@ export default function Home() {
             captureContent={<PhotographySection />}
           />
         </ProfileModeProvider>
+        <GuestNotesSection />
         <ContactSection />
       </div>
 

@@ -232,6 +232,19 @@ visible win.
       Joie de Vivre**; the photography tagline is *"I love capturing moments —
       joie de vivre."*
 
+- [x] **Guest notes are Notion-backed, not Supabase.** §3.4 said a database
+      would only be justified by visitor-generated features — that case has now
+      arrived. Notion still wins: the client, key, and query patterns already
+      exist, there is no 7-day pause to work around, and moderation happens in
+      the Notion app. Supabase is only required if email gating later needs
+      real verification (magic link), which Notion cannot do.
+
+      Implementation: `app/lib/guestNotes.ts`, `app/api/guest-notes/route.ts`,
+      `app/components/sections/GuestNotesSection.tsx`. Notes are created
+      **unapproved** and stay hidden until the `Approved` checkbox is ticked.
+      Visitor emails are stored but **never** included in the shape returned by
+      the public GET route.
+
 ### Still open
 
 - [ ] **Case study page or modal?** Existing projects use `Projectmodal` fed by
@@ -244,8 +257,18 @@ visible win.
 - [ ] **Avatar assets.** `AvatarMorph` expects `/public/avatar-analyst.jpg` and
       `/public/avatar-capture.jpg`. Until both exist it renders a labelled
       placeholder rather than a broken image.
-- [ ] **Contact email.** `ContactSection` ships a `your-email@example.com`
-      placeholder — publishing a personal address is the owner's call.
+- [ ] **Email gate — what does it protect?** Requested but not built: the
+      target content was never settled. Recommended scope is the CV alone
+      (identity for a download is a fair trade), leaving the portfolio and
+      gallery open so a hurried recruiter is never turned away. Gating the
+      whole site is the highest-risk option.
+- [ ] **Gate strictness.** A soft gate (record the email, admit immediately)
+      needs nothing beyond the Notion setup already in place. Real magic-link
+      verification requires Supabase Auth — a new service, plus the 7-day
+      pause to work around.
+- [ ] **Notion guestbook database** must be created with the properties listed
+      at the top of `app/lib/guestNotes.ts`, and `NOTION_GUESTBOOK_DATABASE_ID`
+      set. The section renders an empty state until then.
 
 ---
 
