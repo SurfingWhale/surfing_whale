@@ -4,8 +4,7 @@
 import { useState } from "react";
 
 const WA_NUMBER = "6285156964766";
-// TODO: isi dengan alamat email yang mau kamu tampilkan publik.
-const EMAIL = "your-email@example.com";
+const EMAIL = "fauzymuhamad43@gmail.com";
 
 export function ContactSection() {
     const [form, setForm] = useState({ name: "", message: "" });
