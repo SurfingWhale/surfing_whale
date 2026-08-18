@@ -9,20 +9,26 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useProfileMode, type Mode } from "./ProfileMode";
 
-const PORTRAIT: Record<Mode, { src: string; alt: string }> = {
+// The two portraits are framed very differently — one is a full-body seated
+// shot with the subject low in frame, the other a tight headshot. A square
+// crop mangles the first, so the frame is 3:4 and each image carries its own
+// focal point to keep the subject placed consistently through the crossfade.
+const PORTRAIT: Record<Mode, { src: string; alt: string; position: string }> = {
   analyst: {
     src: "/avatar-analyst.jpg",
-    alt: "Fauzy — profile portrait",
+    alt: "Fauzy seated on a stool against a white backdrop",
+    position: "center 55%",
   },
   capture: {
     src: "/avatar-capture.jpg",
-    alt: "Fauzy holding a film camera to his eye",
+    alt: "Fauzy holding a film camera up to his eye",
+    position: "center 35%",
   },
 };
 
 function Portrait({ mode, active }: { mode: Mode; active: boolean }) {
   const [failed, setFailed] = useState(false);
-  const { src, alt } = PORTRAIT[mode];
+  const { src, alt, position } = PORTRAIT[mode];
 
   return (
     <motion.div
@@ -47,6 +53,7 @@ function Portrait({ mode, active }: { mode: Mode; active: boolean }) {
           src={src}
           alt={active ? alt : ""}
           onError={() => setFailed(true)}
+          style={{ objectPosition: position }}
           className="w-full h-full object-cover grayscale"
         />
       )}
@@ -58,7 +65,7 @@ export function AvatarMorph() {
   const { mode } = useProfileMode();
 
   return (
-    <div className="relative w-full aspect-square max-w-sm mx-auto overflow-hidden rounded-2xl border border-border bg-bg-subtle">
+    <div className="relative w-full aspect-[3/4] max-w-sm mx-auto overflow-hidden rounded-2xl border border-border bg-bg-subtle">
       <Portrait mode="analyst" active={mode === "analyst"} />
       <Portrait mode="capture" active={mode === "capture"} />
     </div>
