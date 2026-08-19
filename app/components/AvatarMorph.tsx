@@ -1,21 +1,18 @@
 // app/components/AvatarMorph.tsx
-// Crossfade between the two portraits when the role toggles. The outgoing
-// frame scales up and blurs out while the incoming one settles — a dissolve
-// rather than a true geometric morph, which reads as a morph because both
-// portraits are framed alike.
+// Small single avatar that crossfades between the two portraits when the role
+// toggles. Both sources are pre-cropped square to head-and-shoulders, so the
+// faces sit at a comparable scale and the outgoing frame reads as becoming
+// the incoming one rather than swapping.
 "use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useProfileMode, type Mode } from "./ProfileMode";
 
-// Both source files are pre-cropped square around their subject, so the two
-// figures occupy a comparable share of the frame and the crossfade reads as
-// one portrait becoming the other rather than jumping in scale.
 const PORTRAIT: Record<Mode, { src: string; alt: string }> = {
   analyst: {
     src: "/avatar-analyst.jpg",
-    alt: "Fauzy seated on a stool against a white backdrop",
+    alt: "Fauzy, seated against a white backdrop",
   },
   capture: {
     src: "/avatar-capture.jpg",
@@ -33,17 +30,14 @@ function Portrait({ mode, active }: { mode: Mode; active: boolean }) {
       initial={false}
       animate={{
         opacity: active ? 1 : 0,
-        scale: active ? 1 : 1.06,
-        filter: active ? "blur(0px)" : "blur(10px)",
+        scale: active ? 1 : 1.08,
+        filter: active ? "blur(0px)" : "blur(6px)",
       }}
-      transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
       aria-hidden={!active}
     >
       {failed ? (
-        // Keeps the layout intentional until the real files are dropped in.
-        <div className="w-full h-full flex items-center justify-center bg-bg-muted text-fg-muted text-xs text-center px-4">
-          {mode === "capture" ? "camera portrait" : "profile portrait"}
-        </div>
+        <div className="w-full h-full bg-bg-muted" />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -57,13 +51,19 @@ function Portrait({ mode, active }: { mode: Mode; active: boolean }) {
   );
 }
 
+/** Clicking the avatar toggles the role, the same affordance as the pills. */
 export function AvatarMorph() {
-  const { mode } = useProfileMode();
+  const { mode, setMode } = useProfileMode();
 
   return (
-    <div className="relative w-full aspect-square max-w-sm mx-auto overflow-hidden rounded-2xl border border-border bg-bg-subtle">
+    <button
+      type="button"
+      onClick={() => setMode(mode === "analyst" ? "capture" : "analyst")}
+      aria-label="Switch portrait"
+      className="relative w-24 h-24 rounded-full overflow-hidden border border-border bg-bg-subtle hover:border-border-strong transition-colors duration-300"
+    >
       <Portrait mode="analyst" active={mode === "analyst"} />
       <Portrait mode="capture" active={mode === "capture"} />
-    </div>
+    </button>
   );
 }
