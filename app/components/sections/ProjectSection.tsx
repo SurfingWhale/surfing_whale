@@ -3,6 +3,7 @@
 // The Three.js particle backdrop was archived alongside Spline — see PRD v2 §6.
 
 import { useState } from "react";
+import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -32,6 +33,28 @@ export function ProjectSection({ projects }: Props) {
                 {projects.length} projects
             </span>
             </div>
+
+            {/* Featured case study — its own route rather than the Notion modal,
+                since it runs longer than a project card. */}
+            <Link
+            href="/work/finance-dashboard"
+            className="group block border border-border rounded-lg p-6 mb-10 bg-bg-subtle hover:border-border-strong transition-colors duration-300"
+            >
+            <p className="text-xs text-fg-muted uppercase tracking-wider mb-2">
+                Featured case study
+            </p>
+            <h3 className="text-lg font-medium tracking-tight">
+                A ledger that behaves like a product
+            </h3>
+            <p className="text-sm text-fg-secondary mt-2 leading-relaxed">
+                A personal finance dashboard built on general-ledger accounts —
+                prorate budgeting against working days, forecasting, and
+                reconciliation.
+            </p>
+            <span className="inline-block text-sm text-fg mt-4">
+                Read the case study →
+            </span>
+            </Link>
 
             {projects.length === 0 ? (
             <p className="text-fg-muted text-center py-16 text-sm">
