@@ -11,11 +11,17 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import type { NotionProject } from "@/app/lib/notion";
 import { ProjectModal } from "@/app/components/Projectmodal";
+import { useAccess } from "@/app/components/AccessGate";
 
 interface Props { projects: NotionProject[]; }
 
 export function ProjectSection({ projects }: Props) {
     const [selectedProject, setSelectedProject] = useState<NotionProject | null>(null);
+    const { requireAccess } = useAccess();
+
+    // Cards stay browsable; the gate sits in front of opening a detail.
+    const openProject = (project: NotionProject) =>
+        requireAccess("Project", () => setSelectedProject(project));
 
     return (
         <section className="w-full py-24 border-t border-border">
@@ -75,7 +81,7 @@ export function ProjectSection({ projects }: Props) {
                     <SwiperSlide key={project.id}>
                     <div
                         className="group block cursor-pointer"
-                        onClick={() => setSelectedProject(project)}
+                        onClick={() => openProject(project)}
                     >
                         <div className="relative overflow-hidden rounded-lg border border-border aspect-video bg-bg-muted">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
