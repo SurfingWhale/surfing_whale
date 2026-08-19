@@ -3,8 +3,8 @@
 
 import { useState } from "react";
 
-const WA_NUMBER = "6281234567890"; // ganti dengan nomor lo
-const EMAIL = "muhammadfauzy@email.com"; // ganti dengan email lo
+const WA_NUMBER = "6285156964766";
+const EMAIL = "fauzymuhamad43@gmail.com";
 
 export function ContactSection() {
     const [form, setForm] = useState({ name: "", message: "" });
@@ -27,89 +27,78 @@ export function ContactSection() {
 
     const isReady = form.name.trim().length > 0 && form.message.trim().length > 0;
 
+    const fieldClass =
+        "w-full bg-bg border border-border rounded-lg px-4 py-3 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors";
+
     return (
-        <section id="contact" className="relative w-full py-24 bg-[#080808]">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{ backgroundImage: "url('/noise.png')", backgroundRepeat: "repeat" }} />
-
-        {/* radial glow */}
-        <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse 60% 40% at 50% 100%, #ff6a0015 0%, transparent 70%)" }} />
-
-        <div className="container mx-auto px-6 relative z-10 max-w-2xl">
-            {/* Header */}
-            <div className="mb-12 text-center">
-            <span className="font-mono text-[10px] text-[#ff6a00] tracking-[0.3em] uppercase">
-                [ GET_IN_TOUCH ]
-            </span>
-            <h2 className="font-black text-4xl md:text-5xl text-white mt-1 tracking-tight">
-                CONTACT_ME
+        <section id="contact" className="w-full py-24 border-t border-border">
+        <div className="container mx-auto px-6 max-w-[680px]">
+            <div className="mb-10 text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+                Get in touch
             </h2>
-            <p className="text-white/30 font-mono text-xs mt-3 tracking-wider">
-                // open for collaboration, freelance, or just a chat
+            <p className="text-sm text-fg-secondary mt-2">
+                Open for collaboration, freelance, or just a chat.
             </p>
             </div>
 
             {sent ? (
-            <div className="text-center py-16 border border-[#ff6a00]/20 rounded-sm">
-                <p className="font-mono text-[#ff6a00] text-sm tracking-widest">
-                ✓ MESSAGE_SENT
-                </p>
-                <p className="text-white/30 font-mono text-xs mt-2">
-                // akan gue balas secepatnya
+            <div className="text-center py-16 border border-border rounded-lg bg-bg-subtle">
+                <p className="text-sm font-medium">Message sent</p>
+                <p className="text-sm text-fg-secondary mt-2">
+                I will get back to you shortly.
                 </p>
                 <button
                 onClick={() => { setSent(false); setForm({ name: "", message: "" }); }}
-                className="mt-6 font-mono text-xs text-white/30 hover:text-white/60 transition-colors"
+                className="mt-6 text-sm text-fg-secondary hover:text-fg transition-colors underline underline-offset-4"
                 >
-                → SEND_ANOTHER
+                Send another
                 </button>
             </div>
             ) : (
-            <div className="space-y-4">
-                {/* Name */}
+            <div className="space-y-5">
                 <div>
-                <label className="font-mono text-[10px] text-white/30 tracking-widest uppercase block mb-2">
-                    // name
+                <label htmlFor="contact-name" className="text-sm text-fg-secondary block mb-2">
+                    Name
                 </label>
                 <input
+                    id="contact-name"
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Your name"
-                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-sm px-4 py-3 text-white font-mono text-sm placeholder:text-white/20 focus:outline-none focus:border-[#ff6a00]/40 transition-colors"
+                    className={fieldClass}
                 />
                 </div>
 
-                {/* Message */}
                 <div>
-                <label className="font-mono text-[10px] text-white/30 tracking-widest uppercase block mb-2">
-                    // message
+                <label htmlFor="contact-message" className="text-sm text-fg-secondary block mb-2">
+                    Message
                 </label>
                 <textarea
+                    id="contact-message"
                     rows={5}
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     placeholder="What's on your mind?"
-                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-sm px-4 py-3 text-white font-mono text-sm placeholder:text-white/20 focus:outline-none focus:border-[#ff6a00]/40 transition-colors resize-none"
+                    className={`${fieldClass} resize-none`}
                 />
                 </div>
 
-                {/* Buttons */}
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-3 pt-1">
                 <button
                     onClick={handleWA}
                     disabled={!isReady}
-                    className="flex-1 font-mono text-xs py-3 border border-[#ff6a00]/30 text-[#ff6a00] hover:bg-[#ff6a00]/10 transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed rounded-sm tracking-widest"
+                    className="flex-1 text-sm font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
                 >
-                    → WHATSAPP
+                    WhatsApp
                 </button>
                 <button
                     onClick={handleEmail}
                     disabled={!isReady}
-                    className="flex-1 font-mono text-xs py-3 border border-white/10 text-white/50 hover:border-white/30 hover:text-white transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed rounded-sm tracking-widest"
+                    className="flex-1 text-sm font-medium py-3 rounded-lg border border-border text-fg hover:border-border-strong transition-colors duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
                 >
-                    → EMAIL
+                    Email
                 </button>
                 </div>
             </div>

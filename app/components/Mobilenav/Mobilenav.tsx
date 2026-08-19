@@ -1,5 +1,5 @@
 "use client";
-// app/components/MobileNav.tsx
+// app/components/Mobilenav/Mobilenav.tsx
 
 import { useState } from "react";
 
@@ -8,7 +8,8 @@ const LINKS = [
     { label: "Projects", href: "#project" },
     { label: "Skills", href: "#skills" },
     { label: "Activity", href: "#activity" },
-    { label: "CV", href: "#CV" },
+    { label: "About", href: "#CV" },
+    { label: "Notes", href: "#guest-notes" },
     { label: "Contact", href: "#contact" },
     ];
 
@@ -17,32 +18,27 @@ const LINKS = [
 
     return (
         <div className="md:hidden">
-        {/* Hamburger button */}
         <button
             onClick={() => setOpen(!open)}
             className="flex flex-col gap-[5px] p-2"
             aria-label="Toggle menu"
+            aria-expanded={open}
         >
-            <span className={`block w-5 h-[1.5px] bg-white/60 transition-all duration-300 ${open ? "rotate-45 translate-y-[6.5px]" : ""}`} />
-            <span className={`block w-5 h-[1.5px] bg-white/60 transition-all duration-300 ${open ? "opacity-0" : ""}`} />
-            <span className={`block w-5 h-[1.5px] bg-white/60 transition-all duration-300 ${open ? "-rotate-45 -translate-y-[6.5px]" : ""}`} />
+            <span className={`block w-5 h-[1.5px] bg-fg transition-all duration-300 ${open ? "rotate-45 translate-y-[6.5px]" : ""}`} />
+            <span className={`block w-5 h-[1.5px] bg-fg transition-all duration-300 ${open ? "opacity-0" : ""}`} />
+            <span className={`block w-5 h-[1.5px] bg-fg transition-all duration-300 ${open ? "-rotate-45 -translate-y-[6.5px]" : ""}`} />
         </button>
 
-        {/* Dropdown */}
         {open && (
-            <div className="absolute top-12 left-0 w-full bg-[#080808]/95 backdrop-blur-sm border-b border-white/[0.06] py-4 px-6 flex flex-col gap-4">
+            <div className="absolute top-14 left-0 w-full bg-bg border-b border-border py-5 px-6 flex flex-col gap-4">
             {LINKS.map((link) => (
                 <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className={`font-mono text-xs tracking-widest uppercase transition-colors duration-300 ${
-                    link.label === "Contact"
-                    ? "text-[#ff6a00]"
-                    : "text-white/40 hover:text-white"
-                }`}
+                className="text-sm text-fg-secondary hover:text-fg transition-colors duration-300"
                 >
-                → {link.label}
+                {link.label}
                 </a>
             ))}
             </div>

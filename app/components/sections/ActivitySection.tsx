@@ -4,8 +4,8 @@
 
 import { useEffect, useState } from "react";
 
-const GITHUB_USERNAME = "Untamed98x"; // udah bener
-const KAGGLE_USERNAME = "muhammadfauzy43"; // ganti kalau beda
+const GITHUB_USERNAME = "Untamed98x";
+const KAGGLE_USERNAME = "muhammadfauzy43";
 
 interface KaggleDataset {
     title: string;
@@ -29,7 +29,6 @@ interface KaggleDataset {
         votes: 12,
         views: 890,
     },
-    // tambah manual project Kaggle lo di sini
     ];
 
     function KaggleCard({ title, url, votes, views }: KaggleDataset) {
@@ -38,24 +37,17 @@ interface KaggleDataset {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="group block border border-white/[0.06] rounded-sm p-5 bg-white/[0.02] hover:border-[#ff6a00]/30 transition-all duration-300"
+        className="group block border border-border rounded-lg p-5 bg-bg-subtle hover:border-border-strong transition-colors duration-300"
         >
-        <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-            <p className="font-mono text-[10px] text-[#20beff]/60 tracking-widest uppercase mb-2">
-                // kaggle notebook
-            </p>
-            <h4 className="font-black text-sm text-white group-hover:text-[#ff6a00] transition-colors line-clamp-2 tracking-tight">
-                {title.replace(/ /g, "_").toUpperCase()}
-            </h4>
-            </div>
-            <svg className="w-5 h-5 text-[#20beff]/40 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.5 17.311l-2.5-2.961v4.15H9.5V9.5l-2.5 2.961V9.5L12 4l5 5.5v2.811z"/>
-            </svg>
-        </div>
+        <p className="text-xs text-fg-muted uppercase tracking-wider mb-2">
+            Kaggle notebook
+        </p>
+        <h4 className="text-sm font-medium text-fg line-clamp-2">
+            {title}
+        </h4>
         <div className="flex gap-4 mt-3">
-            <span className="font-mono text-[10px] text-white/20">▲ {votes}</span>
-            <span className="font-mono text-[10px] text-white/20">👁 {views}</span>
+            <span className="font-mono text-xs text-fg-muted">▲ {votes}</span>
+            <span className="font-mono text-xs text-fg-muted">{views} views</span>
         </div>
         </a>
     );
@@ -68,14 +60,13 @@ interface KaggleDataset {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // GitHub public API — repo + follower count
         fetch(`https://api.github.com/users/${GITHUB_USERNAME}`)
         .then((r) => r.json())
         .then((data) => {
             setStats({
             repos: data.public_repos,
             followers: data.followers,
-            contributions: generateMockContributions(), // GitHub contributions API butuh OAuth
+            contributions: generateMockContributions(), // real graph needs OAuth
             });
         })
         .catch(() => {
@@ -89,16 +80,16 @@ interface KaggleDataset {
     }, []);
 
     return (
-        <div className="border border-white/[0.06] rounded-sm p-5 bg-white/[0.02]">
-        <div className="flex items-center justify-between mb-4">
-            <p className="font-mono text-[10px] text-white/30 tracking-widest uppercase">
-            // github_activity
+        <div className="border border-border rounded-lg p-5 bg-bg-subtle">
+        <div className="flex items-center justify-between mb-5">
+            <p className="text-xs text-fg-muted uppercase tracking-wider">
+            GitHub activity
             </p>
             <a
             href={`https://github.com/${GITHUB_USERNAME}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-mono text-[10px] text-[#ff6a00]/60 hover:text-[#ff6a00] transition-colors tracking-widest"
+            className="text-xs text-fg-secondary hover:text-fg transition-colors"
             >
             @{GITHUB_USERNAME} →
             </a>
@@ -106,53 +97,48 @@ interface KaggleDataset {
 
         {loading ? (
             <div className="h-20 flex items-center justify-center">
-            <span className="font-mono text-[10px] text-white/20 tracking-widest animate-pulse">
-                LOADING...
-            </span>
+            <span className="text-xs text-fg-muted animate-pulse">Loading…</span>
             </div>
         ) : (
             <>
-            {/* Stats row */}
-            <div className="flex gap-6 mb-4">
+            <div className="flex gap-8 mb-5">
                 <div>
-                <p className="font-black text-2xl text-white">{stats?.repos}</p>
-                <p className="font-mono text-[10px] text-white/30 tracking-widest uppercase">Repos</p>
+                <p className="text-2xl font-semibold tracking-tight">{stats?.repos}</p>
+                <p className="text-xs text-fg-muted mt-1">Repos</p>
                 </div>
                 <div>
-                <p className="font-black text-2xl text-white">{stats?.followers}</p>
-                <p className="font-mono text-[10px] text-white/30 tracking-widest uppercase">Followers</p>
+                <p className="text-2xl font-semibold tracking-tight">{stats?.followers}</p>
+                <p className="text-xs text-fg-muted mt-1">Followers</p>
                 </div>
             </div>
 
-            {/* Contribution heatmap */}
+            {/* Contribution heatmap — greyscale ramp */}
             <div className="flex gap-[3px] flex-wrap">
                 {stats?.contributions.map((day, i) => (
                 <div
                     key={i}
                     title={`${day.date}: ${day.count} contributions`}
-                    className="w-[10px] h-[10px] rounded-[2px] transition-all duration-200 hover:scale-125"
+                    className="w-[10px] h-[10px] rounded-[2px] transition-transform duration-200 hover:scale-125"
                     style={{
                     background: day.count === 0
-                        ? "rgba(255,255,255,0.04)"
+                        ? "var(--bg-muted)"
                         : day.count < 3
-                        ? "#ff6a0044"
+                        ? "var(--fg-muted)"
                         : day.count < 6
-                        ? "#ff6a0088"
-                        : "#ff6a00",
+                        ? "var(--fg-secondary)"
+                        : "var(--fg)",
                     }}
                 />
                 ))}
             </div>
-            <p className="font-mono text-[10px] text-white/20 mt-3 tracking-widest">
-                // last 6 months
-            </p>
+            <p className="text-xs text-fg-muted mt-3">Last 6 months</p>
             </>
         )}
         </div>
     );
     }
 
-    // Generate 180 days of mock contribution data (replace dengan real data kalau mau)
+    // Generate 180 days of mock contribution data
     function generateMockContributions() {
     const days = [];
     const now = new Date();
@@ -174,32 +160,23 @@ interface KaggleDataset {
 
     export function ActivitySection() {
     return (
-        <section id="activity" className="relative w-full py-24 bg-[#080808]">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{ backgroundImage: "url('/noise.png')", backgroundRepeat: "repeat" }} />
-
-        <div className="container mx-auto px-6 relative z-10">
-            {/* Header */}
-            <div className="mb-14">
-            <span className="font-mono text-[10px] text-[#ff6a00] tracking-[0.3em] uppercase">
-                [ OPEN_SOURCE ]
-            </span>
-            <h2 className="font-black text-4xl md:text-5xl text-white mt-1 tracking-tight">
-                ACTIVITY_LOG
+        <section id="activity" className="w-full py-24 border-t border-border">
+        <div className="container mx-auto px-6 max-w-[1120px]">
+            <div className="mb-12">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+                Activity
             </h2>
+            <p className="text-sm text-fg-secondary mt-1">
+                Where I spend my open-source time.
+            </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left: GitHub */}
             <div>
                 <GitHubGraph />
             </div>
 
-            {/* Right: Kaggle */}
             <div className="space-y-4">
-                <p className="font-mono text-[10px] text-white/30 tracking-widest uppercase mb-4">
-                // kaggle_notebooks
-                </p>
                 {KAGGLE_PROJECTS.map((p) => (
                 <KaggleCard key={p.url} {...p} />
                 ))}
@@ -207,9 +184,9 @@ interface KaggleDataset {
                 href={`https://www.kaggle.com/${KAGGLE_USERNAME}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center font-mono text-[10px] text-white/20 hover:text-[#ff6a00]/60 transition-colors py-3 border border-white/[0.04] rounded-sm tracking-widest"
+                className="block text-center text-sm text-fg-secondary hover:text-fg transition-colors py-3 border border-border rounded-lg"
                 >
-                → VIEW_ALL_ON_KAGGLE
+                View all on Kaggle →
                 </a>
             </div>
             </div>
