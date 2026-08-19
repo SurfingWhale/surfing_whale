@@ -31,31 +31,3 @@ export function useProfileMode() {
   if (!ctx) throw new Error("useProfileMode must be used within ProfileModeProvider");
   return ctx;
 }
-
-export function RoleToggle() {
-  const { mode, setMode } = useProfileMode();
-
-  return (
-    <div
-      className="inline-flex rounded-full border border-border bg-bg-muted p-1"
-      role="group"
-      aria-label="Choose what to view"
-    >
-      {(Object.keys(MODE_LABEL) as Mode[]).map((m) => (
-        <button
-          key={m}
-          type="button"
-          onClick={() => setMode(m)}
-          aria-pressed={mode === m}
-          className={`px-5 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
-            mode === m
-              ? "bg-fg text-bg"
-              : "text-fg-secondary hover:text-fg"
-          }`}
-        >
-          {MODE_LABEL[m]}
-        </button>
-      ))}
-    </div>
-  );
-}

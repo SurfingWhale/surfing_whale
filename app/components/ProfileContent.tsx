@@ -1,6 +1,6 @@
 // app/components/ProfileContent.tsx
-// Swaps the page body to match the role. The toggle itself lives in the hero
-// (RoleToggle); this only reads the shared mode.
+// Swaps the page body to match the role. The switch itself is the pair of
+// portraits in the hero (AvatarPicker); this only reads the shared mode.
 "use client";
 
 import { type ReactNode } from "react";

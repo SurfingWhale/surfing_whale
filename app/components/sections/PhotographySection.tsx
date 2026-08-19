@@ -19,6 +19,31 @@ export function PhotographySection() {
   return (
     <section id="photography" className="w-full py-24 border-t border-border">
       <div className="container mx-auto px-6 max-w-[1120px]">
+        <div className="max-w-[680px] mb-16 space-y-5 text-fg-secondary leading-relaxed">
+          <p>
+            I might snap myself in a mirror, someone laughing, a random moment,
+            a friend&apos;s expression. It is simply a photograph ✌️ Perhaps no
+            one cares. Perhaps tomorrow even I won&apos;t like it.
+          </p>
+          <p>
+            Yet decades later someone might look at that very same frame and
+            find something I missed the moment I pressed the shutter.
+          </p>
+          <p>
+            Perhaps that is why Vivian Maier sits so close to the heart — not
+            because she was a &ldquo;great photographer,&rdquo; but simply
+            because she kept on taking pictures.
+          </p>
+          <p>
+            There is more to capture, more to carry, and more of life to move
+            through — all while knowing we can never truly control what an image
+            means, or how long it endures.
+          </p>
+          <p className="text-fg">
+            To my old soul, and to my faithful vintage Fujifilm: thank you. 📸
+          </p>
+        </div>
+
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
             Selected frames
