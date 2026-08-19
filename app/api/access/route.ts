@@ -4,6 +4,18 @@ import { recordAccess, isValidEmail, EMAIL_MAX, type AccessReason } from "@/app/
 
 const REASONS: AccessReason[] = ["CV", "Project"];
 
+/**
+ * Health check — reports whether the Notion target is configured, without
+ * exposing it. Mirrors the status GET on /api/sync-images.
+ */
+export async function GET(): Promise<NextResponse> {
+  return NextResponse.json({
+    status: "ok",
+    endpoint: "POST /api/access",
+    notionConfigured: Boolean(process.env.NOTION_ACCESS_DATABASE_ID),
+  });
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let body: any;
   try {
