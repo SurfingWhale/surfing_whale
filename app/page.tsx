@@ -10,6 +10,7 @@ import { GuestNotesSection } from "./components/sections/GuestNotesSection";
 import { MobileNav } from "./components/Mobilenav/Mobilenav";
 import { ProfileContent } from "./components/ProfileContent";
 import { ProfileModeProvider } from "./components/ProfileMode";
+import { AccessProvider } from "./components/AccessGate";
 
 const NAV_LINKS = [
   { label: "Home", href: "#" },
@@ -45,6 +46,7 @@ export default function Home() {
       </nav>
 
       <div className="pt-14">
+        <AccessProvider>
         <ProfileModeProvider>
           <HeroSection />
           <ProfileContent
@@ -59,6 +61,7 @@ export default function Home() {
             captureContent={<PhotographySection />}
           />
         </ProfileModeProvider>
+        </AccessProvider>
         <GuestNotesSection />
         <ContactSection />
       </div>
