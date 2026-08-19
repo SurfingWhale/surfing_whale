@@ -4,17 +4,29 @@
 import { useState } from "react";
 import { photographs, type PhotoCategory } from "@/app/data/photography";
 
-const FILTERS: { key: "all" | PhotoCategory; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "portraits", label: "Portraits" },
-  { key: "everyday", label: "Everyday" },
-  { key: "landscapes", label: "Landscapes" },
-];
+const LABEL: Record<PhotoCategory, string> = {
+  portraits: "Portraits",
+  everyday: "Everyday",
+  landscapes: "Landscapes",
+};
+
+const ORDER: PhotoCategory[] = ["portraits", "everyday", "landscapes"];
+
+// Only offer filters that actually have frames behind them, so a tab never
+// leads to an empty grid.
+const AVAILABLE = ORDER.filter((c) => photographs.some((p) => p.category === c));
+
+type Filter = "all" | PhotoCategory;
 
 export function PhotographySection() {
-  const [filter, setFilter] = useState<"all" | PhotoCategory>("all");
+  const [filter, setFilter] = useState<Filter>("all");
   const visible =
     filter === "all" ? photographs : photographs.filter((p) => p.category === filter);
+
+  const filters: { key: Filter; label: string }[] = [
+    { key: "all", label: "All" },
+    ...AVAILABLE.map((c) => ({ key: c as Filter, label: LABEL[c] })),
+  ];
 
   return (
     <section id="photography" className="w-full py-24 border-t border-border">
@@ -46,15 +58,15 @@ export function PhotographySection() {
 
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
-            Selected frames
+            Selected photography
           </h2>
           <p className="text-sm text-fg-secondary mt-1">
-            {photographs.length} photographs, caught along the way.
+            Photography archive · {photographs.length} photographs.
           </p>
         </div>
 
-        <div className="flex gap-2 mb-8 flex-wrap">
-          {FILTERS.map((f) => (
+        <div className="flex gap-2 mb-8 flex-wrap" role="group" aria-label="Filter photographs">
+          {filters.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
@@ -70,25 +82,23 @@ export function PhotographySection() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {/* Column masonry keeps every frame at its own aspect ratio — a uniform
+            grid would crop compositions the photographer chose. */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
           {visible.map((photo) => (
             <figure
               key={photo.id}
-              className="relative aspect-[4/5] rounded-lg overflow-hidden bg-bg-muted border border-border group"
+              className="break-inside-avoid mb-4 overflow-hidden rounded-lg border border-border bg-bg-muted"
             >
-              {photo.src ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-fg-muted text-xs">
-                  {photo.alt}
-                </div>
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.src}
+                alt={photo.alt}
+                width={photo.width}
+                height={photo.height}
+                loading="lazy"
+                className="w-full h-auto block"
+              />
             </figure>
           ))}
         </div>
