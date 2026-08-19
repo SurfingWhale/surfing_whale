@@ -9,26 +9,23 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useProfileMode, type Mode } from "./ProfileMode";
 
-// The two portraits are framed very differently — one is a full-body seated
-// shot with the subject low in frame, the other a tight headshot. A square
-// crop mangles the first, so the frame is 3:4 and each image carries its own
-// focal point to keep the subject placed consistently through the crossfade.
-const PORTRAIT: Record<Mode, { src: string; alt: string; position: string }> = {
+// Both source files are pre-cropped square around their subject, so the two
+// figures occupy a comparable share of the frame and the crossfade reads as
+// one portrait becoming the other rather than jumping in scale.
+const PORTRAIT: Record<Mode, { src: string; alt: string }> = {
   analyst: {
     src: "/avatar-analyst.jpg",
     alt: "Fauzy seated on a stool against a white backdrop",
-    position: "center 55%",
   },
   capture: {
     src: "/avatar-capture.jpg",
     alt: "Fauzy holding a film camera up to his eye",
-    position: "center 35%",
   },
 };
 
 function Portrait({ mode, active }: { mode: Mode; active: boolean }) {
   const [failed, setFailed] = useState(false);
-  const { src, alt, position } = PORTRAIT[mode];
+  const { src, alt } = PORTRAIT[mode];
 
   return (
     <motion.div
@@ -53,7 +50,6 @@ function Portrait({ mode, active }: { mode: Mode; active: boolean }) {
           src={src}
           alt={active ? alt : ""}
           onError={() => setFailed(true)}
-          style={{ objectPosition: position }}
           className="w-full h-full object-cover grayscale"
         />
       )}
@@ -65,7 +61,7 @@ export function AvatarMorph() {
   const { mode } = useProfileMode();
 
   return (
-    <div className="relative w-full aspect-[3/4] max-w-sm mx-auto overflow-hidden rounded-2xl border border-border bg-bg-subtle">
+    <div className="relative w-full aspect-square max-w-sm mx-auto overflow-hidden rounded-2xl border border-border bg-bg-subtle">
       <Portrait mode="analyst" active={mode === "analyst"} />
       <Portrait mode="capture" active={mode === "capture"} />
     </div>
