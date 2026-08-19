@@ -1,126 +1,131 @@
 "use client";
 // app/components/sections/ProjectSection.tsx
-// The Three.js particle backdrop was archived alongside Spline — see PRD v2 §6.
+//
+// Two tiers, following the reference site's structure rather than a carousel
+// of thumbnails: one featured case study given room, then the rest as a
+// typographic list. In the list the name and the sentence carry the work and
+// the screenshot only surfaces on hover — image second, text first.
+//
+// The Three.js particle backdrop was archived alongside Spline — PRD v2 §6.
 
 import { useState } from "react";
 import Link from "next/link";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import type { NotionProject } from "@/app/lib/notion";
 import { ProjectModal } from "@/app/components/Projectmodal";
 import { useAccess } from "@/app/components/AccessGate";
 
 interface Props { projects: NotionProject[]; }
 
+function ProjectRow({ project, onOpen }: {
+    project: NotionProject;
+    onOpen: () => void;
+}) {
+    const hasPreview = Boolean(project.image) && !project.image.includes("placeholder");
+
+    return (
+        <li className="group relative border-b border-border last:border-b-0">
+        <button
+            onClick={onOpen}
+            className="w-full text-left py-6 pr-0 lg:pr-72 block"
+        >
+            <span className="text-lg tracking-tight">
+            <span className="font-medium text-fg group-hover:underline underline-offset-4 decoration-1">
+                {project.title}
+            </span>
+            {project.subGroup && (
+                <span className="text-fg-secondary"> — {project.subGroup}</span>
+            )}
+            </span>
+
+            {project.tags.length > 0 && (
+            <span className="block text-sm text-fg-muted mt-1.5">
+                {project.tags.filter((t) => !t.startsWith("#")).join(" · ")}
+            </span>
+            )}
+        </button>
+
+        {/* Desktop-only hover preview, parked in the gutter the button leaves. */}
+        {hasPreview && (
+            <figure
+            aria-hidden="true"
+            className="pointer-events-none hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-64 aspect-[16/10] rounded-lg overflow-hidden border border-border bg-bg-muted opacity-0 scale-[0.96] group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out"
+            >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+                src={project.image}
+                alt=""
+                loading="lazy"
+                className="w-full h-full object-cover"
+            />
+            </figure>
+        )}
+        </li>
+    );
+}
+
 export function ProjectSection({ projects }: Props) {
     const [selectedProject, setSelectedProject] = useState<NotionProject | null>(null);
     const { requireAccess } = useAccess();
 
-    // Cards stay browsable; the gate sits in front of opening a detail.
+    // The list stays browsable; the gate sits in front of opening a detail.
     const openProject = (project: NotionProject) =>
         requireAccess("Project", () => setSelectedProject(project));
 
     return (
         <section className="w-full py-24 border-t border-border">
-        <div id="project" className="container mx-auto px-6 max-w-[1120px]">
-            <div className="flex items-end justify-between mb-10">
-            <div>
-                <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
-                Selected work
-                </h2>
-                <p className="text-sm text-fg-secondary mt-1">
-                Things I have built and shipped.
-                </p>
-            </div>
-            <span className="text-sm text-fg-muted hidden md:block">
-                {projects.length} projects
-            </span>
-            </div>
+        <div id="project" className="container mx-auto px-6 max-w-[880px]">
 
-            {/* Featured case study — its own route rather than the Notion modal,
-                since it runs longer than a project card. */}
+            {/* ── Tier one: the featured case study ─────────────────────── */}
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+            Selected case study
+            </h2>
+            <p className="text-sm text-fg-secondary mt-1 mb-8">
+            The longer story behind how I think about data.
+            </p>
+
             <Link
             href="/work/finance-dashboard"
-            className="group block border border-border rounded-lg p-6 mb-10 bg-bg-subtle hover:border-border-strong transition-colors duration-300"
+            className="group block border border-border rounded-xl overflow-hidden bg-bg-subtle hover:border-border-strong transition-colors duration-300"
             >
-            <p className="text-xs text-fg-muted uppercase tracking-wider mb-2">
-                Featured case study
-            </p>
-            <h3 className="text-lg font-medium tracking-tight">
+            <div className="p-7">
+                <h3 className="text-xl font-medium tracking-tight">
                 A ledger that behaves like a product
-            </h3>
-            <p className="text-sm text-fg-secondary mt-2 leading-relaxed">
+                </h3>
+                <p className="text-fg-secondary leading-relaxed mt-2 max-w-prose">
                 A personal finance dashboard built on general-ledger accounts —
-                prorate budgeting against working days, forecasting, and
-                reconciliation.
-            </p>
-            <span className="inline-block text-sm text-fg mt-4">
-                Read the case study →
-            </span>
+                prorate budgeting against working days, end-of-month
+                forecasting, and bank reconciliation.
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-sm text-fg mt-5">
+                Read the case study
+                <span className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+                </span>
+            </div>
             </Link>
 
-            {projects.length === 0 ? (
-            <p className="text-fg-muted text-center py-16 text-sm">
-                No projects found.
+            {/* ── Tier two: everything else, as a list ──────────────────── */}
+            <div className="mt-20">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+                Other work
+            </h2>
+            <p className="text-sm text-fg-secondary mt-1 mb-4">
+                {projects.length} projects · hover to preview.
             </p>
+
+            {projects.length === 0 ? (
+                <p className="text-fg-muted text-sm py-10">No projects found.</p>
             ) : (
-            <>
-                <Swiper
-                modules={[Navigation, Pagination]}
-                navigation={{ nextEl: ".swiper-next", prevEl: ".swiper-prev" }}
-                pagination={{ clickable: true }}
-                spaceBetween={24}
-                slidesPerView={1}
-                breakpoints={{ 768: { slidesPerView: 2 } }}
-                className="!pb-12"
-                >
+                <ul className="border-t border-border">
                 {projects.map((project) => (
-                    <SwiperSlide key={project.id}>
-                    <div
-                        className="group block cursor-pointer"
-                        onClick={() => openProject(project)}
-                    >
-                        <div className="relative overflow-hidden rounded-lg border border-border aspect-video bg-bg-muted">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={project.image}
-                            alt={project.title}
-                            loading="lazy"
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        </div>
-                        <div className="mt-4">
-                        <h3 className="text-base font-medium tracking-tight">
-                            {project.title}
-                        </h3>
-                        <div className="flex gap-2 mt-2 flex-wrap">
-                            {project.tags.map((tag) => (
-                            <span
-                                key={tag}
-                                className="text-xs px-2 py-0.5 border border-border rounded-full text-fg-secondary"
-                            >
-                                {tag}
-                            </span>
-                            ))}
-                        </div>
-                        </div>
-                    </div>
-                    </SwiperSlide>
+                    <ProjectRow
+                    key={project.id}
+                    project={project}
+                    onOpen={() => openProject(project)}
+                    />
                 ))}
-                </Swiper>
-                <div className="flex gap-3 justify-end mt-2">
-                <button className="swiper-prev text-sm border border-border rounded-lg text-fg-secondary px-4 py-2 hover:border-border-strong hover:text-fg transition-colors duration-300">
-                    ← Prev
-                </button>
-                <button className="swiper-next text-sm border border-border rounded-lg text-fg-secondary px-4 py-2 hover:border-border-strong hover:text-fg transition-colors duration-300">
-                    Next →
-                </button>
-                </div>
-            </>
+                </ul>
             )}
+            </div>
         </div>
 
         <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
