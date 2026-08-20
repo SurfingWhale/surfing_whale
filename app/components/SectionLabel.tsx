@@ -12,7 +12,7 @@ export function SectionLabel({
 }) {
   return (
     <div className="mb-6">
-      <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-fg-muted">
+      <h2 className="text-[0.8125rem] font-medium uppercase tracking-[0.12em] text-fg-muted">
         {children}
       </h2>
       {note && (
