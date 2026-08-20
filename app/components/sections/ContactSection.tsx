@@ -2,6 +2,7 @@
 // app/components/sections/ContactSection.tsx
 
 import { useState } from "react";
+import { SectionLabel } from "@/app/components/SectionLabel";
 
 const WA_NUMBER = "6285156964766";
 const EMAIL = "fauzymuhamad43@gmail.com";
@@ -33,14 +34,9 @@ export function ContactSection() {
     return (
         <section id="contact" className="w-full py-24 border-t border-border">
         <div className="container mx-auto px-6 max-w-[680px]">
-            <div className="mb-10 text-center">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+            <SectionLabel note="Open for collaboration, freelance, or just a chat.">
                 Get in touch
-            </h2>
-            <p className="text-sm text-fg-secondary mt-2">
-                Open for collaboration, freelance, or just a chat.
-            </p>
-            </div>
+            </SectionLabel>
 
             {sent ? (
             <div className="text-center py-16 border border-border rounded-lg bg-bg-subtle">

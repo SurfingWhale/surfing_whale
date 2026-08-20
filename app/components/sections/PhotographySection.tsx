@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { photographs, type PhotoCategory } from "@/app/data/photography";
+import { SectionLabel } from "@/app/components/SectionLabel";
 
 const LABEL: Record<PhotoCategory, string> = {
   portraits: "Portraits",
@@ -30,8 +31,8 @@ export function PhotographySection() {
 
   return (
     <section id="photography" className="w-full py-24 border-t border-border">
-      <div className="container mx-auto px-6 max-w-[1120px]">
-        <div className="max-w-[680px] mb-16 space-y-5 text-fg-secondary leading-relaxed">
+      <div className="container mx-auto px-6 max-w-[680px]">
+        <div className="mb-16 space-y-5 text-fg-secondary leading-relaxed">
           <p>
             I might snap myself in a mirror, someone laughing, a random moment,
             a friend&apos;s expression. It is simply a photograph ✌️ Perhaps no
@@ -56,14 +57,9 @@ export function PhotographySection() {
           </p>
         </div>
 
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
-            Selected photography
-          </h2>
-          <p className="text-sm text-fg-secondary mt-1">
-            Photography archive · {photographs.length} photographs.
-          </p>
-        </div>
+        <SectionLabel note={`Photography archive · ${photographs.length} photographs.`}>
+          Selected photography
+        </SectionLabel>
 
         <div className="flex gap-2 mb-8 flex-wrap" role="group" aria-label="Filter photographs">
           {filters.map((f) => (
@@ -84,7 +80,7 @@ export function PhotographySection() {
 
         {/* Column masonry keeps every frame at its own aspect ratio — a uniform
             grid would crop compositions the photographer chose. */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
+        <div className="columns-1 sm:columns-2 gap-4 [column-fill:_balance]">
           {visible.map((photo) => (
             <figure
               key={photo.id}

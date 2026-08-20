@@ -3,6 +3,7 @@
 // Kaggle showcase + GitHub contribution graph
 
 import { useEffect, useState } from "react";
+import { SectionLabel } from "@/app/components/SectionLabel";
 
 const GITHUB_USERNAME = "Untamed98x";
 const KAGGLE_USERNAME = "muhammadfauzy43";
@@ -161,17 +162,10 @@ interface KaggleDataset {
     export function ActivitySection() {
     return (
         <section id="activity" className="w-full py-24 border-t border-border">
-        <div className="container mx-auto px-6 max-w-[1120px]">
-            <div className="mb-12">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
-                Activity
-            </h2>
-            <p className="text-sm text-fg-secondary mt-1">
-                Where I spend my open-source time.
-            </p>
-            </div>
+        <div className="container mx-auto px-6 max-w-[680px]">
+            <SectionLabel note="Where I spend my open-source time.">Activity</SectionLabel>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
             <div>
                 <GitHubGraph />
             </div>

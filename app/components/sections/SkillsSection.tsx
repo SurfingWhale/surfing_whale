@@ -2,6 +2,7 @@
 // app/components/sections/SkillsSection.tsx
 
 import { useEffect, useRef, useState } from "react";
+import { SectionLabel } from "@/app/components/SectionLabel";
 
 const SKILLS = [
     { category: "Data Analysis", items: [
@@ -56,17 +57,10 @@ const SKILLS = [
 
     return (
         <section ref={ref} id="skills" className="w-full py-24 border-t border-border">
-        <div className="container mx-auto px-6 max-w-[1120px]">
-            <div className="mb-12">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
-                Skills
-            </h2>
-            <p className="text-sm text-fg-secondary mt-1">
-                Tools I reach for most.
-            </p>
-            </div>
+        <div className="container mx-auto px-6 max-w-[680px]">
+            <SectionLabel note="Tools I reach for most.">Skills</SectionLabel>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {SKILLS.map((group) => (
                 <div key={group.category}
                 className="border border-border rounded-lg p-6 bg-bg-subtle">

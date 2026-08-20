@@ -2,6 +2,7 @@
 // app/components/sections/GuestNotesSection.tsx
 
 import { useEffect, useState } from "react";
+import { SectionLabel } from "@/app/components/SectionLabel";
 
 interface GuestNote {
   id: string;
@@ -68,14 +69,9 @@ export function GuestNotesSection() {
   return (
     <section id="guest-notes" className="w-full py-24 border-t border-border">
       <div className="container mx-auto px-6 max-w-[680px]">
-        <div className="mb-10 text-center">
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
-            Guest notes
-          </h2>
-          <p className="text-sm text-fg-secondary mt-2">
-            Leave a note if you passed by. I read every one.
-          </p>
-        </div>
+        <SectionLabel note="Leave a note if you passed by. I read every one.">
+          Guest notes
+        </SectionLabel>
 
         {status === "sent" ? (
           <div className="text-center py-12 border border-border rounded-lg bg-bg-subtle">

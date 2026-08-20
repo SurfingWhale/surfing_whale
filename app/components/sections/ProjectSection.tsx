@@ -13,6 +13,7 @@ import Link from "next/link";
 import type { NotionProject } from "@/app/lib/notion";
 import { ProjectModal } from "@/app/components/Projectmodal";
 import { useAccess } from "@/app/components/AccessGate";
+import { SectionLabel } from "@/app/components/SectionLabel";
 
 interface Props { projects: NotionProject[]; }
 
@@ -26,7 +27,7 @@ function ProjectRow({ project, onOpen }: {
         <li className="group relative border-b border-border last:border-b-0">
         <button
             onClick={onOpen}
-            className="w-full text-left py-6 pr-0 lg:pr-72 block"
+            className="w-full text-left py-6 block"
         >
             <span className="text-lg tracking-tight">
             <span className="font-medium text-fg group-hover:underline underline-offset-4 decoration-1">
@@ -48,7 +49,7 @@ function ProjectRow({ project, onOpen }: {
         {hasPreview && (
             <figure
             aria-hidden="true"
-            className="pointer-events-none hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-64 aspect-[16/10] rounded-lg overflow-hidden border border-border bg-bg-muted opacity-0 scale-[0.96] group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out"
+            className="pointer-events-none hidden xl:block absolute left-full ml-10 top-1/2 -translate-y-1/2 w-60 aspect-[16/10] rounded-lg overflow-hidden border border-border bg-bg-muted opacity-0 scale-[0.96] group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out"
             >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -73,15 +74,12 @@ export function ProjectSection({ projects }: Props) {
 
     return (
         <section className="w-full py-24 border-t border-border">
-        <div id="project" className="container mx-auto px-6 max-w-[880px]">
+        <div id="project" className="container mx-auto px-6 max-w-[680px]">
 
             {/* ── Tier one: the featured case study ─────────────────────── */}
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+            <SectionLabel note="The longer story behind how I think about data.">
             Selected case study
-            </h2>
-            <p className="text-sm text-fg-secondary mt-1 mb-8">
-            The longer story behind how I think about data.
-            </p>
+            </SectionLabel>
 
             <Link
             href="/work/finance-dashboard"
@@ -105,12 +103,9 @@ export function ProjectSection({ projects }: Props) {
 
             {/* ── Tier two: everything else, as a list ──────────────────── */}
             <div className="mt-20">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.02em]">
+            <SectionLabel note={`${projects.length} projects.`}>
                 Other work
-            </h2>
-            <p className="text-sm text-fg-secondary mt-1 mb-4">
-                {projects.length} projects · hover to preview.
-            </p>
+            </SectionLabel>
 
             {projects.length === 0 ? (
                 <p className="text-fg-muted text-sm py-10">No projects found.</p>
