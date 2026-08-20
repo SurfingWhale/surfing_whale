@@ -26,7 +26,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #111111;
     --bg-subtle: #1a1a1a;
     --bg-muted: #222222;
@@ -38,6 +38,32 @@
     --fg-body: #aaa7a0;
     --fg-label: #aaa7a0;
   }
+}
+
+[data-theme="dark"] {
+  --bg: #111111;
+  --bg-subtle: #1a1a1a;
+  --bg-muted: #222222;
+  --fg: #f0f0f0;
+  --fg-secondary: rgba(240, 240, 240, 0.75);
+  --fg-muted: rgba(240, 240, 240, 0.45);
+  --border: rgba(240, 240, 240, 0.07);
+  --border-strong: rgba(240, 240, 240, 0.12);
+  --fg-body: #aaa7a0;
+  --fg-label: #aaa7a0;
+}
+
+[data-theme="light"] {
+  --bg: #fafafa;
+  --bg-subtle: #f7f7f7;
+  --bg-muted: #f0f0f0;
+  --fg: #111111;
+  --fg-secondary: rgba(17, 17, 17, 0.75);
+  --fg-muted: rgba(17, 17, 17, 0.45);
+  --border: rgba(17, 17, 17, 0.08);
+  --border-strong: rgba(17, 17, 17, 0.14);
+  --fg-body: #6f6f6f;
+  --fg-label: #84817c;
 }
 
 @theme inline {
@@ -106,5 +132,87 @@ h1, h2, h3, h4 {
   [data-spot],
   [data-spot-row] {
     transition-duration: 0.01ms;
+  }
+}
+
+/* ---- Justified gallery ----------------------------------------------
+   Frames share a row in proportion to their aspect ratio, so nothing is
+   cropped and rows still come out flush. --photo-ratio is width/height and
+   --photo-basis is that ratio times the target row height; flex-grow then
+   settles the row. The trailing spacer stops a short last row from
+   stretching to fill the width. */
+.photo-justified {
+  --photo-row: 260px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  column-gap: 4px;
+  row-gap: 4px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding-inline: 4px;
+}
+
+.photo-justified::after {
+  content: "";
+  flex: 999 1 360px;
+}
+
+.photo-justified > figure {
+  flex: var(--photo-ratio) 1 var(--photo-basis);
+  min-width: 0;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .photo-justified {
+    --photo-row: 160px;
+  }
+  .photo-justified::after {
+    flex-basis: 256px;
+  }
+}
+
+/* The full-bleed row is wider than the page; clip rather than scroll. */
+body:has(.photo-justified) {
+  overflow-x: clip;
+}
+
+/* ---- Theme transition ------------------------------------------------
+   The new snapshot is revealed through a radial mask growing from the
+   toggle, so the change reads as a wavefront rather than a hard cut. */
+@property --theme-wave {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-old(root) { z-index: 1; }
+  ::view-transition-new(root) {
+    z-index: 2;
+    animation: theme-wavefront 700ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    mask-image: radial-gradient(
+      circle var(--theme-wave, 0px) at var(--wave-x, 100%) var(--wave-y, 0%),
+      #000 calc(100% - 60px),
+      transparent 100%
+    );
+  }
+  @keyframes theme-wavefront {
+    from { --theme-wave: 0px; }
+    to   { --theme-wave: var(--wave-r, 150vmax); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+    mask-image: none !important;
   }
 }

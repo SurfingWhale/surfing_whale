@@ -81,20 +81,30 @@ export function PhotographySection() {
           ))}
         </div>
 
-        {/* Column masonry keeps every frame at its own aspect ratio — a uniform
-            grid would crop compositions the photographer chose. */}
-        <div className="columns-1 sm:columns-2 gap-4 [column-fill:_balance]">
+      </div>
+
+      {/* Frames break out of the reading column: rows are justified by aspect
+          ratio, so nothing is cropped and the archive reads as a contact
+          sheet rather than a set of tiles. */}
+      <div className="photo-justified">
           {visible.map((photo, i) => (
-            <figure
-              key={photo.id}
-              className="break-inside-avoid mb-4 overflow-hidden rounded-lg border border-border bg-bg-muted"
+          <figure
+            key={photo.id}
+            style={{
+              // flex-grow tracks the ratio; flex-basis is that ratio at the
+              // target row height, so a row settles flush.
+              ["--photo-ratio" as string]: String(photo.width / photo.height),
+              ["--photo-basis" as string]:
+                `calc(var(--photo-row) * ${photo.width / photo.height})`,
+            }}
+            className="overflow-hidden bg-bg-muted"
+          >
+            <button
+              type="button"
+              onClick={() => setViewing(i)}
+              aria-label={`Open: ${photo.alt}`}
+              className="block w-full cursor-zoom-in border-0 p-0 bg-transparent transition-transform duration-150 active:scale-[0.98]"
             >
-              <button
-                type="button"
-                onClick={() => setViewing(i)}
-                aria-label={`Open: ${photo.alt}`}
-                className="block w-full cursor-zoom-in border-0 p-0 bg-transparent transition-transform duration-150 active:scale-[0.98]"
-              >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={photo.src}
@@ -102,12 +112,11 @@ export function PhotographySection() {
                 width={photo.width}
                 height={photo.height}
                 loading="lazy"
-                className="w-full h-auto block"
+                className="w-full h-auto block outline outline-1 -outline-offset-1 outline-black/10"
               />
-              </button>
-            </figure>
+            </button>
+          </figure>
           ))}
-        </div>
       </div>
 
       <PhotoViewer

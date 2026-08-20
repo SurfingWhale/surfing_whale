@@ -11,6 +11,7 @@ import { MobileNav } from "./components/Mobilenav/Mobilenav";
 import { ProfileContent } from "./components/ProfileContent";
 import { ProfileModeProvider } from "./components/ProfileMode";
 import { AccessProvider } from "./components/AccessGate";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 const NAV_LINKS = [
   { label: "Home", href: "#" },
@@ -26,10 +27,10 @@ export default function Home() {
   return (
     <main className="relative min-h-screen bg-bg text-fg">
       <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className="container mx-auto px-6 h-14 flex items-center justify-between max-w-[720px]">
-          <span className="text-sm font-medium tracking-tight">Surfing Whale</span>
+        <div className="container mx-auto px-6 h-14 flex items-center justify-between gap-6 max-w-[720px]">
+          <span className="text-[13px] font-medium tracking-tight whitespace-nowrap">Surfing Whale</span>
 
-          <div className="hidden md:flex gap-7 text-sm text-fg-secondary">
+          <div className="hidden md:flex gap-5 text-[13px] text-fg-secondary">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
@@ -41,7 +42,10 @@ export default function Home() {
             ))}
           </div>
 
-          <MobileNav />
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <MobileNav />
+          </div>
         </div>
       </nav>
 
@@ -68,8 +72,8 @@ export default function Home() {
 
       <footer data-spot className="border-t border-border py-8 px-6 mt-16">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-3 max-w-[720px]">
-          <span className="text-sm text-fg-secondary">Muhammad Fauzy</span>
-          <span className="text-sm text-fg-muted">
+          <span className="text-[13px] text-fg-secondary">Muhammad Fauzy</span>
+          <span className="text-[13px] text-fg-muted">
             © {new Date().getFullYear()} Surfing Whale
           </span>
         </div>

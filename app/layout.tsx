@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
 
 // Matches the reference site, which loads Plus Jakarta Sans at 400/500/600 —
 // confirmed from its stylesheet link and from the font names embedded in a
@@ -70,6 +71,10 @@ export default function RootLayout({
       lang="id"
       className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Applies a stored theme choice before first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
