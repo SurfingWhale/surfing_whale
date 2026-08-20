@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { photographs, type PhotoCategory } from "@/app/data/photography";
 import { SectionLabel } from "@/app/components/SectionLabel";
+import { PhotoViewer } from "@/app/components/PhotoViewer";
 
 const LABEL: Record<PhotoCategory, string> = {
   portraits: "Portraits",
@@ -21,6 +22,8 @@ type Filter = "all" | PhotoCategory;
 
 export function PhotographySection() {
   const [filter, setFilter] = useState<Filter>("all");
+  // Index runs against the filtered set, so arrows walk what is on screen.
+  const [viewing, setViewing] = useState<number | null>(null);
   const visible =
     filter === "all" ? photographs : photographs.filter((p) => p.category === filter);
 
@@ -81,11 +84,17 @@ export function PhotographySection() {
         {/* Column masonry keeps every frame at its own aspect ratio — a uniform
             grid would crop compositions the photographer chose. */}
         <div className="columns-1 sm:columns-2 gap-4 [column-fill:_balance]">
-          {visible.map((photo) => (
+          {visible.map((photo, i) => (
             <figure
               key={photo.id}
               className="break-inside-avoid mb-4 overflow-hidden rounded-lg border border-border bg-bg-muted"
             >
+              <button
+                type="button"
+                onClick={() => setViewing(i)}
+                aria-label={`Open: ${photo.alt}`}
+                className="block w-full cursor-zoom-in border-0 p-0 bg-transparent transition-transform duration-150 active:scale-[0.98]"
+              >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={photo.src}
@@ -95,10 +104,18 @@ export function PhotographySection() {
                 loading="lazy"
                 className="w-full h-auto block"
               />
+              </button>
             </figure>
           ))}
         </div>
       </div>
+
+      <PhotoViewer
+        photos={visible}
+        index={viewing}
+        onIndex={setViewing}
+        onClose={() => setViewing(null)}
+      />
     </section>
   );
 }

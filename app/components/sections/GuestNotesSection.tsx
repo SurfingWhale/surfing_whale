@@ -1,5 +1,9 @@
 "use client";
 // app/components/sections/GuestNotesSection.tsx
+//
+// Written in the page's own language: 13px copy, hairline-ruled fields rather
+// than boxed inputs, and a text link to send. A boxed form with a filled
+// button read like a contact widget borrowed from another site.
 
 import { useEffect, useState } from "react";
 import { SectionLabel } from "@/app/components/SectionLabel";
@@ -21,6 +25,16 @@ function formatDate(iso: string) {
     year: "numeric",
   });
 }
+
+// Bottom hairline only — a ruled line to write on, not a box to fill in.
+const FIELD =
+  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 " +
+  "text-[13px] leading-[2] text-fg placeholder:text-fg-muted " +
+  "focus:outline-none focus:border-fg transition-colors duration-200";
+
+const LINK =
+  "text-fg underline decoration-border-strong underline-offset-[3px] " +
+  "hover:decoration-[var(--accent-soft)] transition-colors duration-200";
 
 export function GuestNotesSection() {
   const [notes, setNotes] = useState<GuestNote[]>([]);
@@ -63,9 +77,6 @@ export function GuestNotesSection() {
     }
   };
 
-  const fieldClass =
-    "w-full bg-bg border border-border rounded-lg px-4 py-3 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors";
-
   return (
     <section data-spot id="guest-notes" className="w-full py-24 border-t border-border">
       <div className="container mx-auto px-6 max-w-[720px]">
@@ -74,69 +85,52 @@ export function GuestNotesSection() {
         </SectionLabel>
 
         {status === "sent" ? (
-          <div className="text-center py-12 border border-border rounded-lg bg-bg-subtle">
-            <p className="text-sm font-medium">Thanks for the note</p>
-            <p className="text-sm text-fg-secondary mt-2">
-              It will show up here once I have had a look.
-            </p>
-            <button
-              onClick={() => setStatus("idle")}
-              className="mt-6 text-sm text-fg-secondary hover:text-fg transition-colors underline underline-offset-4"
-            >
+          <p className="text-[13px] leading-[2] text-fg-body">
+            Thanks for the note — it will show up here once I have had a look.{" "}
+            <button onClick={() => setStatus("idle")} className={LINK}>
               Write another
             </button>
-          </div>
+          </p>
         ) : (
-          <div className="space-y-5">
-            <div>
-              <label htmlFor="note-name" className="text-sm text-fg-secondary block mb-2">
-                Name
-              </label>
-              <input
-                id="note-name"
-                type="text"
-                maxLength={50}
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Your name"
-                className={fieldClass}
-              />
-            </div>
+          <div className="max-w-[520px] space-y-6">
+            <input
+              type="text"
+              maxLength={50}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="Your name"
+              aria-label="Your name"
+              className={FIELD}
+            />
 
             <div>
-              <label htmlFor="note-message" className="text-sm text-fg-secondary block mb-2">
-                Note
-              </label>
               <textarea
-                id="note-message"
-                rows={4}
+                rows={3}
                 maxLength={MAX_MESSAGE}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 placeholder="Say hello…"
-                className={`${fieldClass} resize-none`}
+                aria-label="Your note"
+                className={`${FIELD} resize-none`}
               />
-              <p className="text-xs text-fg-muted mt-1 text-right">
+              <p className="text-[11px] text-fg-muted mt-1 text-right tabular-nums">
                 {form.message.length}/{MAX_MESSAGE}
               </p>
             </div>
 
             <div>
-              <label htmlFor="note-email" className="text-sm text-fg-secondary block mb-2">
-                Email <span className="text-fg-muted">(optional)</span>
-              </label>
               <input
-                id="note-email"
                 type="email"
                 maxLength={254}
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@example.com"
-                className={fieldClass}
+                placeholder="Email (optional)"
+                aria-label="Your email, optional"
+                className={FIELD}
               />
-              <p className="text-xs text-fg-muted mt-2">
-                Only so I can reply. It is never shown publicly, and never shared
-                or used for any mailing list.
+              <p className="text-[11px] leading-[1.7] text-fg-muted mt-2">
+                Only so I can reply. Never shown publicly, never shared, never
+                added to a mailing list.
               </p>
             </div>
 
@@ -152,39 +146,34 @@ export function GuestNotesSection() {
               className="hidden"
             />
 
-            {error && <p className="text-sm text-fg">{error}</p>}
+            {error && <p className="text-[13px] text-fg">{error}</p>}
 
             <button
               onClick={submit}
               disabled={!isReady}
-              className="w-full text-sm font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
+              className={`text-[13px] font-medium ${LINK} disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed`}
             >
-              {status === "sending" ? "Sending…" : "Leave a note"}
+              {status === "sending" ? "Sending…" : "Leave a note →"}
             </button>
           </div>
         )}
 
-        <div className="mt-14">
+        <div className="mt-16">
           {loading ? (
-            <p className="text-sm text-fg-muted text-center animate-pulse">Loading notes…</p>
+            <p className="text-[13px] text-fg-muted">Loading notes…</p>
           ) : notes.length === 0 ? (
-            <p className="text-sm text-fg-muted text-center">
-              No notes yet — be the first.
-            </p>
+            <p className="text-[13px] text-fg-muted">No notes yet — be the first.</p>
           ) : (
-            <ul className="space-y-4">
+            <ul className="border-t border-border">
               {notes.map((note) => (
-                <li
-                  key={note.id}
-                  className="border border-border rounded-lg p-5 bg-bg-subtle"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-sm font-medium">{note.name}</span>
-                    <span className="text-xs text-fg-muted flex-shrink-0">
+                <li key={note.id} className="py-6 border-b border-border">
+                  <div className="flex items-baseline justify-between gap-4">
+                    <span className="text-[13px] font-medium text-fg">{note.name}</span>
+                    <span className="text-[11px] text-fg-muted flex-shrink-0 tabular-nums">
                       {formatDate(note.date)}
                     </span>
                   </div>
-                  <p className="text-sm text-fg-secondary leading-relaxed mt-2 whitespace-pre-line">
+                  <p className="text-[13px] leading-[1.8] text-fg-body mt-1.5 whitespace-pre-line">
                     {note.message}
                   </p>
                 </li>

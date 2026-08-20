@@ -28,6 +28,10 @@ function AvatarCard({ mode, active, open, onSelect }: {
   open: boolean;
   onSelect: () => void;
 }) {
+  // The card behind is almost entirely covered at rest, so its centre is not
+  // clickable until the pair fans — which never happens without hover. Both
+  // cards therefore advance the deck: the top one is always hittable, and the
+  // one behind selects itself once it is exposed.
   const [failed, setFailed] = useState(false);
   const { src, alt } = PORTRAIT[mode];
 
@@ -46,7 +50,7 @@ function AvatarCard({ mode, active, open, onSelect }: {
       type="button"
       onClick={onSelect}
       aria-pressed={active}
-      aria-label={`Show ${MODE_LABEL[mode]}`}
+      aria-label={active ? `Showing ${MODE_LABEL[mode]} — switch` : `Show ${MODE_LABEL[mode]}`}
       style={{ transform, transformOrigin: "50% 58%" }}
       className={`absolute top-0 left-0 w-[78px] h-[82px] p-1 pb-2 rounded-[18px] bg-white border-0 cursor-pointer
         transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0,0,1)]
@@ -72,6 +76,7 @@ function AvatarCard({ mode, active, open, onSelect }: {
 
 export function AvatarPicker() {
   const { mode, setMode } = useProfileMode();
+  const other = (m: Mode): Mode => (m === "analyst" ? "capture" : "analyst");
   const [open, setOpen] = useState(false);
   const startX = useRef<number | null>(null);
 
@@ -107,7 +112,7 @@ export function AvatarPicker() {
           mode={m}
           active={mode === m}
           open={open}
-          onSelect={() => setMode(m)}
+          onSelect={() => setMode(mode === m ? other(m) : m)}
         />
       ))}
     </div>
