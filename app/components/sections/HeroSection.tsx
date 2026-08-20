@@ -28,7 +28,7 @@ export function HeroSection() {
   const copy = COPY[mode];
 
   return (
-    <section className="w-full">
+    <section data-spot className="w-full">
       <div className="container mx-auto px-6 pt-20 pb-16 max-w-[720px]">
         <AvatarPicker />
 
@@ -58,7 +58,7 @@ export function HeroSection() {
             href="https://wa.me/6285156964766?text=Hello%2C%20aku%20dari%20portfolio%20Fauzy"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-fg transition-colors duration-200"
+            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
           >
             Get in touch
           </a>
@@ -66,7 +66,7 @@ export function HeroSection() {
             href="https://www.linkedin.com/in/muhammad-fauzy-741943203"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-fg transition-colors duration-200"
+            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
           >
             LinkedIn
           </a>

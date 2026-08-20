@@ -32,7 +32,7 @@ export function ContactSection() {
         "w-full bg-bg border border-border rounded-lg px-4 py-3 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors";
 
     return (
-        <section id="contact" className="w-full py-24 border-t border-border">
+        <section data-spot id="contact" className="w-full py-24 border-t border-border">
         <div className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel note="Open for collaboration, freelance, or just a chat.">
                 Get in touch

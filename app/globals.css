@@ -18,6 +18,11 @@
      and section labels lighter still. */
   --fg-body: #6f6f6f;
   --fg-label: #84817c;
+
+  /* The one colour on an otherwise neutral page — text selection, link
+     hover underlines, highlights. */
+  --accent-soft: #c8ddd4;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,4 +73,38 @@ body {
    Headings that need to drop the wide body tracking say so themselves. */
 h1, h2, h3, h4 {
   text-wrap: balance;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+
+/* Spotlight: hovering one project row pushes the rest of the page back, so
+   attention lands on the one being read. Pointer-only — on touch there is no
+   hover to leave, and the page would simply stay blurred. */
+@media (hover: hover) and (pointer: fine) {
+  [data-spot],
+  [data-spot-row] {
+    transition:
+      filter 360ms var(--ease-out),
+      opacity 360ms var(--ease-out);
+  }
+
+  body:has([data-spot-row]:hover) [data-spot],
+  body:has([data-spot-row]:hover) [data-spot-row]:not(:hover) {
+    filter: blur(6px);
+    opacity: 0.24;
+  }
+
+  [data-spot-row]:hover {
+    z-index: 20;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-spot],
+  [data-spot-row] {
+    transition-duration: 0.01ms;
+  }
 }

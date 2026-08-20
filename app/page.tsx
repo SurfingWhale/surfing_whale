@@ -25,7 +25,7 @@ const NAV_LINKS = [
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-bg text-fg">
-      <nav className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
+      <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="container mx-auto px-6 h-14 flex items-center justify-between max-w-[720px]">
           <span className="text-sm font-medium tracking-tight">Surfing Whale</span>
 
@@ -66,7 +66,7 @@ export default function Home() {
         <ContactSection />
       </div>
 
-      <footer className="border-t border-border py-8 px-6 mt-16">
+      <footer data-spot className="border-t border-border py-8 px-6 mt-16">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-3 max-w-[720px]">
           <span className="text-sm text-fg-secondary">Muhammad Fauzy</span>
           <span className="text-sm text-fg-muted">

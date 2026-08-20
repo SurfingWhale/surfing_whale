@@ -24,7 +24,7 @@ function ProjectRow({ project, onOpen }: {
     const hasPreview = Boolean(project.image) && !project.image.includes("placeholder");
 
     return (
-        <li className="group relative border-b border-border last:border-b-0">
+        <li data-spot-row className="group relative border-b border-border last:border-b-0">
         <button
             onClick={onOpen}
             className="w-full text-left py-6 block"
@@ -77,11 +77,14 @@ export function ProjectSection({ projects }: Props) {
         <div id="project" className="container mx-auto px-6 max-w-[720px]">
 
             {/* ── Tier one: the featured case study ─────────────────────── */}
+            <div data-spot>
             <SectionLabel note="The longer story behind how I think about data.">
             Selected case study
             </SectionLabel>
+            </div>
 
             <Link
+            data-spot
             href="/work/finance-dashboard"
             className="group block border border-border rounded-xl overflow-hidden bg-bg-subtle hover:border-border-strong transition-colors duration-300"
             >
@@ -103,9 +106,11 @@ export function ProjectSection({ projects }: Props) {
 
             {/* ── Tier two: everything else, as a list ──────────────────── */}
             <div className="mt-20">
+            <div data-spot>
             <SectionLabel note={`${projects.length} projects.`}>
                 Other work
             </SectionLabel>
+            </div>
 
             {projects.length === 0 ? (
                 <p className="text-fg-muted text-sm py-10">No projects found.</p>

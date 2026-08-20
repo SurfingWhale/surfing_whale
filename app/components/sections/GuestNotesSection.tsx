@@ -67,7 +67,7 @@ export function GuestNotesSection() {
     "w-full bg-bg border border-border rounded-lg px-4 py-3 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors";
 
   return (
-    <section id="guest-notes" className="w-full py-24 border-t border-border">
+    <section data-spot id="guest-notes" className="w-full py-24 border-t border-border">
       <div className="container mx-auto px-6 max-w-[720px]">
         <SectionLabel note="Leave a note if you passed by. I read every one.">
           Guest notes
