@@ -1,11 +1,11 @@
 // app/components/AvatarPicker.tsx
-// Both portraits sit side by side and act as the role switch — the active one
-// comes forward, the other holds back. Replaces the pill toggle entirely, so
-// the photographs carry the affordance rather than a pair of labelled buttons.
+// Two portrait cards stacked like a small deck: the active one sits square on
+// top, the other peeks out rotated behind it, and the pair fans apart on hover
+// (or on tap, where there is no hover). Clicking either — or swiping across
+// them — switches the role.
 "use client";
 
 import { useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { useProfileMode, MODE_LABEL, type Mode } from "./ProfileMode";
 
 const PORTRAIT: Record<Mode, { src: string; alt: string }> = {
@@ -22,52 +22,62 @@ const PORTRAIT: Record<Mode, { src: string; alt: string }> = {
 const ORDER: Mode[] = ["analyst", "capture"];
 const SWIPE_THRESHOLD = 40;
 
-function AvatarCard({ mode, active, onSelect }: {
+function AvatarCard({ mode, active, open, onSelect }: {
   mode: Mode;
   active: boolean;
+  open: boolean;
   onSelect: () => void;
 }) {
   const [failed, setFailed] = useState(false);
   const { src, alt } = PORTRAIT[mode];
 
+  // Resting: active square-ish on top, inactive nudged out and rotated behind.
+  // Fanned: the inactive card slides clear so both read as pickable.
+  const transform = active
+    ? open
+      ? "translateX(0) rotate(-2deg)"
+      : "translate(0, 0) rotate(-1.5deg)"
+    : open
+      ? "translateX(86px) rotate(3deg)"
+      : "translate(9px, 2px) rotate(6deg)";
+
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onSelect}
       aria-pressed={active}
       aria-label={`Show ${MODE_LABEL[mode]}`}
-      initial={false}
-      animate={{ scale: active ? 1 : 0.82, opacity: active ? 1 : 0.45 }}
-      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-      className={`relative w-20 h-20 rounded-full overflow-hidden bg-bg-subtle transition-shadow duration-300 ${
-        active
-          ? "ring-2 ring-fg ring-offset-2 ring-offset-bg"
-          : "ring-1 ring-border hover:ring-border-strong"
-      }`}
+      style={{ transform, transformOrigin: "50% 58%" }}
+      className={`absolute top-0 left-0 w-[78px] h-[82px] p-1 pb-2 rounded-[18px] bg-white border-0 cursor-pointer
+        transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0,0,1)]
+        shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_1px_2px_rgba(24,24,24,0.08),0_8px_22px_rgba(24,24,24,0.1)]
+        hover:shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_2px_4px_rgba(24,24,24,0.1),0_12px_28px_rgba(24,24,24,0.13)]
+        active:scale-95 ${active ? "z-20" : "z-10"}`}
     >
       {failed ? (
-        <span className="block w-full h-full bg-bg-muted" />
+        <span className="block w-full h-full rounded-[14px] bg-bg-muted" />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           alt={alt}
           onError={() => setFailed(true)}
-          className="w-full h-full object-cover grayscale"
           draggable={false}
+          className="block w-full h-full object-cover rounded-[14px] grayscale outline outline-1 -outline-offset-1 outline-black/10"
         />
       )}
-    </motion.button>
+    </button>
   );
 }
 
 export function AvatarPicker() {
   const { mode, setMode } = useProfileMode();
+  const [open, setOpen] = useState(false);
   const startX = useRef<number | null>(null);
 
-  // Horizontal swipe moves between portraits on touch devices.
   const onPointerDown = (e: React.PointerEvent) => {
     startX.current = e.clientX;
+    setOpen(true);
   };
   const onPointerUp = (e: React.PointerEvent) => {
     if (startX.current === null) return;
@@ -85,13 +95,18 @@ export function AvatarPicker() {
       aria-label="Choose what to view"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
-      className="flex items-center gap-4 touch-pan-y"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+      className="relative w-[164px] h-[82px] mb-[18px] touch-pan-y"
     >
       {ORDER.map((m) => (
         <AvatarCard
           key={m}
           mode={m}
           active={mode === m}
+          open={open}
           onSelect={() => setMode(m)}
         />
       ))}

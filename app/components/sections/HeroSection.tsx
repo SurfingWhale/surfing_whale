@@ -1,6 +1,6 @@
 // app/components/sections/HeroSection.tsx
-// Single-column editorial layout: the two portraits act as the role switch,
-// then name and copy run the full measure.
+// No display type: the name runs at body size in medium weight, exactly as
+// the reference site does. Hierarchy comes from weight and colour, not scale.
 "use client";
 
 import { AvatarPicker } from "@/app/components/AvatarPicker";
@@ -12,8 +12,6 @@ const COPY = {
     bio: "I turn raw numbers into stories people can act on — ledgers, forecasts, and the patterns underneath them.",
   },
   capture: {
-    // Kept short so it leads into the full statement below rather than
-    // repeating its opening line.
     tagline: "I love capturing moments — joie de vivre.",
     bio: "It is simply a photograph. Perhaps no one cares — I keep taking them anyway.",
   },
@@ -31,34 +29,36 @@ export function HeroSection() {
 
   return (
     <section className="w-full">
-      <div className="container mx-auto px-6 py-20 md:py-28 max-w-[680px]">
+      <div className="container mx-auto px-6 pt-20 pb-16 max-w-[720px]">
         <AvatarPicker />
 
-        <h1 className="text-[clamp(2.25rem,6vw,3.5rem)] font-semibold tracking-[-0.03em] leading-[1.05] mt-8">
+        <h1 className="text-[13px] leading-[2] font-medium tracking-normal text-fg mt-5">
           Hello, I&apos;m Fauzy.
         </h1>
 
-        <p className="text-lg text-fg-secondary mt-3 leading-relaxed">
-          {copy.tagline}
+        <p className="text-[13px] leading-[2] text-fg-body">{copy.tagline}</p>
+
+        <p className="text-[13px] leading-[2] text-fg-body mt-5 max-w-[560px]">
+          {copy.bio}
         </p>
 
-        <p className="text-fg-secondary leading-relaxed mt-6">{copy.bio}</p>
-
-        <div className="flex gap-10 py-6 mt-8 border-y border-border">
+        <div className="flex gap-10 py-5 mt-10 border-y border-border">
           {STATS.map((s) => (
             <div key={s.label}>
-              <div className="text-2xl font-semibold tracking-tight">{s.value}</div>
-              <div className="text-xs text-fg-muted mt-1">{s.label}</div>
+              <div className="text-[15px] font-medium tracking-[-0.02em] text-fg leading-[1.6]">
+                {s.value}
+              </div>
+              <div className="text-[11px] text-fg-muted leading-[1.6]">{s.label}</div>
             </div>
           ))}
         </div>
 
-        <div className="flex gap-3 flex-wrap mt-8">
+        <div className="flex gap-5 mt-8 text-[13px]">
           <a
             href="https://wa.me/6285156964766?text=Hello%2C%20aku%20dari%20portfolio%20Fauzy"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-3 rounded-lg bg-fg text-bg text-sm font-medium hover:opacity-85 transition-opacity duration-300"
+            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-fg transition-colors duration-200"
           >
             Get in touch
           </a>
@@ -66,7 +66,7 @@ export function HeroSection() {
             href="https://www.linkedin.com/in/muhammad-fauzy-741943203"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-3 rounded-lg border border-border text-fg text-sm font-medium hover:border-border-strong transition-colors duration-300"
+            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-fg transition-colors duration-200"
           >
             LinkedIn
           </a>

@@ -31,7 +31,7 @@ export function PhotographySection() {
 
   return (
     <section id="photography" className="w-full py-24 border-t border-border">
-      <div className="container mx-auto px-6 max-w-[680px]">
+      <div className="container mx-auto px-6 max-w-[720px]">
         <div className="mb-16 space-y-5 text-fg-secondary leading-relaxed">
           <p>
             I might snap myself in a mirror, someone laughing, a random moment,

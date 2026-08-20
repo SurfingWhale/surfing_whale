@@ -1,29 +1,37 @@
 @import "tailwindcss";
 
-/* Monochrome system — PRD v2 §2.2.
-   Light is the default. Dark inverts the same token names, so components
-   reference tokens and never literals. */
+/* Type and colour scale taken from the reference site's stylesheet.
+   The surprise there: it carries no display type at all — the name in the
+   header runs at the same 13px as body copy, and hierarchy comes from
+   weight, colour and space rather than size. */
 :root {
-  --bg: #ffffff;
-  --bg-subtle: #fafafa;
-  --bg-muted: #f2f2f2;
-  --fg: #000000;
-  --fg-secondary: #666666;
-  --fg-muted: #999999;
-  --border: #eaeaea;
-  --border-strong: #d4d4d4;
+  --bg: #fafafa;
+  --bg-subtle: #f7f7f7;
+  --bg-muted: #f0f0f0;
+  --fg: #111111;
+  --fg-secondary: rgba(17, 17, 17, 0.75);
+  --fg-muted: rgba(17, 17, 17, 0.45);
+  --border: rgba(17, 17, 17, 0.08);
+  --border-strong: rgba(17, 17, 17, 0.14);
+
+  /* Running copy sits a shade lighter than --fg-secondary on that site,
+     and section labels lighter still. */
+  --fg-body: #6f6f6f;
+  --fg-label: #84817c;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000000;
-    --bg-subtle: #0a0a0a;
-    --bg-muted: #171717;
-    --fg: #ffffff;
-    --fg-secondary: #a1a1a1;
-    --fg-muted: #6f6f6f;
-    --border: #1f1f1f;
-    --border-strong: #333333;
+    --bg: #111111;
+    --bg-subtle: #1a1a1a;
+    --bg-muted: #222222;
+    --fg: #f0f0f0;
+    --fg-secondary: rgba(240, 240, 240, 0.75);
+    --fg-muted: rgba(240, 240, 240, 0.45);
+    --border: rgba(240, 240, 240, 0.07);
+    --border-strong: rgba(240, 240, 240, 0.12);
+    --fg-body: #aaa7a0;
+    --fg-label: #aaa7a0;
   }
 }
 
@@ -34,6 +42,8 @@
   --color-fg: var(--fg);
   --color-fg-secondary: var(--fg-secondary);
   --color-fg-muted: var(--fg-muted);
+  --color-fg-body: var(--fg-body);
+  --color-fg-label: var(--fg-label);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --font-sans: var(--font-jakarta);
@@ -44,4 +54,18 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  line-height: 2;
+  letter-spacing: 1px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-wrap: pretty;
+}
+
+/* Headings balance their line lengths. Deliberately no letter-spacing reset
+   here: unlayered rules outrank Tailwind's layered utilities, so an element
+   selector would silently override every tracking-* class on a heading.
+   Headings that need to drop the wide body tracking say so themselves. */
+h1, h2, h3, h4 {
+  text-wrap: balance;
 }

@@ -57,7 +57,7 @@ const SKILLS = [
 
     return (
         <section ref={ref} id="skills" className="w-full py-24 border-t border-border">
-        <div className="container mx-auto px-6 max-w-[680px]">
+        <div className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel note="Tools I reach for most.">Skills</SectionLabel>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

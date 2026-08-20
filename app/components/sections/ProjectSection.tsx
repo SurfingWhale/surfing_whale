@@ -29,7 +29,7 @@ function ProjectRow({ project, onOpen }: {
             onClick={onOpen}
             className="w-full text-left py-6 block"
         >
-            <span className="text-lg tracking-tight">
+            <span className="text-[15px] leading-[24px] tracking-[-0.02em]">
             <span className="font-medium text-fg group-hover:underline underline-offset-4 decoration-1">
                 {project.title}
             </span>
@@ -39,7 +39,7 @@ function ProjectRow({ project, onOpen }: {
             </span>
 
             {project.tags.length > 0 && (
-            <span className="block text-sm text-fg-muted mt-1.5">
+            <span className="block text-[13px] leading-[1.8] text-fg-body mt-2.5">
                 {project.tags.filter((t) => !t.startsWith("#")).join(" · ")}
             </span>
             )}
@@ -74,7 +74,7 @@ export function ProjectSection({ projects }: Props) {
 
     return (
         <section className="w-full py-24 border-t border-border">
-        <div id="project" className="container mx-auto px-6 max-w-[680px]">
+        <div id="project" className="container mx-auto px-6 max-w-[720px]">
 
             {/* ── Tier one: the featured case study ─────────────────────── */}
             <SectionLabel note="The longer story behind how I think about data.">
@@ -86,15 +86,15 @@ export function ProjectSection({ projects }: Props) {
             className="group block border border-border rounded-xl overflow-hidden bg-bg-subtle hover:border-border-strong transition-colors duration-300"
             >
             <div className="p-7">
-                <h3 className="text-xl font-medium tracking-tight">
+                <h3 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.4]">
                 A ledger that behaves like a product
                 </h3>
-                <p className="text-fg-secondary leading-relaxed mt-2 max-w-prose">
+                <p className="text-[13px] leading-[1.8] text-fg-body mt-2.5 max-w-prose">
                 A personal finance dashboard built on general-ledger accounts —
                 prorate budgeting against working days, end-of-month
                 forecasting, and bank reconciliation.
                 </p>
-                <span className="inline-flex items-center gap-1.5 text-sm text-fg mt-5">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.07em] uppercase text-fg mt-5">
                 Read the case study
                 <span className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
                 </span>

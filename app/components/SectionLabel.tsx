@@ -1,7 +1,6 @@
 // app/components/SectionLabel.tsx
-// Section headings are small tracked labels, not display type. The hero name
-// is the only large moment on the page — every other heading stays quiet so
-// the writing underneath carries the section.
+// 11px / 500 / 0.14em uppercase, with a 32px gap beneath — the reference
+// site's section label, measured from its stylesheet.
 
 export function SectionLabel({
   children,
@@ -11,12 +10,12 @@ export function SectionLabel({
   note?: React.ReactNode;
 }) {
   return (
-    <div className="mb-6">
-      <h2 className="text-[0.8125rem] font-medium uppercase tracking-[0.12em] text-fg-muted">
+    <div className="mb-8">
+      <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label">
         {children}
       </h2>
       {note && (
-        <p className="text-fg-secondary leading-relaxed mt-2">{note}</p>
+        <p className="text-[13px] leading-[2] text-fg-body mt-1.5">{note}</p>
       )}
     </div>
   );

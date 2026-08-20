@@ -162,7 +162,7 @@ interface KaggleDataset {
     export function ActivitySection() {
     return (
         <section id="activity" className="w-full py-24 border-t border-border">
-        <div className="container mx-auto px-6 max-w-[680px]">
+        <div className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel note="Where I spend my open-source time.">Activity</SectionLabel>
 
             <div className="grid grid-cols-1 gap-6">
