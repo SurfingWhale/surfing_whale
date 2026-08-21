@@ -160,9 +160,9 @@ interface Props {
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full text-center text-[13px] font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300"
+                className="inline-block text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
             >
-                Open project
+                Open project →
             </a>
             </div>
 

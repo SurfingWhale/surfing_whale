@@ -28,8 +28,14 @@ export function ContactSection() {
 
     const isReady = form.name.trim().length > 0 && form.message.trim().length > 0;
 
+    // Same underlined field as the guest notes directly below this section,
+    // which was already in the page's own idiom while this one was still in
+    // boxes.
     const fieldClass =
-        "w-full bg-bg border border-border rounded-lg px-4 py-3 text-fg text-[13px] placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors";
+        "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
+
+    const actionClass =
+        "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200 disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed";
 
     return (
         <section data-spot id="contact" className="w-full py-24 border-t border-border">
@@ -39,22 +45,22 @@ export function ContactSection() {
             </SectionLabel>
 
             {sent ? (
-            <div className="text-center py-16 border border-border rounded-lg bg-bg-subtle">
-                <p className="text-[13px] font-medium">Message sent</p>
-                <p className="text-[13px] text-fg-secondary mt-2">
+            <div className="max-w-[520px]">
+                <p className="text-[13px] leading-[2] text-fg">Message sent.</p>
+                <p className="text-[13px] leading-[2] text-fg-body">
                 I will get back to you shortly.
                 </p>
                 <button
                 onClick={() => { setSent(false); setForm({ name: "", message: "" }); }}
-                className="mt-6 text-[13px] text-fg-secondary hover:text-fg transition-colors underline underline-offset-4"
+                className={`mt-4 text-[13px] ${actionClass}`}
                 >
                 Send another
                 </button>
             </div>
             ) : (
-            <div className="space-y-5">
+            <div className="max-w-[520px] space-y-6">
                 <div>
-                <label htmlFor="contact-name" className="text-[13px] text-fg-secondary block mb-2">
+                <label htmlFor="contact-name" className="text-[11px] leading-[1.6] text-fg-muted block">
                     Name
                 </label>
                 <input
@@ -68,7 +74,7 @@ export function ContactSection() {
                 </div>
 
                 <div>
-                <label htmlFor="contact-message" className="text-[13px] text-fg-secondary block mb-2">
+                <label htmlFor="contact-message" className="text-[11px] leading-[1.6] text-fg-muted block">
                     Message
                 </label>
                 <textarea
@@ -81,20 +87,12 @@ export function ContactSection() {
                 />
                 </div>
 
-                <div className="flex gap-3 pt-1">
-                <button
-                    onClick={handleWA}
-                    disabled={!isReady}
-                    className="flex-1 text-[13px] font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
-                >
-                    WhatsApp
+                <div className="flex gap-5 pt-1 text-[13px]">
+                <button onClick={handleWA} disabled={!isReady} className={actionClass}>
+                    Send on WhatsApp →
                 </button>
-                <button
-                    onClick={handleEmail}
-                    disabled={!isReady}
-                    className="flex-1 text-[13px] font-medium py-3 rounded-lg border border-border text-fg hover:border-border-strong transition-colors duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
-                >
-                    Email
+                <button onClick={handleEmail} disabled={!isReady} className={actionClass}>
+                    Send by email →
                 </button>
                 </div>
             </div>

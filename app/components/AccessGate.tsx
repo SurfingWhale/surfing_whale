@@ -170,7 +170,7 @@ function GateDialog({
           onKeyDown={(e) => { if (e.key === "Enter" && email) submit(); }}
           placeholder="you@example.com"
           aria-label="Your email"
-          className="w-full mt-5 bg-bg border border-border rounded-lg px-4 py-3 text-fg text-[13px] placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors"
+          className="w-full mt-5 bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200"
         />
 
         {/* Honeypot */}
@@ -192,17 +192,17 @@ function GateDialog({
 
         {error && <p className="text-[13px] text-fg mt-3">{error}</p>}
 
-        <div className="flex gap-3 mt-6">
+        <div className="flex gap-5 mt-6 text-[13px]">
           <button
             onClick={submit}
             disabled={!email || sending}
-            className="flex-1 text-[13px] font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
+            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200 disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed"
           >
-            {sending ? "Opening…" : "Continue"}
+            {sending ? "Opening…" : "Continue →"}
           </button>
           <button
             onClick={onDismiss}
-            className="px-5 text-[13px] text-fg-secondary hover:text-fg transition-colors"
+            className="text-fg-body hover:text-fg transition-colors duration-300"
           >
             Not now
           </button>
