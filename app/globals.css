@@ -22,6 +22,8 @@
   /* The one colour on an otherwise neutral page — text selection, link
      hover underlines, highlights. */
   --accent-soft: #c8ddd4;
+  /* Warm paper for the case folder — at #f0f0f0 it vanished against the page. */
+  --folder: #ebe9e4;
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 
@@ -37,6 +39,7 @@
     --border-strong: rgba(240, 240, 240, 0.12);
     --fg-body: #aaa7a0;
     --fg-label: #aaa7a0;
+    --folder: #262626;
   }
 }
 
@@ -51,6 +54,7 @@
   --border-strong: rgba(240, 240, 240, 0.12);
   --fg-body: #aaa7a0;
   --fg-label: #aaa7a0;
+  --folder: #262626;
 }
 
 [data-theme="light"] {
@@ -64,6 +68,7 @@
   --border-strong: rgba(17, 17, 17, 0.14);
   --fg-body: #6f6f6f;
   --fg-label: #84817c;
+  --folder: #ebe9e4;
 }
 
 @theme inline {
@@ -75,6 +80,7 @@
   --color-fg-muted: var(--fg-muted);
   --color-fg-body: var(--fg-body);
   --color-fg-label: var(--fg-label);
+  --color-folder: var(--folder);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --font-sans: var(--font-jakarta);

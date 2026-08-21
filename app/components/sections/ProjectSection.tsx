@@ -12,8 +12,8 @@ import { useState } from "react";
 import Link from "next/link";
 import type { NotionProject } from "@/app/lib/notion";
 import { ProjectModal } from "@/app/components/Projectmodal";
-import { useAccess } from "@/app/components/AccessGate";
 import { SectionLabel } from "@/app/components/SectionLabel";
+import { CaseFolder } from "@/app/components/CaseFolder";
 
 interface Props { projects: NotionProject[]; }
 
@@ -66,11 +66,10 @@ function ProjectRow({ project, onOpen }: {
 
 export function ProjectSection({ projects }: Props) {
     const [selectedProject, setSelectedProject] = useState<NotionProject | null>(null);
-    const { requireAccess } = useAccess();
 
-    // The list stays browsable; the gate sits in front of opening a detail.
-    const openProject = (project: NotionProject) =>
-        requireAccess("Project", () => setSelectedProject(project));
+    // Opening is free; the gate now sits partway through the story itself,
+    // so a visitor can read the opening before being asked for anything.
+    const openProject = (project: NotionProject) => setSelectedProject(project);
 
     return (
         <section className="w-full py-24 border-t border-border">
@@ -83,26 +82,13 @@ export function ProjectSection({ projects }: Props) {
             </SectionLabel>
             </div>
 
-            <Link
-            data-spot
-            href="/work/finance-dashboard"
-            className="group block border border-border rounded-xl overflow-hidden bg-bg-subtle hover:border-border-strong transition-colors duration-300"
-            >
-            <div className="p-7">
-                <h3 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.4]">
-                A ledger that behaves like a product
-                </h3>
-                <p className="text-[13px] leading-[1.8] text-fg-body mt-2.5 max-w-prose">
-                A personal finance dashboard built on general-ledger accounts —
-                prorate budgeting against working days, end-of-month
-                forecasting, and bank reconciliation.
-                </p>
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.07em] uppercase text-fg mt-5">
-                Read the case study
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
-                </span>
+            <div data-spot>
+            <CaseFolder
+                href="/work/finance-dashboard"
+                title="A ledger that behaves like a product"
+                subtitle="Finance dashboard · GL accounts, prorate, forecasting"
+            />
             </div>
-            </Link>
 
             {/* ── Tier two: everything else, as a list ──────────────────── */}
             <div className="mt-20">

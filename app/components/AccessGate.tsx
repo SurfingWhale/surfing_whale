@@ -21,6 +21,8 @@ const STORAGE_KEY = "sw-access-granted";
 const AccessContext = createContext<{
   unlocked: boolean;
   requireAccess: (reason: AccessReason, onGranted: () => void) => void;
+  /** Marks access granted without a dialog — used by the inline read gate. */
+  grantAccess: () => void;
 } | null>(null);
 
 export function useAccess() {
@@ -75,7 +77,7 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AccessContext.Provider value={{ unlocked, requireAccess }}>
+    <AccessContext.Provider value={{ unlocked, requireAccess, grantAccess: grant }}>
       {children}
       {pending && (
         <GateDialog reason={pending.reason} onGranted={grant} onDismiss={dismiss} />

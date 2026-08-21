@@ -3,6 +3,12 @@
 
 import { useEffect, useState } from "react";
 import type { NotionBlock, NotionProject } from "@/app/lib/notion";
+import { useAccess } from "@/app/components/AccessGate";
+import { ReadMoreGate } from "@/app/components/ReadMoreGate";
+
+// Enough of the story to judge whether it is worth an email — the opening
+// heading and the paragraphs under it, not a teaser line.
+const FREE_BLOCKS = 4;
 
 interface Props {
     project: NotionProject | null;
@@ -78,6 +84,7 @@ interface Props {
     export function ProjectModal({ project, onClose }: Props) {
     const [blocks, setBlocks] = useState<NotionBlock[]>([]);
     const [loading, setLoading] = useState(false);
+    const { unlocked } = useAccess();
 
     useEffect(() => {
         if (!project) return;
@@ -170,9 +177,12 @@ interface Props {
                 </p>
             ) : (
                 <div>
-                {blocks.map((block, i) => (
+                {(unlocked ? blocks : blocks.slice(0, FREE_BLOCKS)).map((block, i) => (
                     <BlockRenderer key={i} block={block} />
                 ))}
+                {!unlocked && blocks.length > FREE_BLOCKS && (
+                    <ReadMoreGate reason="Project" />
+                )}
                 </div>
             )}
             </div>
