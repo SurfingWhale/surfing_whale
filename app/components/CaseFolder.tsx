@@ -7,9 +7,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface Sheet {
+  /** Drawn artwork. Preferred over src: at this size a real screenshot is an
+      unreadable smear, while a diagram still reads. */
+  art?: React.ReactNode;
   src?: string;
   alt?: string;
   /** Resting offset and tilt, then where it travels to when the folder opens. */
@@ -34,9 +37,14 @@ export function CaseFolder({
   subtitle: string;
   sheets?: Sheet[];
 }) {
-  // Hover drives it on desktop; a first tap opens it on touch, where there is
-  // no hover to rely on. The link still works on either.
+  // Hover drives this on desktop. On touch there is no hover, and a tap goes
+  // straight to the case study — so the folder would never once be seen open,
+  // and its contents would be hidden behind an interaction that cannot
+  // happen. There it rests ajar instead.
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (window.matchMedia("(hover: none)").matches) setOpen(true);
+  }, []);
 
   return (
     <Link
@@ -45,7 +53,6 @@ export function CaseFolder({
       onMouseLeave={() => setOpen(false)}
       onFocus={() => setOpen(true)}
       onBlur={() => setOpen(false)}
-      onTouchStart={() => setOpen(true)}
       aria-label={`${title} — ${subtitle}`}
       className="group block max-w-[360px] no-underline text-fg active:scale-[0.97] transition-transform duration-150"
     >
@@ -75,24 +82,26 @@ export function CaseFolder({
                 key={i}
                 style={{
                   transform: `translateX(calc(-50% + ${pos.x})) ${
-                    open ? "translateY(-22%)" : ""
+                    open ? "translateY(-30%)" : ""
                   } rotate(${pos.r})`,
                   transformOrigin: "50% 100%",
-                  transitionDelay: i === 1 ? "0ms" : "30ms",
+                  // The sheet that stays put leads; the ones that travel follow it.
+                  transitionDelay: sheet.closed.x === sheet.open.x ? "0ms" : "30ms",
                 }}
                 className="absolute top-[17%] left-1/2 w-[44%] aspect-[4/5] m-0 rounded-[7px] overflow-hidden bg-white
                   shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_3px_8px_rgba(0,0,0,0.09)]
                   transition-transform duration-500 ease-[cubic-bezier(0.2,0,0,1)]"
               >
-                {sheet.src && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={sheet.src}
-                    alt=""
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                )}
+                {sheet.art ??
+                  (sheet.src && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={sheet.src}
+                      alt=""
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  ))}
               </figure>
             );
           })}

@@ -17,12 +17,6 @@ const COPY = {
   },
 } as const;
 
-const STATS = [
-  { value: "8+", label: "Projects" },
-  { value: "3+", label: "Years experience" },
-  { value: "∞", label: "Curiosity" },
-];
-
 export function HeroSection() {
   const { mode } = useProfileMode();
   const copy = COPY[mode];
@@ -41,17 +35,6 @@ export function HeroSection() {
         <p className="text-[13px] leading-[2] text-fg-body mt-5 max-w-[560px]">
           {copy.bio}
         </p>
-
-        <div className="flex gap-10 py-5 mt-10 border-y border-border">
-          {STATS.map((s) => (
-            <div key={s.label}>
-              <div className="text-[15px] font-medium tracking-[-0.02em] text-fg leading-[1.6]">
-                {s.value}
-              </div>
-              <div className="text-[11px] text-fg-muted leading-[1.6]">{s.label}</div>
-            </div>
-          ))}
-        </div>
 
         <div className="flex gap-5 mt-8 text-[13px]">
           <a

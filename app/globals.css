@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* Tailwind's stock `dark:` variant only reads prefers-color-scheme, so every
+   dark: utility ignored the theme toggle — the case folder's flap stayed
+   light on a dark page and took its own subtitle down with it. Redefined to
+   the same three states the tokens below use: system preference unless an
+   explicit choice overrides it. */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) & {
+      @slot;
+    }
+  }
+  [data-theme="dark"] & {
+    @slot;
+  }
+}
+
 /* Type and colour scale taken from the reference site's stylesheet.
    The surprise there: it carries no display type at all — the name in the
    header runs at the same 13px as body copy, and hierarchy comes from

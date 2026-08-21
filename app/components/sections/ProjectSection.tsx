@@ -14,6 +14,11 @@ import type { NotionProject } from "@/app/lib/notion";
 import { ProjectModal } from "@/app/components/Projectmodal";
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { CaseFolder } from "@/app/components/CaseFolder";
+import {
+  DashboardSheet,
+  LedgerSheet,
+  StatementSheet,
+} from "@/app/components/FinanceSheets";
 
 interface Props { projects: NotionProject[]; }
 
@@ -64,6 +69,15 @@ function ProjectRow({ project, onOpen }: {
     );
 }
 
+// What is actually in that folder: the ledger, the statements, the dashboard.
+// Order here is paint order, not layout — the dashboard is listed last so it
+// is the sheet on top of the pile while the folder is shut.
+const FINANCE_SHEETS = [
+    { art: <LedgerSheet />, closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" } },
+    { art: <StatementSheet />, closed: { x: "11%", r: "4deg" }, open: { x: "50%", r: "9deg" } },
+    { art: <DashboardSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
+];
+
 export function ProjectSection({ projects }: Props) {
     const [selectedProject, setSelectedProject] = useState<NotionProject | null>(null);
 
@@ -87,6 +101,7 @@ export function ProjectSection({ projects }: Props) {
                 href="/work/finance-dashboard"
                 title="A ledger that behaves like a product"
                 subtitle="Finance dashboard · double-entry GL, prorate, self-audit"
+                sheets={FINANCE_SHEETS}
             />
             </div>
 

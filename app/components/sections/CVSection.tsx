@@ -7,12 +7,6 @@ import { SectionLabel } from "@/app/components/SectionLabel";
 
 const CV_LINK = "https://drive.google.com/file/d/123vUTdVxQ9LwOFwezuILq5FezI2nUvFR/view";
 
-const STATS = [
-    { value: "8+", label: "Projects" },
-    { value: "3+", label: "Years experience" },
-    { value: "∞", label: "Curiosity" },
-    ];
-
     export function CVSection() {
     const { requireAccess } = useAccess();
 
@@ -39,19 +33,10 @@ const STATS = [
             on — data analyst by day, creative thinker always.
             </p>
 
-            <div className="flex gap-12 py-8 my-8 border-y border-border">
-            {STATS.map((stat) => (
-                <div key={stat.label}>
-                <div className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6]">{stat.value}</div>
-                <div className="text-[11px] text-fg-muted leading-[1.6]">{stat.label}</div>
-                </div>
-            ))}
-            </div>
-
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-5 mt-8 text-[13px]">
             <button
                 onClick={openCV}
-                className="px-6 py-3 rounded-lg bg-fg text-bg text-[13px] font-medium hover:opacity-85 transition-opacity duration-300"
+                className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
             >
                 View my CV
             </button>
@@ -59,7 +44,7 @@ const STATS = [
                 href="https://github.com/Untamed98x"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 rounded-lg border border-border text-fg text-[13px] font-medium hover:border-border-strong transition-colors duration-300"
+                className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
             >
                 GitHub
             </a>
