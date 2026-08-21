@@ -29,8 +29,8 @@ const SKILLS = [
     return (
         <div className="mb-5">
         <div className="flex justify-between items-baseline mb-2">
-            <span className="text-sm text-fg">{name}</span>
-            <span className="font-mono text-xs text-fg-muted">{level}%</span>
+            <span className="text-[13px] text-fg">{name}</span>
+            <span className="font-mono text-[11px] text-fg-muted">{level}%</span>
         </div>
         <div className="h-[3px] bg-bg-muted rounded-full overflow-hidden">
             <div
@@ -64,7 +64,7 @@ const SKILLS = [
             {SKILLS.map((group) => (
                 <div key={group.category}
                 className="border border-border rounded-lg p-6 bg-bg-subtle">
-                <p className="text-xs text-fg-muted uppercase tracking-wider mb-6">
+                <p className="text-[11px] text-fg-muted uppercase tracking-wider mb-6">
                     {group.category}
                 </p>
                 {group.items.map((skill) => (

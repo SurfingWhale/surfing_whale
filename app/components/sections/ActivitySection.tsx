@@ -40,15 +40,15 @@ interface KaggleDataset {
         rel="noopener noreferrer"
         className="group block border border-border rounded-lg p-5 bg-bg-subtle hover:border-border-strong transition-colors duration-300"
         >
-        <p className="text-xs text-fg-muted uppercase tracking-wider mb-2">
+        <p className="text-[11px] text-fg-muted uppercase tracking-wider mb-2">
             Kaggle notebook
         </p>
-        <h4 className="text-sm font-medium text-fg line-clamp-2">
+        <h4 className="text-[13px] font-medium text-fg line-clamp-2">
             {title}
         </h4>
         <div className="flex gap-4 mt-3">
-            <span className="font-mono text-xs text-fg-muted">▲ {votes}</span>
-            <span className="font-mono text-xs text-fg-muted">{views} views</span>
+            <span className="font-mono text-[11px] text-fg-muted">▲ {votes}</span>
+            <span className="font-mono text-[11px] text-fg-muted">{views} views</span>
         </div>
         </a>
     );
@@ -83,14 +83,14 @@ interface KaggleDataset {
     return (
         <div className="border border-border rounded-lg p-5 bg-bg-subtle">
         <div className="flex items-center justify-between mb-5">
-            <p className="text-xs text-fg-muted uppercase tracking-wider">
+            <p className="text-[11px] text-fg-muted uppercase tracking-wider">
             GitHub activity
             </p>
             <a
             href={`https://github.com/${GITHUB_USERNAME}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-fg-secondary hover:text-fg transition-colors"
+            className="text-[11px] text-fg-secondary hover:text-fg transition-colors"
             >
             @{GITHUB_USERNAME} →
             </a>
@@ -98,18 +98,18 @@ interface KaggleDataset {
 
         {loading ? (
             <div className="h-20 flex items-center justify-center">
-            <span className="text-xs text-fg-muted animate-pulse">Loading…</span>
+            <span className="text-[11px] text-fg-muted animate-pulse">Loading…</span>
             </div>
         ) : (
             <>
             <div className="flex gap-8 mb-5">
                 <div>
-                <p className="text-2xl font-semibold tracking-tight">{stats?.repos}</p>
-                <p className="text-xs text-fg-muted mt-1">Repos</p>
+                <p className="text-[15px] font-medium tracking-[-0.02em]">{stats?.repos}</p>
+                <p className="text-[11px] text-fg-muted mt-1">Repos</p>
                 </div>
                 <div>
-                <p className="text-2xl font-semibold tracking-tight">{stats?.followers}</p>
-                <p className="text-xs text-fg-muted mt-1">Followers</p>
+                <p className="text-[15px] font-medium tracking-[-0.02em]">{stats?.followers}</p>
+                <p className="text-[11px] text-fg-muted mt-1">Followers</p>
                 </div>
             </div>
 
@@ -132,7 +132,7 @@ interface KaggleDataset {
                 />
                 ))}
             </div>
-            <p className="text-xs text-fg-muted mt-3">Last 6 months</p>
+            <p className="text-[11px] text-fg-muted mt-3">Last 6 months</p>
             </>
         )}
         </div>
@@ -178,7 +178,7 @@ interface KaggleDataset {
                 href={`https://www.kaggle.com/${KAGGLE_USERNAME}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center text-sm text-fg-secondary hover:text-fg transition-colors py-3 border border-border rounded-lg"
+                className="block text-center text-[13px] text-fg-secondary hover:text-fg transition-colors py-3 border border-border rounded-lg"
                 >
                 View all on Kaggle →
                 </a>

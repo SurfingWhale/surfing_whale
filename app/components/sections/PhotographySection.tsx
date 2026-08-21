@@ -35,7 +35,7 @@ export function PhotographySection() {
   return (
     <section data-spot id="photography" className="w-full py-24 border-t border-border">
       <div className="container mx-auto px-6 max-w-[720px]">
-        <div className="mb-16 space-y-5 text-fg-secondary leading-relaxed">
+        <div className="mb-16 space-y-5 text-[13px] leading-[2] text-fg-body max-w-[560px]">
           <p>
             I might snap myself in a mirror, someone laughing, a random moment,
             a friend&apos;s expression. It is simply a photograph ✌️ Perhaps no
@@ -70,7 +70,7 @@ export function PhotographySection() {
               key={f.key}
               onClick={() => setFilter(f.key)}
               aria-pressed={filter === f.key}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors duration-300 border ${
+              className={`px-4 py-1.5 rounded-full text-[13px] transition-colors duration-300 border ${
                 filter === f.key
                   ? "bg-fg text-bg border-fg"
                   : "border-border text-fg-secondary hover:text-fg hover:border-border-strong"

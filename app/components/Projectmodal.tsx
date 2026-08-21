@@ -18,37 +18,37 @@ interface Props {
     function BlockRenderer({ block }: { block: NotionBlock }) {
     switch (block.type) {
         case "heading_1":
-        return <h3 className="text-xl font-semibold tracking-[-0.02em] mt-8 mb-2">{block.text}</h3>;
+        return <h3 className="text-[15px] font-medium tracking-[-0.02em] mt-8 mb-2">{block.text}</h3>;
         case "heading_2":
-        return <h4 className="text-lg font-semibold tracking-[-0.02em] mt-6 mb-2">{block.text}</h4>;
+        return <h4 className="text-[13px] font-medium tracking-[-0.02em] mt-6 mb-2">{block.text}</h4>;
         case "heading_3":
-        return <h5 className="text-base font-medium mt-5 mb-1">{block.text}</h5>;
+        return <h5 className="text-[13px] font-medium mt-5 mb-1">{block.text}</h5>;
         case "paragraph":
         return block.text
-            ? <p className="text-fg-secondary text-sm leading-relaxed mb-4">{block.text}</p>
+            ? <p className="text-fg-secondary text-[13px] leading-[2] mb-4">{block.text}</p>
             : <div className="mb-3" />;
         case "bulleted_list_item":
         return (
             <div className="flex gap-3 mb-2">
             <span className="text-fg-muted mt-0.5 flex-shrink-0">•</span>
-            <p className="text-fg-secondary text-sm leading-relaxed">{block.text}</p>
+            <p className="text-fg-secondary text-[13px] leading-[2]">{block.text}</p>
             </div>
         );
         case "numbered_list_item":
         return (
             <div className="flex gap-3 mb-2">
-            <span className="text-fg-muted text-sm flex-shrink-0">–</span>
-            <p className="text-fg-secondary text-sm leading-relaxed">{block.text}</p>
+            <span className="text-fg-muted text-[13px] flex-shrink-0">–</span>
+            <p className="text-fg-secondary text-[13px] leading-[2]">{block.text}</p>
             </div>
         );
         case "code":
         return (
             <div className="my-4 rounded-lg overflow-hidden border border-border">
             <div className="bg-bg-muted px-3 py-1.5">
-                <span className="font-mono text-xs text-fg-muted">{block.language}</span>
+                <span className="font-mono text-[11px] text-fg-muted">{block.language}</span>
             </div>
             <pre className="p-4 overflow-x-auto bg-bg-subtle">
-                <code className="font-mono text-xs text-fg leading-relaxed whitespace-pre">
+                <code className="font-mono text-[11px] text-fg leading-[1.7] whitespace-pre">
                 {block.text}
                 </code>
             </pre>
@@ -57,7 +57,7 @@ interface Props {
         case "quote":
         return (
             <blockquote className="border-l-2 border-border-strong pl-4 my-4">
-            <p className="text-fg-secondary text-sm italic leading-relaxed">{block.text}</p>
+            <p className="text-fg-secondary text-[13px] italic leading-[2]">{block.text}</p>
             </blockquote>
         );
         case "image":
@@ -70,7 +70,7 @@ interface Props {
                 className="w-full rounded-lg border border-border object-cover"
             />
             {block.caption && (
-                <p className="text-fg-muted text-xs text-center mt-2">{block.caption}</p>
+                <p className="text-fg-muted text-[11px] text-center mt-2">{block.caption}</p>
             )}
             </div>
         );
@@ -124,12 +124,12 @@ interface Props {
 
             <div className="sticky top-0 bg-bg/95 backdrop-blur-md border-b border-border px-6 py-4 flex items-start justify-between gap-4 z-10">
             <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-semibold tracking-[-0.02em] truncate">
+                <h2 className="text-[13px] font-medium tracking-[-0.02em] truncate">
                 {project.title}
                 </h2>
                 <div className="flex gap-2 mt-2 flex-wrap">
                 {project.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-0.5 border border-border rounded-full text-fg-secondary">
+                    <span key={tag} className="text-[11px] px-2 py-0.5 border border-border rounded-full text-fg-secondary">
                     {tag}
                     </span>
                 ))}
@@ -138,7 +138,7 @@ interface Props {
             <button
                 onClick={onClose}
                 aria-label="Close"
-                className="text-sm text-fg-secondary hover:text-fg transition-colors flex-shrink-0 mt-1"
+                className="text-[13px] text-fg-secondary hover:text-fg transition-colors flex-shrink-0 mt-1"
             >
                 Close
             </button>
@@ -160,7 +160,7 @@ interface Props {
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full text-center text-sm font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300"
+                className="block w-full text-center text-[13px] font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300"
             >
                 Open project
             </a>
@@ -168,11 +168,11 @@ interface Props {
 
             <div className="px-6 py-6 flex-1">
             {loading ? (
-                <p className="text-sm text-fg-muted py-8 text-center animate-pulse">
+                <p className="text-[13px] text-fg-muted py-8 text-center animate-pulse">
                 Loading…
                 </p>
             ) : blocks.length === 0 ? (
-                <p className="text-sm text-fg-muted py-8 text-center">
+                <p className="text-[13px] text-fg-muted py-8 text-center">
                 No content available.
                 </p>
             ) : (

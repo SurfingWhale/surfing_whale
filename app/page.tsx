@@ -29,7 +29,7 @@ export default function Home() {
     <main className="relative min-h-screen bg-bg text-fg">
       <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="container mx-auto px-6 h-14 flex items-center justify-between gap-6 max-w-[720px]">
-          <span className="text-[13px] font-medium tracking-tight whitespace-nowrap">Surfing Whale</span>
+          <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">Surfing Whale</span>
 
           <GlassNav links={NAV_LINKS} />
 

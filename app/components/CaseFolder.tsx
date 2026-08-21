@@ -110,10 +110,10 @@ export function CaseFolder({
         >
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-[18px]">
             <div className="min-w-0">
-              <strong className="block truncate text-[12px] font-semibold leading-[1.45] tracking-[-0.01em] text-fg">
+              <strong className="block truncate text-[13px] font-medium leading-[1.6] tracking-[-0.02em] text-fg">
                 {title}
               </strong>
-              <span className="block truncate text-[10px] leading-[1.45] text-fg-body">
+              <span className="block truncate text-[11px] leading-[1.6] text-fg-body">
                 {subtitle}
               </span>
             </div>

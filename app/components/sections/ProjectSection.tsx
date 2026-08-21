@@ -99,7 +99,7 @@ export function ProjectSection({ projects }: Props) {
             </div>
 
             {projects.length === 0 ? (
-                <p className="text-fg-muted text-sm py-10">No projects found.</p>
+                <p className="text-fg-muted text-[13px] py-10">No projects found.</p>
             ) : (
                 <ul className="border-t border-border">
                 {projects.map((project) => (

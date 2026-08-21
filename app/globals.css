@@ -131,6 +131,20 @@ body {
   text-wrap: pretty;
 }
 
+/* ---- Type scale ------------------------------------------------------
+   Three steps, and nothing between them:
+
+     11px  labels, meta, micro copy      (uppercase 0.14em for section labels)
+     13px  everything anyone actually reads, at line-height 2
+     15px  titles, stats, emphasis       (font-medium, tracking -0.02em)
+
+   Hierarchy comes from weight, colour and space rather than size — the same
+   trick the reference site pulls, where even the name in the header is 13px.
+   The count matters more than the values: sizes one step apart read as mud,
+   which is exactly the finding from the competitor teardown in the finance
+   case study. Tailwind's text-xs/sm/base/lg/xl land between these steps, so
+   they are deliberately not used anywhere in the app. */
+
 /* Headings balance their line lengths. Deliberately no letter-spacing reset
    here: unlayered rules outrank Tailwind's layered utilities, so an element
    selector would silently override every tracking-* class on a heading.

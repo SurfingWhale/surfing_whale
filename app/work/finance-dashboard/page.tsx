@@ -31,18 +31,20 @@ function Section({
   return (
     <section className="py-10 border-t border-border">
       <div className="flex items-baseline gap-4 mb-4">
-        <span className="font-mono text-xs text-fg-muted">{number}</span>
-        <h2 className="text-xl font-semibold tracking-[-0.02em]">{title}</h2>
+        <span className="font-mono text-[11px] text-fg-muted">{number}</span>
+        <h2 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
+          {title}
+        </h2>
       </div>
-      <div className="space-y-4 text-fg-secondary leading-relaxed">{children}</div>
+      <div className="space-y-4 text-[13px] leading-[2] text-fg-body">{children}</div>
     </section>
   );
 }
 
 function Todo({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-sm border border-dashed border-border-strong rounded-lg px-4 py-3 text-fg-muted">
-      <span className="font-mono text-xs uppercase tracking-wider">Draft note</span>
+    <p className="text-[13px] leading-[2] border border-dashed border-border-strong rounded-lg px-4 py-3 text-fg-muted">
+      <span className="font-mono text-[11px] uppercase tracking-wider">Draft note</span>
       <br />
       {children}
     </p>
@@ -63,10 +65,10 @@ function Finding({
   return (
     <div className="border-l-2 border-border-strong pl-4 py-1">
       <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
-        <span className="font-mono text-xs uppercase tracking-wider text-fg">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-fg">
           {severity}
         </span>
-        <span className="font-mono text-xs text-fg-muted">{file}</span>
+        <span className="font-mono text-[11px] text-fg-muted">{file}</span>
       </p>
       <div className="space-y-3">{children}</div>
     </div>
@@ -76,11 +78,11 @@ function Finding({
 export default function FinanceDashboardCaseStudy() {
   return (
     <main className="min-h-screen bg-bg text-fg">
-      <nav className="border-b border-border">
+      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="container mx-auto px-6 h-14 flex items-center max-w-[680px]">
           <Link
             href="/"
-            className="text-sm text-fg-secondary hover:text-fg transition-colors"
+            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
           >
             ← Back
           </Link>
@@ -89,11 +91,13 @@ export default function FinanceDashboardCaseStudy() {
 
       <article className="container mx-auto px-6 py-16 max-w-[680px]">
         <header className="mb-6">
-          <p className="text-sm text-fg-muted mb-3">Case study</p>
-          <h1 className="text-[clamp(2rem,5vw,3rem)] font-semibold tracking-[-0.03em] leading-[1.1]">
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
+            Case study
+          </p>
+          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
             A ledger that behaves like a product
           </h1>
-          <p className="text-lg text-fg-secondary mt-4 leading-relaxed">
+          <p className="text-[13px] leading-[2] text-fg-body mt-4 max-w-[560px]">
             A personal finance dashboard built on real double-entry accounting —
             a 112-account general ledger, monthly financial statements, a
             built-in Indonesian tax estimator, and prorate budgeting against
@@ -113,7 +117,7 @@ export default function FinanceDashboardCaseStudy() {
             ].map((tag) => (
               <span
                 key={tag}
-                className="text-xs px-2.5 py-1 border border-border rounded-full text-fg-secondary"
+                className="text-[11px] px-2.5 py-1 border border-border rounded-full text-fg-secondary"
               >
                 {tag}
               </span>
@@ -124,7 +128,7 @@ export default function FinanceDashboardCaseStudy() {
             href={LIVE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-8 px-6 py-3 rounded-lg bg-fg text-bg text-sm font-medium hover:opacity-85 transition-opacity duration-300"
+            className="inline-block mt-8 text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
           >
             View the live dashboard
           </a>

@@ -156,10 +156,10 @@ function GateDialog({
         aria-labelledby="gate-title"
         className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-3rem)] max-w-md bg-bg border border-border rounded-2xl p-7"
       >
-        <h2 id="gate-title" className="text-xl font-semibold tracking-[-0.02em]">
+        <h2 id="gate-title" className="text-[15px] font-medium tracking-[-0.02em]">
           {copy.title}
         </h2>
-        <p className="text-sm text-fg-secondary mt-2 leading-relaxed">{copy.blurb}</p>
+        <p className="text-[13px] leading-[2] text-fg-body mt-2">{copy.blurb}</p>
 
         <input
           ref={inputRef}
@@ -170,7 +170,7 @@ function GateDialog({
           onKeyDown={(e) => { if (e.key === "Enter" && email) submit(); }}
           placeholder="you@example.com"
           aria-label="Your email"
-          className="w-full mt-5 bg-bg border border-border rounded-lg px-4 py-3 text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors"
+          className="w-full mt-5 bg-bg border border-border rounded-lg px-4 py-3 text-fg text-[13px] placeholder:text-fg-muted focus:outline-none focus:border-border-strong transition-colors"
         />
 
         {/* Honeypot */}
@@ -185,24 +185,24 @@ function GateDialog({
           className="hidden"
         />
 
-        <p className="text-xs text-fg-muted mt-2">
+        <p className="text-[11px] text-fg-muted mt-2">
           Used only so I know who visited. Never shown publicly, never shared,
           and never added to a mailing list.
         </p>
 
-        {error && <p className="text-sm text-fg mt-3">{error}</p>}
+        {error && <p className="text-[13px] text-fg mt-3">{error}</p>}
 
         <div className="flex gap-3 mt-6">
           <button
             onClick={submit}
             disabled={!email || sending}
-            className="flex-1 text-sm font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
+            className="flex-1 text-[13px] font-medium py-3 rounded-lg bg-fg text-bg hover:opacity-85 transition-opacity duration-300 disabled:opacity-25 disabled:cursor-not-allowed"
           >
             {sending ? "Opening…" : "Continue"}
           </button>
           <button
             onClick={onDismiss}
-            className="px-5 text-sm text-fg-secondary hover:text-fg transition-colors"
+            className="px-5 text-[13px] text-fg-secondary hover:text-fg transition-colors"
           >
             Not now
           </button>

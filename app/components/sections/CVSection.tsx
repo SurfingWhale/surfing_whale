@@ -10,7 +10,7 @@ const CV_LINK = "https://drive.google.com/file/d/123vUTdVxQ9LwOFwezuILq5FezI2nUv
 const STATS = [
     { value: "8+", label: "Projects" },
     { value: "3+", label: "Years experience" },
-    { value: "99.9%", label: "Curiosity" },
+    { value: "∞", label: "Curiosity" },
     ];
 
     export function CVSection() {
@@ -34,7 +34,7 @@ const STATS = [
         <div className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel>About</SectionLabel>
 
-            <p className="text-fg-secondary leading-relaxed">
+            <p className="text-[13px] leading-[2] text-fg-body max-w-[560px]">
             Numbers tell stories. From raw figures to insights people can act
             on — data analyst by day, creative thinker always.
             </p>
@@ -42,8 +42,8 @@ const STATS = [
             <div className="flex gap-12 py-8 my-8 border-y border-border">
             {STATS.map((stat) => (
                 <div key={stat.label}>
-                <div className="text-2xl font-semibold tracking-tight">{stat.value}</div>
-                <div className="text-xs text-fg-muted mt-1">{stat.label}</div>
+                <div className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6]">{stat.value}</div>
+                <div className="text-[11px] text-fg-muted leading-[1.6]">{stat.label}</div>
                 </div>
             ))}
             </div>
@@ -51,7 +51,7 @@ const STATS = [
             <div className="flex gap-3 flex-wrap">
             <button
                 onClick={openCV}
-                className="px-6 py-3 rounded-lg bg-fg text-bg text-sm font-medium hover:opacity-85 transition-opacity duration-300"
+                className="px-6 py-3 rounded-lg bg-fg text-bg text-[13px] font-medium hover:opacity-85 transition-opacity duration-300"
             >
                 View my CV
             </button>
@@ -59,7 +59,7 @@ const STATS = [
                 href="https://github.com/Untamed98x"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 rounded-lg border border-border text-fg text-sm font-medium hover:border-border-strong transition-colors duration-300"
+                className="px-6 py-3 rounded-lg border border-border text-fg text-[13px] font-medium hover:border-border-strong transition-colors duration-300"
             >
                 GitHub
             </a>
