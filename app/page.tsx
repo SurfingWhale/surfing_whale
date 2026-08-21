@@ -8,12 +8,13 @@ import { ContactSection } from "./components/sections/ContactSection";
 import { PhotographySection } from "./components/sections/PhotographySection";
 import { GuestNotesSection } from "./components/sections/GuestNotesSection";
 import { MobileNav } from "./components/Mobilenav/Mobilenav";
+import { GlassNav, type NavLink } from "./components/GlassNav";
 import { ProfileContent } from "./components/ProfileContent";
 import { ProfileModeProvider } from "./components/ProfileMode";
 import { AccessProvider } from "./components/AccessGate";
 import { ThemeToggle } from "./components/ThemeToggle";
 
-const NAV_LINKS = [
+const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
   { label: "Projects", href: "#project" },
   { label: "Skills", href: "#skills" },
@@ -30,21 +31,11 @@ export default function Home() {
         <div className="container mx-auto px-6 h-14 flex items-center justify-between gap-6 max-w-[720px]">
           <span className="text-[13px] font-medium tracking-tight whitespace-nowrap">Surfing Whale</span>
 
-          <div className="hidden md:flex gap-5 text-[13px] text-fg-secondary">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="hover:text-fg transition-colors duration-300"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+          <GlassNav links={NAV_LINKS} />
 
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <MobileNav />
+            <MobileNav links={NAV_LINKS} />
           </div>
         </div>
       </nav>

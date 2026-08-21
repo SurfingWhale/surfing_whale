@@ -24,6 +24,14 @@
   --accent-soft: #c8ddd4;
   /* Warm paper for the case folder — at #f0f0f0 it vanished against the page. */
   --folder: #ebe9e4;
+  --glass-tint: rgba(255, 255, 255, 0.55);
+  --glass-rim:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+  --glass-lift: 0 1px 2px rgba(17, 17, 17, 0.05), 0 8px 20px -10px rgba(17, 17, 17, 0.18);
+  --glass-spec: 0.8;
+  --glass-edge: rgba(255, 255, 255, 0.95);
+  --glass-tint-strong: rgba(250, 250, 250, 0.76);
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 
@@ -40,6 +48,14 @@
     --fg-body: #aaa7a0;
     --fg-label: #aaa7a0;
     --folder: #262626;
+    --glass-tint: rgba(255, 255, 255, 0.08);
+    --glass-rim:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    --glass-lift: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 26px -10px rgba(0, 0, 0, 0.7);
+    --glass-spec: 0.26;
+    --glass-edge: rgba(255, 255, 255, 0.42);
+    --glass-tint-strong: rgba(30, 30, 30, 0.74);
   }
 }
 
@@ -55,6 +71,14 @@
   --fg-body: #aaa7a0;
   --fg-label: #aaa7a0;
   --folder: #262626;
+  --glass-tint: rgba(255, 255, 255, 0.08);
+  --glass-rim:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  --glass-lift: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 26px -10px rgba(0, 0, 0, 0.7);
+  --glass-spec: 0.26;
+  --glass-edge: rgba(255, 255, 255, 0.42);
+  --glass-tint-strong: rgba(30, 30, 30, 0.74);
 }
 
 [data-theme="light"] {
@@ -69,6 +93,14 @@
   --fg-body: #6f6f6f;
   --fg-label: #84817c;
   --folder: #ebe9e4;
+  --glass-tint: rgba(255, 255, 255, 0.55);
+  --glass-rim:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+  --glass-lift: 0 1px 2px rgba(17, 17, 17, 0.05), 0 8px 20px -10px rgba(17, 17, 17, 0.18);
+  --glass-spec: 0.8;
+  --glass-edge: rgba(255, 255, 255, 0.95);
+  --glass-tint-strong: rgba(250, 250, 250, 0.76);
 }
 
 @theme inline {
@@ -220,5 +252,98 @@ body:has(.photo-justified) {
   ::view-transition-new(root) {
     animation: none !important;
     mask-image: none !important;
+  }
+}
+
+/* ---- Liquid glass ----------------------------------------------------
+   The material Apple introduced with iOS 26 and WhatsApp uses on its compose
+   button: a layer that blurs and re-saturates what is behind it, carries a
+   bright specular rim, and slides a highlight across itself as it moves.
+
+   True refraction needs `backdrop-filter: url(#f)` driving an SVG
+   feDisplacementMap, which only Chromium ships — so the lensing here is
+   drawn rather than computed. At pill scale that reads the same, and it
+   survives Safari and Firefox, which the real thing does not.
+
+   Declared inside @layer components on purpose. Unlayered rules outrank
+   every Tailwind utility, so an unlayered `position: relative` here silently
+   beat `absolute` on the pill and `absolute` on the mobile sheet — the pill
+   collapsed to zero height and the sheet stayed in flow and pushed the menu
+   button off the top of the screen. In the components layer, utilities win,
+   which is what a caller expects. */
+@layer components {
+  .glass {
+    position: relative;
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    backdrop-filter: blur(14px) saturate(180%);
+    box-shadow: var(--glass-rim), var(--glass-lift);
+  }
+
+  /* A pill floats over a few pixels of page; a panel covers a paragraph of
+     it. The tint that reads as glass at pill size reads as a printing fault
+     at panel size — the copy underneath shows straight through the menu. So
+     panels get a heavier blur and a tint with real body behind it. */
+  .glass-panel {
+    background: var(--glass-tint-strong);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-panel {
+      background: var(--bg);
+    }
+  }
+
+  /* Specular sweep. --mx is the pointer's position across this element (0–1),
+     so the highlight sits under the finger and lags as the pill travels. */
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      130% 180% at calc(var(--mx, 0.5) * 100%) -40%,
+      rgba(255, 255, 255, var(--glass-spec)) 0%,
+      rgba(255, 255, 255, 0) 58%
+    );
+  }
+
+  /* Edge lensing — a hairline that brightens where the light lands and fades
+     where it does not. Painted as a padded gradient with its middle masked
+     out, which gives a gradient border without a second element. */
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+      145deg,
+      var(--glass-edge) 0%,
+      rgba(255, 255, 255, 0.12) 38%,
+      rgba(255, 255, 255, 0) 58%,
+      var(--glass-edge) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0.9;
+  }
+
+  /* Without backdrop-filter there is nothing to see through, so fall back to
+     an opaque chip rather than a washed-out ghost. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+      background: var(--bg-muted);
+    }
   }
 }
