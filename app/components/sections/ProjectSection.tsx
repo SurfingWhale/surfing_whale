@@ -86,7 +86,7 @@ export function ProjectSection({ projects }: Props) {
             <CaseFolder
                 href="/work/finance-dashboard"
                 title="A ledger that behaves like a product"
-                subtitle="Finance dashboard · GL accounts, prorate, forecasting"
+                subtitle="Finance dashboard · double-entry GL, prorate, self-audit"
             />
             </div>
 
