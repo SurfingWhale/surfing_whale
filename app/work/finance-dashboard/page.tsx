@@ -19,6 +19,27 @@ export const metadata: Metadata = {
 
 const LIVE_URL = "https://financialdashboardwhale.vercel.app";
 
+const SCREENS = [
+  {
+    src: "/work/finance/01-beranda.jpg",
+    alt: "The home screen: liquid funds for the month, income and spending, and a row of section shortcuts above a five-tab bar with a centre add button.",
+    caption:
+      "Beranda — liquid funds first, total assets second, and the month it belongs to. Five tabs around the centre add button.",
+  },
+  {
+    src: "/work/finance/02-laporan-keuangan.jpg",
+    alt: "The financial statements screen: assets, liabilities, capital and retained earnings, a balanced-books badge, and the chart of accounts expanded by code.",
+    caption:
+      "Laporan Keuangan — the accounting equation up top, the balance check as reassurance, then accounts by their GL codes.",
+  },
+  {
+    src: "/work/finance/03-finplan.jpg",
+    alt: "The planning sheet: budget, recurring bills, saving, debt and investment totals, and a six-rung financial ladder showing progress.",
+    caption:
+      "FinPlan — the six rungs in order, and the sentence stating where every figure on the sheet came from.",
+  },
+];
+
 function Section({
   number,
   title,
@@ -241,10 +262,22 @@ export default function FinanceDashboardCaseStudy() {
             to run out before month end. An automatic budget runs alongside it,
             projecting a shortfall figure against any goal that has been set.
           </p>
-          <Todo>
-            Describe how the projection is derived — simple run-rate, weighted,
-            or something else. Not written down anywhere yet.
-          </Todo>
+          <p>
+            The planning sheet states its own rule underneath the figures, in
+            the app, in plain Indonesian: numbers come from a{" "}
+            <span className="text-fg">
+              three-month trailing average plus the account&apos;s actual
+              balance, with adjustment and reconciliation entries excluded
+            </span>
+            . That exclusion is the part I care about. A reconciliation entry
+            is me correcting the books, not me spending money; averaging it in
+            would let my own bookkeeping mistakes forecast my future.
+          </p>
+          <p>
+            Printing the rule on the screen rather than burying it is the same
+            instinct. A projected number that will not say where it came from
+            is a number nobody should act on.
+          </p>
         </Section>
 
         <Section number="05" title="Rekap Finansial — learning the pattern from a competitor">
@@ -271,9 +304,23 @@ export default function FinanceDashboardCaseStudy() {
             list of what to copy.
           </p>
           <p>
+            The teardown also settled the navigation. It shipped as five tabs —
+            Beranda, Jurnal, Buku Besar, Laporan — around a{" "}
+            <span className="text-fg">single centre button for adding</span>,
+            sitting where the thumb already rests. That replaced an
+            eighteen-item side navigation. A double-entry app has a great many
+            places to go, and the fix was not to shorten that list but to stop
+            showing it all at once.
+          </p>
+          <p>
             A FIRE calculation sits beside it: annualised spending is multiplied
             by 25 (the 4% withdrawal rule) to produce a target, with current
-            position tracked against it as a percentage.
+            position tracked against it as a percentage. Beside that sits{" "}
+            <span className="text-fg">Tangga Keuangan</span> — budget, emergency
+            fund, debt, saving, investing, retirement — six rungs in a fixed
+            order, with a plain count of how many are done. It is the one screen
+            that answers &ldquo;what should I do next&rdquo; rather than
+            &ldquo;what did I do.&rdquo;
           </p>
         </Section>
 
@@ -419,14 +466,23 @@ export default function FinanceDashboardCaseStudy() {
             and technical cleanliness are not mine to lose — losing those just
             means the depth never gets seen.
           </p>
+          <p>
+            The statement screen further down this page is what became of that
+            review. The red <span className="text-fg">Tidak Balance</span> tag
+            with nothing behind it is gone; in its place is a quiet green{" "}
+            <span className="text-fg">Catatan seimbang ✓</span>, sitting under
+            assets, liabilities, capital and retained earnings, so the check
+            reads as reassurance rather than an alarm you cannot act on.
+          </p>
         </Section>
 
         <Section number="09" title="What is still open">
           <p>
-            A debt tracker is the largest remaining gap against the competition,
-            and there is no native app — it is a mobile-first PWA and stays one
-            for now. The monthly budget gap that the May review flagged is the
-            one thing since closed, by the prorate view above.
+            Both gaps the May review named have since closed: monthly budgeting
+            by the prorate view, and debt by the planning sheet, which now
+            carries totals for debt and investments beside the rest. What has
+            not moved is the shape — it is a mobile-first PWA and stays one for
+            now, with no native app.
           </p>
           <p>
             Both audits are dated documents rather than a finished state, and I
@@ -436,12 +492,29 @@ export default function FinanceDashboardCaseStudy() {
         </Section>
 
         <Section number="10" title="Screens">
-          <Todo>
-            Add the three captured views — Dashboard, Prorate &amp; Budgeting,
-            Rekap Finansial. Drop the files into{" "}
-            <span className="font-mono">/public/work/finance/</span> and they can
-            be wired in here.
-          </Todo>
+          <p>
+            Captured on a phone rather than mocked up, which is why the status
+            bar is still in them.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-2">
+            {SCREENS.map((screen) => (
+              <figure key={screen.src} className="m-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={screen.src}
+                  alt={screen.alt}
+                  width={780}
+                  height={1688}
+                  loading="lazy"
+                  className="w-full h-auto block rounded-xl border border-border bg-bg-muted"
+                />
+                <figcaption className="text-[11px] leading-[1.7] text-fg-body mt-2.5">
+                  {screen.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </Section>
       </article>
     </main>
