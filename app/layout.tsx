@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
+import { REVEAL_INIT_SCRIPT } from "./components/Reveal";
 
 // Matches the reference site, which loads Plus Jakarta Sans at 400/500/600 —
 // confirmed from its stylesheet link and from the font names embedded in a
@@ -72,8 +73,11 @@ export default function RootLayout({
       className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Applies a stored theme choice before first paint. */}
+        {/* Both run before first paint: one applies a stored theme choice,
+            the other arms the scroll reveal so sections do not flash in and
+            straight back out on load. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

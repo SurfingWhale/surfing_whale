@@ -48,7 +48,7 @@ export function ActivitySection() {
 
   return (
     <section data-spot id="activity" className="w-full py-24 border-t border-border">
-      <div className="container mx-auto px-6 max-w-[720px]">
+      <div data-reveal className="container mx-auto px-6 max-w-[720px]">
         <SectionLabel note="Where I work in the open.">Activity</SectionLabel>
 
         <RowList>

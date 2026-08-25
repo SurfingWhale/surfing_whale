@@ -91,7 +91,7 @@ export function ProjectSection({ projects }: Props) {
 
     return (
         <section className="w-full py-24 border-t border-border">
-        <div id="project" className="container mx-auto px-6 max-w-[720px]">
+        <div id="project" data-reveal className="container mx-auto px-6 max-w-[720px]">
 
             {/* ── Tier one: the featured case study ─────────────────────── */}
             <div data-spot>
@@ -110,7 +110,7 @@ export function ProjectSection({ projects }: Props) {
             </div>
 
             {/* ── Tier two: everything else, as a list ──────────────────── */}
-            <div className="mt-20">
+            <div data-reveal style={{ ["--reveal-delay" as string]: "90ms" }} className="mt-20">
             <div data-spot>
             <SectionLabel note={`${projects.length} projects.`}>
                 Other work

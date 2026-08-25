@@ -79,7 +79,7 @@ export function GuestNotesSection() {
 
   return (
     <section data-spot id="guest-notes" className="w-full py-24 border-t border-border">
-      <div className="container mx-auto px-6 max-w-[720px]">
+      <div data-reveal className="container mx-auto px-6 max-w-[720px]">
         <SectionLabel note="Leave a note if you passed by. I read every one.">
           Guest notes
         </SectionLabel>

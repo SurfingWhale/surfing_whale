@@ -34,7 +34,7 @@ export function PhotographySection() {
 
   return (
     <section data-spot id="photography" className="w-full py-24 border-t border-border">
-      <div className="container mx-auto px-6 max-w-[720px]">
+      <div data-reveal className="container mx-auto px-6 max-w-[720px]">
         <div className="mb-16 space-y-5 text-[13px] leading-[2] text-fg-body max-w-[560px]">
           <p>
             I might snap myself in a mirror, someone laughing, a random moment,
@@ -76,16 +76,16 @@ export function PhotographySection() {
           .
         </p>
 
-        <div className="flex gap-2 mb-8 flex-wrap" role="group" aria-label="Filter photographs">
+        <div className="flex gap-5 mb-8 flex-wrap text-[13px]" role="group" aria-label="Filter photographs">
           {filters.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
               aria-pressed={filter === f.key}
-              className={`px-4 py-1.5 rounded-full text-[13px] transition-colors duration-300 border ${
+              className={`transition-colors duration-300 ${
                 filter === f.key
-                  ? "bg-fg text-bg border-fg"
-                  : "border-border text-fg-secondary hover:text-fg hover:border-border-strong"
+                  ? "font-medium text-fg underline decoration-border-strong underline-offset-[3px]"
+                  : "text-fg-body hover:text-fg"
               }`}
             >
               {f.label}
@@ -97,7 +97,7 @@ export function PhotographySection() {
 
       {/* Frames break out of the reading column and fall into columns, so the
           archive reads as a contact sheet and never strands a last row. */}
-      <div className="photo-masonry">
+      <div data-reveal className="photo-masonry">
           {visible.map((photo, i) => (
           <figure key={photo.id} className="overflow-hidden bg-bg-muted">
             <button

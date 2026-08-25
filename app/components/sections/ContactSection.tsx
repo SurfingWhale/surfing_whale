@@ -39,7 +39,7 @@ export function ContactSection() {
 
     return (
         <section data-spot id="contact" className="w-full py-24 border-t border-border">
-        <div className="container mx-auto px-6 max-w-[720px]">
+        <div data-reveal className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel note="Open for collaboration, freelance, or just a chat.">
                 Get in touch
             </SectionLabel>

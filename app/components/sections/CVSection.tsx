@@ -25,7 +25,7 @@ const CV_LINK = "https://drive.google.com/file/d/123vUTdVxQ9LwOFwezuILq5FezI2nUv
 
     return (
         <section data-spot id="CV" className="w-full py-24 border-t border-border">
-        <div className="container mx-auto px-6 max-w-[720px]">
+        <div data-reveal className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel>About</SectionLabel>
 
             <p className="text-[13px] leading-[2] text-fg-body max-w-[560px]">

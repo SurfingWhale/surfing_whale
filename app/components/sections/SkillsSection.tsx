@@ -16,7 +16,7 @@ const SKILLS = [
 export function SkillsSection() {
   return (
     <section data-spot id="skills" className="w-full py-24 border-t border-border">
-      <div className="container mx-auto px-6 max-w-[720px]">
+      <div data-reveal className="container mx-auto px-6 max-w-[720px]">
         <SectionLabel note="What I reach for most.">Skills</SectionLabel>
 
         <RowList>
