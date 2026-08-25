@@ -55,3 +55,47 @@ cloudinary.config({
     export async function deleteFromCloudinary(publicId: string): Promise<void> {
     await cloudinary.uploader.destroy(publicId);
     }
+
+/**
+ * Photographs, as opposed to project screenshots: nothing is cropped and the
+ * stored dimensions come back with the URL, because the gallery needs the
+ * aspect ratio to lay a row out before the image has loaded.
+ */
+export interface CloudinaryPhotoResult extends CloudinaryUploadResult {
+    width: number;
+    height: number;
+}
+
+export async function uploadPhoto(
+    imageBuffer: Buffer,
+    publicId: string
+): Promise<CloudinaryPhotoResult> {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+        {
+            folder: "surfing-whale/darkroom",
+            public_id: publicId,
+            overwrite: false,
+            unique_filename: true,
+            // Bound the long edge rather than crop; limit never enlarges.
+            transformation: [
+            { width: 2000, height: 2000, crop: "limit" },
+            { quality: "auto:good", fetch_format: "auto" },
+            ],
+        },
+        (error, result) => {
+            if (error || !result) {
+            reject(error ?? new Error("Upload failed"));
+            } else {
+            resolve({
+                secure_url: result.secure_url,
+                public_id: result.public_id,
+                width: result.width,
+                height: result.height,
+            });
+            }
+        }
+        );
+        uploadStream.end(imageBuffer);
+    });
+}

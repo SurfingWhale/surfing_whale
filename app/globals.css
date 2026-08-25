@@ -203,46 +203,64 @@ h1, h2, h3, h4 {
   }
 }
 
-/* ---- Justified gallery ----------------------------------------------
-   Frames share a row in proportion to their aspect ratio, so nothing is
-   cropped and rows still come out flush. --photo-ratio is width/height and
-   --photo-basis is that ratio times the target row height; flex-grow then
-   settles the row. The trailing spacer stops a short last row from
-   stretching to fill the width. */
-.photo-justified {
-  --photo-row: 260px;
+/* ---- Photo essay rows -------------------------------------------------
+   Photographs sharing a row share a height: flex-grow tracks each one's
+   aspect ratio against a zero basis, so widths come out proportional and the
+   row ends flush whatever mix of shapes it holds. Below 640px three across
+   would be thumbnails, so a row becomes a column. */
+.photo-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  gap: 4px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding-inline: 4px;
+  margin-block: 4px;
+}
+
+.photo-row > figure {
+  flex: var(--ratio, 1) 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .photo-row {
+    flex-direction: column;
+  }
+}
+
+/* ---- Archive ----------------------------------------------------------
+   Columns rather than justified rows. Justification looks right only when
+   the count divides evenly: five photographs came out as a row of four and
+   one stranded frame beside a half-page of nothing. Columns always fill,
+   whatever the count, and nothing is cropped either way. */
+.photo-masonry {
+  columns: 4;
   column-gap: 4px;
-  row-gap: 4px;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   padding-inline: 4px;
 }
 
-.photo-justified::after {
-  content: "";
-  flex: 999 1 360px;
+.photo-masonry > figure {
+  break-inside: avoid;
+  margin: 0 0 4px;
 }
 
-.photo-justified > figure {
-  flex: var(--photo-ratio) 1 var(--photo-basis);
-  min-width: 0;
-  margin: 0;
+@media (max-width: 1024px) {
+  .photo-masonry {
+    columns: 3;
+  }
 }
 
 @media (max-width: 640px) {
-  .photo-justified {
-    --photo-row: 160px;
-  }
-  .photo-justified::after {
-    flex-basis: 256px;
+  .photo-masonry {
+    columns: 2;
   }
 }
 
-/* The full-bleed row is wider than the page; clip rather than scroll. */
-body:has(.photo-justified) {
+/* Both break out past the page width; clip rather than scroll. */
+body:has(.photo-masonry),
+body:has(.photo-row) {
   overflow-x: clip;
 }
 

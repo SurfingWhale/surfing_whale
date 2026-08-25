@@ -64,6 +64,18 @@ export function PhotographySection() {
           Selected photography
         </SectionLabel>
 
+        <p className="text-[13px] leading-[2] text-fg-body mb-8 -mt-4">
+          Longer pieces, where the writing and the frames go together, live in
+          the{" "}
+          <a
+            href="/photo"
+            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
+          >
+            darkroom
+          </a>
+          .
+        </p>
+
         <div className="flex gap-2 mb-8 flex-wrap" role="group" aria-label="Filter photographs">
           {filters.map((f) => (
             <button
@@ -83,22 +95,11 @@ export function PhotographySection() {
 
       </div>
 
-      {/* Frames break out of the reading column: rows are justified by aspect
-          ratio, so nothing is cropped and the archive reads as a contact
-          sheet rather than a set of tiles. */}
-      <div className="photo-justified">
+      {/* Frames break out of the reading column and fall into columns, so the
+          archive reads as a contact sheet and never strands a last row. */}
+      <div className="photo-masonry">
           {visible.map((photo, i) => (
-          <figure
-            key={photo.id}
-            style={{
-              // flex-grow tracks the ratio; flex-basis is that ratio at the
-              // target row height, so a row settles flush.
-              ["--photo-ratio" as string]: String(photo.width / photo.height),
-              ["--photo-basis" as string]:
-                `calc(var(--photo-row) * ${photo.width / photo.height})`,
-            }}
-            className="overflow-hidden bg-bg-muted"
-          >
+          <figure key={photo.id} className="overflow-hidden bg-bg-muted">
             <button
               type="button"
               onClick={() => setViewing(i)}
