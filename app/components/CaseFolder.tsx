@@ -97,9 +97,12 @@ export function CaseFolder({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={sheet.src}
+                      // The folder's own aria-label already names the case
+                      // study; these are decoration within that link.
                       alt=""
+                      title={sheet.alt}
                       loading="lazy"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                     />
                   ))}
               </figure>

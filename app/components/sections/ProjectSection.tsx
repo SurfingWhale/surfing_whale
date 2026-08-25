@@ -14,11 +14,7 @@ import type { NotionProject } from "@/app/lib/notion";
 import { ProjectModal } from "@/app/components/Projectmodal";
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { CaseFolder } from "@/app/components/CaseFolder";
-import {
-  BerandaSheet,
-  MarkSheet,
-  RecapSheet,
-} from "@/app/components/FinanceSheets";
+import { MarkSheet } from "@/app/components/FinanceSheets";
 
 interface Props { projects: NotionProject[]; }
 
@@ -73,9 +69,17 @@ function ProjectRow({ project, onOpen }: {
 // here is paint order, not layout — Beranda is listed last so it is the sheet
 // on top of the pile while the folder is shut.
 const FINANCE_SHEETS = [
-    { art: <RecapSheet />, closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" } },
+    {
+        src: "/work/finance/sheet-recap.jpg",
+        alt: "The monthly recap card: a looping MONTHLY RECAP ribbon over the month's persona.",
+        closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" },
+    },
     { art: <MarkSheet />, closed: { x: "11%", r: "4deg" }, open: { x: "50%", r: "9deg" } },
-    { art: <BerandaSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
+    {
+        src: "/work/finance/sheet-beranda.jpg",
+        alt: "The app's home screen: liquid funds with the balance hidden, income and spending, and the section shortcuts.",
+        closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" },
+    },
 ];
 
 export function ProjectSection({ projects }: Props) {
