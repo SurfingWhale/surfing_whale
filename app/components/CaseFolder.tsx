@@ -7,7 +7,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
 export interface Sheet {
   /** Drawn artwork. Preferred over src: at this size a real screenshot is an
@@ -37,23 +37,46 @@ export function CaseFolder({
   subtitle: string;
   sheets?: Sheet[];
 }) {
-  // Hover drives this on desktop. On touch there is no hover, and a tap goes
-  // straight to the case study — so the folder would never once be seen open,
-  // and its contents would be hidden behind an interaction that cannot
-  // happen. There it rests ajar instead.
+  // Hover drives this on desktop, where a click can go straight through to
+  // the case study because the folder has already been seen open.
+  //
+  // On touch there is no hover, so the first tap opens the folder and the
+  // second one follows the link: peek, then read. Without that, a phone would
+  // never once see the folder open, and it may as well have been a card.
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (window.matchMedia("(hover: none)").matches) setOpen(true);
-  }, []);
+  const [peeking, setPeeking] = useState(false);
+
+  // Which kind of pointer opened this, taken from the event rather than from
+  // a media query: a hybrid laptop has both, and what matters is the one in
+  // use right now. A keyboard activation records nothing and falls through to
+  // the link, which is right — focus has already opened the folder.
+  const pointer = useRef("");
+
+  const onClick = (e: React.MouseEvent) => {
+    const touched = pointer.current === "touch" || pointer.current === "pen";
+    // Guarded on `peeking`, not on `open`: a tap focuses the link before it
+    // clicks, onFocus has already set `open`, and guarding on that would let
+    // the very first tap straight through to the case study.
+    if (!touched || peeking) return;
+    e.preventDefault();
+    setOpen(true);
+    setPeeking(true);
+  };
 
   return (
     <Link
       href={href}
+      onPointerDown={(e) => {
+        pointer.current = e.pointerType;
+      }}
+      onClick={onClick}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       onFocus={() => setOpen(true)}
       onBlur={() => setOpen(false)}
-      aria-label={`${title} — ${subtitle}`}
+      aria-label={
+        peeking ? `Open: ${title} — ${subtitle}` : `${title} — ${subtitle}`
+      }
       className="group block max-w-[360px] no-underline text-fg active:scale-[0.97] transition-transform duration-150"
     >
       <div className="relative w-full aspect-[20/17] [perspective:1000px]">
@@ -132,8 +155,10 @@ export function CaseFolder({
             <svg
               viewBox="0 0 16 16"
               aria-hidden="true"
-              className="flex-none w-4 h-4 fill-none stroke-current stroke-[1.5] [stroke-linecap:round] [stroke-linejoin:round] text-fg-muted
-                transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px group-hover:text-fg"
+              className={`flex-none w-4 h-4 fill-none stroke-current stroke-[1.5] [stroke-linecap:round] [stroke-linejoin:round]
+                transition-[transform,color] duration-300 motion-reduce:transition-none
+                group-hover:translate-x-px group-hover:-translate-y-px group-hover:text-fg
+                ${peeking ? "text-fg translate-x-0.5" : "text-fg-muted"}`}
             >
               <path d="M5 11 11 5M6 5h5v5" />
             </svg>

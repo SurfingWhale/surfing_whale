@@ -13,6 +13,7 @@ import { ProfileContent } from "./components/ProfileContent";
 import { ProfileModeProvider } from "./components/ProfileMode";
 import { AccessProvider } from "./components/AccessGate";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { VisitorCard } from "./components/VisitorCard";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -69,6 +70,8 @@ export default function Home() {
           </span>
         </div>
       </footer>
+
+      <VisitorCard />
     </main>
   );
 }

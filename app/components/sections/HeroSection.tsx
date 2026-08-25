@@ -1,6 +1,10 @@
 // app/components/sections/HeroSection.tsx
 // No display type: the name runs at body size in medium weight, exactly as
 // the reference site does. Hierarchy comes from weight and colour, not scale.
+//
+// No call to action either. This is a showcase, and a page that opens by
+// asking for an introduction is asking before it has shown anything. The
+// ways to reach me are at the end, where someone who wants them will be.
 "use client";
 
 import { AvatarPicker } from "@/app/components/AvatarPicker";
@@ -36,24 +40,6 @@ export function HeroSection() {
           {copy.bio}
         </p>
 
-        <div className="flex gap-5 mt-8 text-[13px]">
-          <a
-            href="https://wa.me/6285156964766?text=Hello%2C%20aku%20dari%20portfolio%20Fauzy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-          >
-            Get in touch
-          </a>
-          <a
-            href="https://www.linkedin.com/in/muhammad-fauzy-741943203"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-          >
-            LinkedIn
-          </a>
-        </div>
       </div>
     </section>
   );
