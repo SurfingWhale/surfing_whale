@@ -15,9 +15,9 @@ import { ProjectModal } from "@/app/components/Projectmodal";
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { CaseFolder } from "@/app/components/CaseFolder";
 import {
-  DashboardSheet,
-  LedgerSheet,
-  StatementSheet,
+  BerandaSheet,
+  MarkSheet,
+  RecapSheet,
 } from "@/app/components/FinanceSheets";
 
 interface Props { projects: NotionProject[]; }
@@ -69,13 +69,13 @@ function ProjectRow({ project, onOpen }: {
     );
 }
 
-// What is actually in that folder: the ledger, the statements, the dashboard.
-// Order here is paint order, not layout — the dashboard is listed last so it
-// is the sheet on top of the pile while the folder is shut.
+// The recap on the left, the mark on the right, Beranda in the middle. Order
+// here is paint order, not layout — Beranda is listed last so it is the sheet
+// on top of the pile while the folder is shut.
 const FINANCE_SHEETS = [
-    { art: <LedgerSheet />, closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" } },
-    { art: <StatementSheet />, closed: { x: "11%", r: "4deg" }, open: { x: "50%", r: "9deg" } },
-    { art: <DashboardSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
+    { art: <RecapSheet />, closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" } },
+    { art: <MarkSheet />, closed: { x: "11%", r: "4deg" }, open: { x: "50%", r: "9deg" } },
+    { art: <BerandaSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
 ];
 
 export function ProjectSection({ projects }: Props) {
