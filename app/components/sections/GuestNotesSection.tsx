@@ -5,7 +5,7 @@
 // than boxed inputs, and a text link to send. A boxed form with a filled
 // button read like a contact widget borrowed from another site.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SectionLabel } from "@/app/components/SectionLabel";
 
 interface GuestNote {
@@ -42,6 +42,8 @@ export function GuestNotesSection() {
   const [form, setForm] = useState({ name: "", message: "", email: "", website: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState<string | null>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     fetch("/api/guest-notes")
@@ -51,10 +53,19 @@ export function GuestNotesSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  const isReady =
-    form.name.trim().length > 0 && form.message.trim().length > 0 && status !== "sending";
-
   const submit = async () => {
+    // The button stays enabled and says what is missing, rather than greying
+    // itself out and leaving the reader to work out which field it wants.
+    if (!form.name.trim()) {
+      setError("Add your name so I know who stopped by.");
+      nameRef.current?.focus();
+      return;
+    }
+    if (!form.message.trim()) {
+      setError("Write a line or two before sending.");
+      messageRef.current?.focus();
+      return;
+    }
     setStatus("sending");
     setError(null);
     try {
@@ -65,7 +76,7 @@ export function GuestNotesSection() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong.");
+        setError(data.error ?? "Unable to send. Try again in a moment.");
         setStatus("idle");
         return;
       }
@@ -94,17 +105,20 @@ export function GuestNotesSection() {
         ) : (
           <div className="max-w-[520px] space-y-6">
             <input
+              ref={nameRef}
               type="text"
               maxLength={50}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="Your name"
               aria-label="Your name"
+              autoComplete="name"
               className={FIELD}
             />
 
             <div>
               <textarea
+                ref={messageRef}
                 rows={3}
                 maxLength={MAX_MESSAGE}
                 value={form.message}
@@ -126,6 +140,7 @@ export function GuestNotesSection() {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="Email (optional)"
                 aria-label="Your email, optional"
+                autoComplete="email"
                 className={FIELD}
               />
               <p className="text-[11px] leading-[1.7] text-fg-muted mt-2">
@@ -146,11 +161,15 @@ export function GuestNotesSection() {
               className="hidden"
             />
 
-            {error && <p className="text-[13px] text-fg">{error}</p>}
+            {error && (
+              <p role="alert" className="text-[13px] text-fg">
+                {error}
+              </p>
+            )}
 
             <button
               onClick={submit}
-              disabled={!isReady}
+              disabled={status === "sending"}
               className={`text-[13px] font-medium ${LINK} disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed`}
             >
               {status === "sending" ? "Sending…" : "Leave a note →"}

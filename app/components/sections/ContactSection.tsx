@@ -1,7 +1,7 @@
 "use client";
 // app/components/sections/ContactSection.tsx
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SectionLabel } from "@/app/components/SectionLabel";
 
 const WA_NUMBER = "6285156964766";
@@ -10,8 +10,29 @@ const EMAIL = "fauzymuhamad43@gmail.com";
 export function ContactSection() {
     const [form, setForm] = useState({ name: "", message: "" });
     const [sent, setSent] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const nameRef = useRef<HTMLInputElement>(null);
+    const messageRef = useRef<HTMLTextAreaElement>(null);
+
+    // Checked when the button is pressed rather than by greying it out, so
+    // the reader is told which field is missing instead of guessing.
+    const missing = () => {
+        if (!form.name.trim()) {
+            setError("Add your name.");
+            nameRef.current?.focus();
+            return true;
+        }
+        if (!form.message.trim()) {
+            setError("Write your message first.");
+            messageRef.current?.focus();
+            return true;
+        }
+        setError(null);
+        return false;
+    };
 
     const handleWA = () => {
+        if (missing()) return;
         const text = encodeURIComponent(
         `Halo, nama saya ${form.name}.\n\n${form.message}`
         );
@@ -20,13 +41,12 @@ export function ContactSection() {
     };
 
     const handleEmail = () => {
+        if (missing()) return;
         const subject = encodeURIComponent(`Pesan dari ${form.name} — Portfolio`);
         const body = encodeURIComponent(form.message);
         window.open(`mailto:${EMAIL}?subject=${subject}&body=${body}`, "_blank");
         setSent(true);
     };
-
-    const isReady = form.name.trim().length > 0 && form.message.trim().length > 0;
 
     // Same underlined field as the guest notes directly below this section,
     // which was already in the page's own idiom while this one was still in
@@ -64,8 +84,10 @@ export function ContactSection() {
                     Name
                 </label>
                 <input
+                    ref={nameRef}
                     id="contact-name"
                     type="text"
+                    autoComplete="name"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Your name"
@@ -78,6 +100,7 @@ export function ContactSection() {
                     Message
                 </label>
                 <textarea
+                    ref={messageRef}
                     id="contact-message"
                     rows={5}
                     value={form.message}
@@ -87,11 +110,17 @@ export function ContactSection() {
                 />
                 </div>
 
+                {error && (
+                <p role="alert" className="text-[13px] leading-[2] text-fg">
+                    {error}
+                </p>
+                )}
+
                 <div className="flex gap-5 pt-1 text-[13px]">
-                <button onClick={handleWA} disabled={!isReady} className={actionClass}>
+                <button onClick={handleWA} className={actionClass}>
                     Send on WhatsApp →
                 </button>
-                <button onClick={handleEmail} disabled={!isReady} className={actionClass}>
+                <button onClick={handleEmail} className={actionClass}>
                     Send by email →
                 </button>
                 </div>

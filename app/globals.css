@@ -169,6 +169,43 @@ h1, h2, h3, h4 {
   text-wrap: balance;
 }
 
+/* The header is fixed, so an anchor jump would otherwise land under it. */
+[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+/* ---- Focus ------------------------------------------------------------
+   Several fields carry Tailwind's `outline-none` so the hairline underline
+   can do the work on mouse focus, which leaves a keyboard user with nothing
+   to follow. This rule is unlayered, so it outranks that utility and puts
+   the indicator back — on :focus-visible only, so a mouse click still does
+   not draw one. --fg is the highest-contrast colour the theme has, in both
+   directions. */
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* The skip link is the first thing in the tab order and invisible until it
+   is reached — repeated chrome sits between the top of the page and the
+   content on every visit. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  inset-inline-start: 0.5rem;
+  z-index: 100;
+  padding: 0.5rem 0.875rem;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: 0 0 0 1px var(--border-strong), 0 8px 20px -10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 ::selection {
   background: var(--accent-soft);
   color: var(--fg);

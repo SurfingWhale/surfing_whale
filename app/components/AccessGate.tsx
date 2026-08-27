@@ -111,15 +111,48 @@ function GateDialog({
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Where focus came from, so it can be handed back on close rather than
+    // dropped at the top of the document.
+    const opener = document.activeElement as HTMLElement | null;
     inputRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onDismiss(); };
+
+    const focusable = () =>
+      Array.from(
+        dialogRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]):not([tabindex="-1"]), textarea, [tabindex]:not([tabindex="-1"])'
+        ) ?? []
+      );
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") return onDismiss();
+      if (e.key !== "Tab") return;
+      // Without this, Tab walks straight out of the dialog and into the page
+      // behind it, which is still there and still clickable.
+      const stops = focusable();
+      if (!stops.length) return;
+      const first = stops[0];
+      const last = stops[stops.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !dialogRef.current?.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "contain";
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      document.body.style.overscrollBehavior = "";
+      opener?.focus?.();
     };
   }, [onDismiss]);
 
@@ -134,7 +167,7 @@ function GateDialog({
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong.");
+        setError(data.error ?? "Unable to send. Try again in a moment.");
         setSending(false);
         return;
       }
@@ -149,8 +182,9 @@ function GateDialog({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={onDismiss} />
+      <div aria-hidden="true" className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={onDismiss} />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="gate-title"
@@ -170,6 +204,7 @@ function GateDialog({
           onKeyDown={(e) => { if (e.key === "Enter" && email) submit(); }}
           placeholder="you@example.com"
           aria-label="Your email"
+          autoComplete="email"
           className="w-full mt-5 bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200"
         />
 
@@ -190,7 +225,11 @@ function GateDialog({
           and never added to a mailing list.
         </p>
 
-        {error && <p className="text-[13px] text-fg mt-3">{error}</p>}
+        {error && (
+          <p role="alert" className="text-[13px] text-fg mt-3">
+            {error}
+          </p>
+        )}
 
         <div className="flex gap-5 mt-6 text-[13px]">
           <button

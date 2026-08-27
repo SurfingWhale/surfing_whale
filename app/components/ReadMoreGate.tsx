@@ -27,7 +27,7 @@ export function ReadMoreGate({ reason }: { reason: AccessReason }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong.");
+        setError(data.error ?? "Unable to send. Try again in a moment.");
         setSending(false);
         return;
       }
@@ -65,6 +65,7 @@ export function ReadMoreGate({ reason }: { reason: AccessReason }) {
             onKeyDown={(e) => { if (e.key === "Enter" && email) submit(); }}
             placeholder="you@example.com"
             aria-label="Your email"
+            autoComplete="email"
             className="flex-1 min-w-[200px] bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200"
           />
           <button
@@ -88,7 +89,11 @@ export function ReadMoreGate({ reason }: { reason: AccessReason }) {
           className="hidden"
         />
 
-        {error && <p className="text-[13px] text-fg mt-3">{error}</p>}
+        {error && (
+          <p role="alert" className="text-[13px] text-fg mt-3">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );
