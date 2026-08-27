@@ -24,13 +24,15 @@ const CV_LINK = "https://drive.google.com/file/d/123vUTdVxQ9LwOFwezuILq5FezI2nUv
         });
 
     return (
-        <section data-spot id="CV" className="w-full py-24 border-t border-border">
+        <section data-spot id="CV" className="w-full py-16 sm:py-24 border-t border-border">
         <div data-reveal className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel>About</SectionLabel>
 
             <p className="text-[13px] leading-[2] text-fg-body max-w-[560px]">
-            Numbers tell stories. From raw figures to insights people can act
-            on — data analyst by day, creative thinker always.
+            Accounting first, then data. That order matters: I learned to care
+            whether a number reconciles before I learned to plot one. Most of
+            what is here started because something looked off and I wanted to
+            know why.
             </p>
 
             <div className="flex gap-5 mt-8 text-[13px]">
@@ -40,14 +42,6 @@ const CV_LINK = "https://drive.google.com/file/d/123vUTdVxQ9LwOFwezuILq5FezI2nUv
             >
                 View my CV
             </button>
-            <a
-                href="https://github.com/Untamed98x"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-            >
-                GitHub
-            </a>
             </div>
         </div>
         </section>

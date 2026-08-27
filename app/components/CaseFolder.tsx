@@ -133,15 +133,17 @@ export function CaseFolder({
           })}
         </div>
 
-        {/* Front flap, carrying the label */}
+        {/* Front flap, carrying the label. Opaque enough to read as paper:
+            at 75% white over a saturated screenshot the blur turned the sheet
+            behind it into a coloured smudge rather than a frosted surface. */}
         <div
           style={{ transform: open ? "rotateX(-28deg)" : "rotateX(0deg)" }}
           className="absolute inset-x-0 bottom-0 top-[24%] z-20 rounded-[7.5%/11.6%] origin-bottom
-            bg-gradient-to-b from-white/75 to-[#faf9f6]/60
+            bg-gradient-to-b from-white/88 to-[#faf9f6]/82
             shadow-[inset_0_0_0_1px_rgba(255,255,255,0.72),0_-2px_7px_-2px_rgba(65,59,49,0.12)]
-            backdrop-blur-[16px] backdrop-saturate-[160%]
+            backdrop-blur-[18px] backdrop-saturate-[115%]
             transition-transform duration-500 ease-[cubic-bezier(0.2,0,0,1)]
-            dark:from-[#2d2d2d]/80 dark:to-[#1d1d1d]/72"
+            dark:from-[#2d2d2d]/90 dark:to-[#1d1d1d]/84"
         >
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-[18px]">
             <div className="min-w-0">

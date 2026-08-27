@@ -31,7 +31,7 @@ export function HeroSection() {
 
   return (
     <section data-spot className="w-full">
-      <div data-reveal className="container mx-auto px-6 pt-20 pb-16 max-w-[720px]">
+      <div data-reveal className="container mx-auto px-6 pt-14 pb-12 sm:pt-20 sm:pb-16 max-w-[720px]">
         <AvatarPicker />
 
         <h1 className="text-[13px] leading-[2] font-medium tracking-normal text-fg mt-5">

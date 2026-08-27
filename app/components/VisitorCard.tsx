@@ -3,6 +3,10 @@
 // Asking on arrival is a stranger asking for your name at the door; asking
 // halfway through is asking someone who stayed.
 //
+// It stands down the moment the guest notes section itself comes into view.
+// The card exists for readers who will not scroll that far — floating one
+// identical form over another is asking the same thing twice on one screen.
+//
 // Carries the same liquid glass as the nav, and remembers a dismissal so it
 // does not greet the same person twice.
 "use client";
@@ -11,7 +15,10 @@ import { useEffect, useRef, useState } from "react";
 
 const KEY = "sw-visitor-card";
 const QUIET_DAYS = 30;
-const APPEAR_AT = 0.42;
+// Low enough to leave a real window before the guest notes section takes
+// over: with Skills gone the page is short, and at 0.42 the section was
+// already on screen by the time the card was due, so it never appeared.
+const APPEAR_AT = 0.25;
 
 const field =
   "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-1.5 " +
@@ -45,6 +52,24 @@ export function VisitorCard() {
   const armed = useRef(true);
   const nameRef = useRef<HTMLInputElement>(null);
   const noteRef = useRef<HTMLTextAreaElement>(null);
+
+  // The real form is downstream; once it is on screen the card is redundant.
+  const [supplanted, setSupplanted] = useState(false);
+  useEffect(() => {
+    const section = document.getElementById("guest-notes");
+    if (!section || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSupplanted(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -20% 0px" }
+    );
+    io.observe(section);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     if (seenRecently()) return;
@@ -110,7 +135,7 @@ export function VisitorCard() {
     }
   };
 
-  if (!shown) return null;
+  if (!shown || supplanted) return null;
 
   const busy = state === "sending";
 

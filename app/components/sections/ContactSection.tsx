@@ -58,7 +58,7 @@ export function ContactSection() {
         "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200 disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed";
 
     return (
-        <section data-spot id="contact" className="w-full py-24 border-t border-border">
+        <section data-spot id="contact" className="w-full py-16 sm:py-24 border-t border-border">
         <div data-reveal className="container mx-auto px-6 max-w-[720px]">
             <SectionLabel note="Open for collaboration, freelance, or just a chat.">
                 Get in touch
