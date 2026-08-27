@@ -4,9 +4,9 @@
 // The reasoning in this page is drawn from Fauzy's own project documentation
 // in Notion (market research Apr 2026, the security audit of 2026-05-15, the
 // UI/UX self-review of 2026-05-29, and the Finku teardown of 2026-05-31).
-// Two sections are still marked as draft notes: the prorate model and the
-// forecasting derivation have no written PRD yet, so the reasoning there is
-// his to state, not mine to invent.
+// Nothing here is invented: the prorate model comes from the PRD in
+// Untamed98x/Personal_Finance_Dashboard, the forecasting rule is printed on
+// the planning screen itself, and the research is his own executive summary.
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -62,15 +62,6 @@ function Section({
   );
 }
 
-function Todo({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-[13px] leading-[2] border border-dashed border-border-strong rounded-lg px-4 py-3 text-fg-muted">
-      <span className="font-mono text-[11px] uppercase tracking-wider">Draft note</span>
-      <br />
-      {children}
-    </p>
-  );
-}
 
 // A finding worth reading as a unit rather than as prose — used for the audit,
 // where the point is the shape of the mistake, not the paragraph around it.
@@ -200,6 +191,17 @@ export default function FinanceDashboardCaseStudy() {
             The gap nobody had filled: structured onboarding with local
             Indonesian financial context.
           </p>
+          <p>
+            The full study — method, every chart, the competitor breakdown and
+            the opportunity matrix — is{" "}
+            <Link
+              href="/work/finance-dashboard/research"
+              className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
+            >
+              the executive summary
+            </Link>
+            .
+          </p>
         </Section>
 
         <Section number="02" title="Why a general ledger, not categories">
@@ -246,13 +248,24 @@ export default function FinanceDashboardCaseStudy() {
             Each day then reports its own allowance, spend, and remainder, with a
             status marker once the day&apos;s share is exceeded.
           </p>
-          <Todo>
-            This is the most distinctive idea in the product and the one place
-            the documentation runs out — the{" "}
-            <span className="font-mono">Prorate Budgeting</span> PRD in Notion
-            is still an empty page marked &ldquo;Belum PRD&rdquo;. Why working
-            days rather than calendar days?
-          </Todo>
+          <p>
+            Liquid means current assets only — accounts under{" "}
+            <span className="font-mono">11xx</span> in the chart of accounts. A
+            term deposit at <span className="font-mono">1200</span> is money I
+            have and cannot spend this week, so it sits outside the allowance
+            on purpose.
+          </p>
+          <p>
+            The part worth being honest about is where it is still wrong.
+            Budgets do not carry over, so last month&apos;s overspend leaves no
+            mark on this one. Categories are free text and undeduplicated, so{" "}
+            <span className="text-fg">Makan</span> and{" "}
+            <span className="text-fg">Makan &amp; Minum</span> can sit side by
+            side and split their own total. And an actual is matched to a
+            category by its description rather than by its GL account — which
+            means the one screen built on a general ledger is the one screen
+            not using it. That is written down as the next thing to fix.
+          </p>
         </Section>
 
         <Section number="04" title="Forecasting">
