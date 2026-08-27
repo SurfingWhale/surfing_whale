@@ -33,7 +33,9 @@ export function GlassNav({ links }: { links: NavLink[] }) {
       const line = window.innerHeight * 0.35;
       let best = 0;
       links.forEach((link, i) => {
-        if (link.href === "#") return;
+        // Route links have nothing on this page to spy on, and passing "/x"
+        // to querySelector throws rather than returning null.
+        if (!link.href.startsWith("#") || link.href === "#") return;
         const el = document.querySelector(link.href);
         if (el && el.getBoundingClientRect().top <= line) best = i;
       });

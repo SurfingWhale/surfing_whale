@@ -10,10 +10,14 @@
 import { AvatarPicker } from "@/app/components/AvatarPicker";
 import { useProfileMode } from "@/app/components/ProfileMode";
 
+// Not a job title. "Data analyst with an accounting background" is a claim
+// about what I am; these are observations about how the work actually goes,
+// drawn from a read-back of how I talk about it rather than from a CV line.
 const COPY = {
   analyst: {
-    tagline: "Data analyst with an accounting background.",
-    bio: "I turn raw numbers into stories people can act on — ledgers, forecasts, and the patterns underneath them.",
+    tagline:
+      "I like building things that tell a story rather than report a number.",
+    bio: "Most of it starts as a question — why is this happening, what is actually going on, does this add up. The work is turning something blurry into something that can be seen, compared and argued with. The tool comes after the question, not before it.",
   },
   capture: {
     tagline: "I love capturing moments — joie de vivre.",

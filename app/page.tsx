@@ -2,7 +2,6 @@
 import { HeroSection } from "./components/sections/HeroSection";
 import ProjectSectionWrapper from "./components/sections/ProjectSectionWrapper";
 import { CVSection } from "./components/sections/CVSection";
-import { SkillsSection } from "./components/sections/SkillsSection";
 import { ActivitySection } from "./components/sections/ActivitySection";
 import { ContactSection } from "./components/sections/ContactSection";
 import { PhotographySection } from "./components/sections/PhotographySection";
@@ -19,7 +18,7 @@ import { Reveal } from "./components/Reveal";
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
   { label: "Projects", href: "#project" },
-  { label: "Skills", href: "#skills" },
+  { label: "Writing", href: "/writing" },
   { label: "Activity", href: "#activity" },
   { label: "About", href: "#CV" },
   { label: "Notes", href: "#guest-notes" },
@@ -53,7 +52,6 @@ export default function Home() {
             analystContent={
               <>
                 <ProjectSectionWrapper />
-                <SkillsSection />
                 <ActivitySection />
                 <CVSection />
               </>

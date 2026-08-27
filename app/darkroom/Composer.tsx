@@ -61,7 +61,7 @@ function Shell({ children, wide }: { children: React.ReactNode; wide?: boolean }
   );
 }
 
-function Lock({ configured, notion, onIn }: { configured: boolean; notion: boolean; onIn: () => void }) {
+export function Lock({ configured, notion, onIn }: { configured: boolean; notion: boolean; onIn: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -111,7 +111,7 @@ function Lock({ configured, notion, onIn }: { configured: boolean; notion: boole
   );
 }
 
-function Editor() {
+export function Editor() {
   const [essays, setEssays] = useState<EssayMeta[]>([]);
   const [id, setId] = useState<string | undefined>();
   const [title, setTitle] = useState("");

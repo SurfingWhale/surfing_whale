@@ -142,16 +142,17 @@ passes and which was measured rather than assumed:
 
 ## 7. Phases
 
-**Phase 1 — Notes (half a day).** `/studio/notes`, approve/hide/delete,
+**Phase 1 — Notes (half a day, next).** `/studio/notes`, approve/hide/delete,
 confirmation on delete. Closes the loop that currently runs through Notion.
 Done when a note left on the site can be made public without leaving it.
 
-**Phase 2 — Write (one to two days).** Block composer, `/writing` index,
-`/writing/[slug]`, images through the existing upload path. Done when a piece
-can be drafted, saved, reopened, published and read.
+**Phase 2 — Write — shipped.** Block composer with Notion's markdown
+shortcuts, `/writing` index, `/writing/[slug]`, images through the existing
+upload path.
 
-**Phase 3 — Shell (half a day).** `/studio` landing with what needs
-attention; `/darkroom` moves under it and redirects; one shared session.
+**Phase 3 — Shell — shipped in part.** `/studio` holds Write and Darkroom
+behind one session; `/darkroom` redirects into it. Still to do: a landing
+view showing what needs attention.
 
 **Phase 4 — Profile (two hours).** Hero tagline and bio from the store, with
 the current strings as fallback.
