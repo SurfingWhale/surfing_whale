@@ -119,3 +119,65 @@ export async function addNote(note: NewGuestNote): Promise<boolean> {
   }
   return true;
 }
+
+// ── Moderation ────────────────────────────────────────────────────────────
+// Everything below is for the studio and requires a session at the route.
+// The email address is included here and nowhere else; getApprovedNotes above
+// deliberately does not map it, so the public route cannot leak it even by
+// accident.
+
+export interface ModeratedNote extends GuestNote {
+  email: string;
+  approved: boolean;
+}
+
+/** Every note, approved or not, newest first. */
+export async function listAllNotes(): Promise<ModeratedNote[]> {
+  const res = await fetch(
+    `https://api.notion.com/v1/databases/${databaseId()}/query`,
+    {
+      method: "POST",
+      headers: notionHeaders(),
+      body: JSON.stringify({
+        sorts: [{ timestamp: "created_time", direction: "descending" }],
+        page_size: 100,
+      }),
+      cache: "no-store",
+    }
+  );
+
+  if (!res.ok) {
+    console.error("Notion guest notes moderation read error:", await res.text());
+    return [];
+  }
+
+  const data = await res.json();
+  return data.results.map((page: any) => ({
+    id: page.id,
+    name: page.properties.Name?.title?.[0]?.plain_text ?? "Anonymous",
+    message: page.properties.Message?.rich_text?.[0]?.plain_text ?? "",
+    date: page.created_time ?? "",
+    email: page.properties.Email?.email ?? "",
+    approved: Boolean(page.properties.Approved?.checkbox),
+  }));
+}
+
+/** Ticks or unticks the checkbox the public read filters on. */
+export async function setApproved(id: string, approved: boolean): Promise<void> {
+  const res = await fetch(`https://api.notion.com/v1/pages/${id}`, {
+    method: "PATCH",
+    headers: notionHeaders(),
+    body: JSON.stringify({ properties: { Approved: { checkbox: approved } } }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+/** Notion has no hard delete over the API; archiving is what its UI does too. */
+export async function archiveNote(id: string): Promise<void> {
+  const res = await fetch(`https://api.notion.com/v1/pages/${id}`, {
+    method: "PATCH",
+    headers: notionHeaders(),
+    body: JSON.stringify({ archived: true }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+}

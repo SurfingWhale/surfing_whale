@@ -119,9 +119,6 @@ refactor:
 
 Not yet true, and required before this ships:
 
-- **Delete needs a confirmation** naming what is being deleted. Notion
-  archiving is recoverable; the confirmation is about the mistake, not the
-  data.
 - **The in-memory rate limiter resets on every cold start.** Acceptable for
   one password on a personal site, and it should say so in the code rather
   than imply more protection than it gives.
@@ -142,9 +139,9 @@ passes and which was measured rather than assumed:
 
 ## 7. Phases
 
-**Phase 1 — Notes (half a day, next).** `/studio/notes`, approve/hide/delete,
-confirmation on delete. Closes the loop that currently runs through Notion.
-Done when a note left on the site can be made public without leaving it.
+**Phase 1 — Notes — shipped.** The Notes room in `/studio`: publish, hide,
+delete, with a confirmation on delete. The loop that ran through Notion is
+closed — a note left on the site is published from the site.
 
 **Phase 2 — Write — shipped.** Block composer with Notion's markdown
 shortcuts, `/writing` index, `/writing/[slug]`, images through the existing
@@ -154,7 +151,7 @@ upload path.
 behind one session; `/darkroom` redirects into it. Still to do: a landing
 view showing what needs attention.
 
-**Phase 4 — Profile (two hours).** Hero tagline and bio from the store, with
+**Phase 4 — Profile (two hours, next).** Hero tagline and bio from the store, with
 the current strings as fallback.
 
 **Phase 5 — On-demand revalidation (two hours).** `revalidatePath` on save
