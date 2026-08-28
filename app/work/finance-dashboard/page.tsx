@@ -11,10 +11,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const TITLE = "A ledger that behaves like a product";
+const DESCRIPTION =
+  "A personal finance dashboard on double-entry accounting: a 112-account general ledger, prorate budgeting against working days, PDF statement import, and a security audit run as its own pass.";
+
 export const metadata: Metadata = {
-  title: "Finance Dashboard — Surfing Whale",
-  description:
-    "A personal finance dashboard built on double-entry accounting: a 112-account general ledger, prorate budgeting against working days, PDF statement import, and a security audit run as its own pass.",
+  title: `${TITLE} — Surfing Whale`,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    type: "article",
+    images: [{ url: "/og-finance.png", width: 1200, height: 630, alt: TITLE }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og-finance.png"] },
 };
 
 const LIVE_URL = "https://financialdashboardwhale.vercel.app";

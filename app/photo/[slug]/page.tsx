@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     openGraph: {
       title: essay.title,
       description: essay.subtitle || undefined,
-      images: essay.cover ? [{ url: essay.cover }] : undefined,
+      // Falls back to the site card rather than unfurling bare.
+      images: [{ url: essay.cover || "/og.png" }],
     },
   };
 }

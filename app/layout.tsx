@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
@@ -17,49 +17,70 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// The status bar colour follows the theme, so a dark-mode home screen does
+// not get a pale bar sitting on a dark page.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#111111" },
+  ],
+};
+
+const SITE = "https://surfing-whale.vercel.app";
+const TITLE = "Muhammad Fauzy — Surfing Whale";
+const DESCRIPTION =
+  "I like building things that tell a story rather than report a number. Ledgers, forecasts, photographs, and the questions underneath them.";
+
 export const metadata: Metadata = {
-  title: "Muhammad Fauzy — Data Analyst & Visual Thinker",
-  description:
-    "Portfolio of Muhammad Fauzy — Data Analyst with a background in Accounting and a passion for photography. Turning raw numbers into meaningful stories.",
-  keywords: ["Data Analyst", "Python", "SQL", "Tableau", "Portfolio", "Muhammad Fauzy"],
-  authors: [{ name: "Muhammad Fauzy", url: "https://surfing-whale.vercel.app" }],
+  title: TITLE,
+  description: DESCRIPTION,
+  applicationName: "Surfing Whale",
+  authors: [{ name: "Muhammad Fauzy", url: SITE }],
   creator: "Muhammad Fauzy",
 
-  // Favicon
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png", // opsional, taruh di /public
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
   },
 
-  // Open Graph — buat preview link di WA, IG, LinkedIn, dll
+  // Lets iOS run it full-screen from the home screen.
+  appleWebApp: {
+    capable: true,
+    title: "Surfing Whale",
+    statusBarStyle: "default",
+  },
+
+  // What WhatsApp, LinkedIn and the rest unfurl.
   openGraph: {
-    title: "Muhammad Fauzy — Data Analyst & Visual Thinker",
-    description:
-      "Turning raw numbers into meaningful stories. Data analyst by day, creative thinker always.",
-    url: "https://surfing-whale.vercel.app",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE,
     siteName: "Surfing Whale",
     images: [
       {
-        url: "https://surfing-whale.vercel.app/og-image.jpg", // taruh di /public/og-image.jpg
+        url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Muhammad Fauzy Portfolio",
+        alt: "Surfing Whale — I like building things that tell a story rather than report a number.",
       },
     ],
-    locale: "id_ID",
+    locale: "en_GB",
     type: "website",
   },
 
-  // Twitter/X card
   twitter: {
     card: "summary_large_image",
-    title: "Muhammad Fauzy — Data Analyst",
-    description: "Turning raw numbers into meaningful stories.",
-    images: ["https://surfing-whale.vercel.app/og-image.jpg"],
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/og.png"],
   },
 
-  // Vercel / browser tab
-  metadataBase: new URL("https://surfing-whale.vercel.app"),
+  // Relative image URLs above resolve against this.
+  metadataBase: new URL(SITE),
 };
 
 export default function RootLayout({

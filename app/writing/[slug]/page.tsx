@@ -23,7 +23,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: post.title,
       description: post.standfirst || undefined,
       type: "article",
-      images: post.cover ? [{ url: post.cover }] : undefined,
+      // Falls back to the site card rather than unfurling bare.
+      images: [{ url: post.cover || "/og.png" }],
     },
   };
 }

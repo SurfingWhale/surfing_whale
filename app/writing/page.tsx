@@ -9,6 +9,11 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Writing — Surfing Whale",
   description: "Notes on taking something messy and finding the structure in it.",
+  openGraph: {
+    title: "Writing",
+    description: "Notes on taking something messy and finding the structure in it.",
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
+  },
 };
 
 export default async function WritingIndex() {

@@ -6,10 +6,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const TITLE = "Market research — validating two user segments";
+const DESCRIPTION =
+  "1,050 Google Play reviews across nine budgeting apps in Indonesia and the US, read to validate two user segments before a line of the product was written.";
+
 export const metadata: Metadata = {
-  title: "Market research — Surfing Whale Finance",
-  description:
-    "1,050 Google Play reviews across nine budgeting apps in Indonesia and the US, read to validate two user segments before a line of the product was written.",
+  title: `${TITLE} — Surfing Whale`,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    type: "article",
+    images: [{ url: "/og-research.png", width: 1200, height: 630, alt: TITLE }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og-research.png"] },
 };
 
 const column = "container mx-auto px-6 max-w-[680px]";

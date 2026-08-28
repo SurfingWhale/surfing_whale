@@ -11,6 +11,11 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Darkroom — Surfing Whale",
   description: "Photo essays: writing, and the photographs that go with it.",
+  openGraph: {
+    title: "Darkroom",
+    description: "Photo essays: writing, and the photographs that go with it.",
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
+  },
 };
 
 export default async function DarkroomIndex() {
