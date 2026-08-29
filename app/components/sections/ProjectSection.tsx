@@ -15,6 +15,7 @@ import { ProjectModal } from "@/app/components/Projectmodal";
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { CaseFolder } from "@/app/components/CaseFolder";
 import { MarkSheet } from "@/app/components/FinanceSheets";
+import { MapSheet, MoatSheet } from "@/app/components/PadelSheets";
 
 interface Props { projects: NotionProject[]; }
 
@@ -82,15 +83,18 @@ const FINANCE_SHEETS = [
     },
 ];
 
+// Map left and right, the moat ranking in the middle. Listed last is painted
+// on top, and only the sheet's top fifth clears the flap while the folder is
+// shut — a horizontal bar survives that crop, scattered dots do not.
+const PADEL_SHEETS = [
+    { art: <MapSheet />, closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" } },
+    { art: <MapSheet />, closed: { x: "11%", r: "4deg" }, open: { x: "50%", r: "9deg" } },
+    { art: <MoatSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
+];
+
 // Work with a page of its own on this site. Order is strongest first, not
 // chronological — this is the list a stranger reads top-down.
 const WRITTEN_UP = [
-    {
-        href: "/work/padel",
-        title: "Padel, and the moat nobody has dug",
-        kind: "Strategic snapshot",
-        note: "Isochrone · competitive density · review NLP",
-    },
     {
         href: "/work/tracker-doc",
         title: "TrackerDoc",
@@ -119,16 +123,25 @@ export function ProjectSection({ projects }: Props) {
             {/* ── Tier one: the featured case study ─────────────────────── */}
             <div data-spot>
             <SectionLabel note="The longer story behind how I think about data.">
-            Selected case study
+            Selected case studies
             </SectionLabel>
             </div>
 
-            <div data-spot>
+            {/* Two, not one. A single featured folder said the finance
+                dashboard was the work and everything else was a footnote,
+                which was never true. */}
+            <div data-spot className="grid gap-10 sm:grid-cols-2 sm:gap-8">
             <CaseFolder
                 href="/work/finance-dashboard"
                 title="A ledger that behaves like a product"
                 subtitle="Finance dashboard · double-entry GL, prorate, self-audit"
                 sheets={FINANCE_SHEETS}
+            />
+            <CaseFolder
+                href="/work/padel"
+                title="Padel, and the moat nobody has dug"
+                subtitle="140 courts, 22 kelurahan, and two with none at all"
+                sheets={PADEL_SHEETS}
             />
             </div>
 

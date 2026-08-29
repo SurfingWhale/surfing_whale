@@ -10,6 +10,8 @@
 // letting the percentage carry more weight than it can hold.
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GapMap } from "./GapMap";
+import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
 
 const TITLE = "Padel, and the moat nobody has dug";
 const DESCRIPTION =
@@ -138,6 +140,12 @@ function Rows({ head, rows }: { head: string[]; rows: string[][] }) {
   );
 }
 
+// Best and worst provision per head. The two zero-court kelurahan sit at the
+// bottom of the second list, which is the point of showing both.
+const BY_PC = [...KELURAHAN].sort((a, b) => perCapita(b) - perCapita(a));
+const TOP_PC = BY_PC.slice(0, 4);
+const BOTTOM_PC = BY_PC.slice(-4);
+
 export default function PadelPage() {
   return (
     <main className="min-h-screen bg-bg text-fg">
@@ -219,25 +227,49 @@ export default function PadelPage() {
 
         <Section number="03" title="Where the gap actually is">
           <p>
-            Five kelurahan come out underserved, and the top of that list is
-            not subtle.
+            Across the 22 kelurahan there are {TOTAL_COURTS} courts serving{" "}
+            {TOTAL_POP.toLocaleString("en-GB")} people. Plotted, the supply is
+            not close to even.
+          </p>
+          <GapMap />
+          <p>
+            The gap score ranks Pondok Aren first at 0.79, then Perigi Lama at
+            0.73. What the ranking hides is that those two are not merely
+            underserved —{" "}
+            <strong className="font-medium text-fg">
+              they have no padel court at all
+            </strong>
+            , between them 53,442 people.
+          </p>
+          <p>
+            Normalising to courts per 100,000 residents makes the spread
+            legible in a way the 0-to-1 score does not:
           </p>
           <Bars
-            rows={[
-              ["Pondok Aren", 0.79],
-              ["Perigi Lama", 0.73],
-              ["Pondok Kacang Timur", 0.7],
-              ["Jurangmangu Barat", 0.7],
-              ["Jurangmangu Timur", 0.66],
-            ]}
-            max={0.8}
+            rows={TOP_PC.map((k) => [k.name, Math.round(perCapita(k) * 10) / 10])}
+            max={95}
+            suffix=" per 100k"
           />
+          <Bars
+            rows={BOTTOM_PC.map((k) => [
+              k.name,
+              Math.round(perCapita(k) * 10) / 10,
+            ])}
+            max={95}
+            suffix=" per 100k"
+          />
+          <p>
+            Perigi Baru has 12 courts for 12,837 people. Pondok Kacang Timur
+            has one for 37,947 — a 36-fold difference in provision between two
+            kelurahan a short drive apart, and two more with none at all. That
+            is the finding; the gap score is just the way it was ranked.
+          </p>
           <p>
             One piece of context sharpens all of it. DKI Jakarta has since
             banned new padel courts in residential zones. If that holds, demand
             does not disappear — it moves across the provincial border, into
-            exactly the Tangerang Selatan kelurahan sitting at the top of this
-            list.
+            exactly the Tangerang Selatan kelurahan sitting at the bottom of
+            that second list.
           </p>
         </Section>
 
