@@ -30,6 +30,11 @@
   --border: rgba(17, 17, 17, 0.08);
   --border-strong: rgba(17, 17, 17, 0.14);
 
+  /* Paper. Whiter than --bg so a document reads as something handed to you
+     rather than another panel of the page. */
+  --doc: #ffffff;
+  --doc-stack: #efeeea;
+
   /* Running copy sits a shade lighter than --fg-secondary on that site,
      and section labels lighter still. */
   --fg-body: #6f6f6f;
@@ -61,6 +66,8 @@
     --fg-muted: rgba(240, 240, 240, 0.45);
     --border: rgba(240, 240, 240, 0.07);
     --border-strong: rgba(240, 240, 240, 0.12);
+    --doc: #191919;
+    --doc-stack: #202020;
     --fg-body: #aaa7a0;
     --fg-label: #aaa7a0;
     --folder: #262626;
@@ -84,6 +91,8 @@
   --fg-muted: rgba(240, 240, 240, 0.45);
   --border: rgba(240, 240, 240, 0.07);
   --border-strong: rgba(240, 240, 240, 0.12);
+  --doc: #191919;
+  --doc-stack: #202020;
   --fg-body: #aaa7a0;
   --fg-label: #aaa7a0;
   --folder: #262626;
@@ -106,6 +115,8 @@
   --fg-muted: rgba(17, 17, 17, 0.45);
   --border: rgba(17, 17, 17, 0.08);
   --border-strong: rgba(17, 17, 17, 0.14);
+  --doc: #ffffff;
+  --doc-stack: #efeeea;
   --fg-body: #6f6f6f;
   --fg-label: #84817c;
   --folder: #ebe9e4;
@@ -131,6 +142,8 @@
   --color-folder: var(--folder);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-doc: var(--doc);
+  --color-doc-stack: var(--doc-stack);
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
 }
@@ -386,6 +399,103 @@ body:has(.photo-row) {
    button off the top of the screen. In the components layer, utilities win,
    which is what a caller expects. */
 @layer components {
+  /* ---- Document type --------------------------------------------------
+     A document embedded in the page is not the page. The site runs at
+     11/13/15px with `letter-spacing: 1px` from body; inside `.doc` that
+     tracking is reset and the scale steps up, so the sheet reads as a
+     separate artefact rather than one more section.
+
+     Layered so utilities on the children still win. */
+  .doc {
+    letter-spacing: normal;
+    font-size: 14px;
+    line-height: 1.72;
+    color: var(--fg-body);
+    max-width: 62ch;
+  }
+  .doc > * + * { margin-top: 0.95em; }
+
+  .doc h1 {
+    font-size: 21px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+  .doc h2 {
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--fg);
+    margin-top: 1.9em;
+  }
+  .doc h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-top: 1.5em;
+  }
+  .doc h1 + p, .doc h2 + p, .doc h3 + p { margin-top: 0.5em; }
+  .doc strong { font-weight: 600; color: var(--fg); }
+  .doc em { font-style: italic; }
+
+  .doc blockquote {
+    border-left: 2px solid var(--border-strong);
+    padding-left: 1.1em;
+    color: var(--fg-secondary);
+  }
+
+  .doc ul, .doc ol { padding-left: 1.35em; }
+  .doc ul { list-style: disc; }
+  .doc ol { list-style: decimal; }
+  .doc li::marker { color: var(--fg-muted); }
+  .doc li + li { margin-top: 0.35em; }
+
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 1.8em 0;
+  }
+
+  /* Tables carry a lot of these documents, so they get real treatment
+     rather than being flattened into lists. */
+  .doc table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .doc thead th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-label);
+    padding: 0 0.9em 0.5em 0;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .doc tbody td {
+    padding: 0.55em 0.9em 0.55em 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .doc tbody td:first-child { color: var(--fg); }
+  .doc th:last-child, .doc td:last-child { padding-right: 0; }
+
+  /* A table wider than the sheet scrolls inside its own box — the page
+     itself must never scroll sideways. */
+  .doc .doc-table { overflow-x: auto; }
+
+  .doc figcaption {
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--fg-muted);
+    margin-top: 0.6em;
+  }
+
+
   .glass {
     position: relative;
     background: var(--glass-tint);

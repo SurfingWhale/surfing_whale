@@ -4,13 +4,18 @@
 // analysis (22 kelurahan, BPS population, Google Maps supply) and the Pondok
 // Labu strategic snapshot for Sense Padel Margasatwa.
 //
-// Every figure here is his. The one thing this page adds is arithmetic he
-// left implicit: the niche-gap percentages come off a 41-review base, so
-// "2.4% demand signal" is one review. §08 says that outright rather than
-// letting the percentage carry more weight than it can hold.
+// The strategic snapshot is embedded as the document it is (§04) rather than
+// paraphrased — an earlier draft restated it across seven sections, which was
+// both longer and less convincing than showing it.
+//
+// What this page adds around that document: a map built from the repo's own
+// coordinates (§03), and the arithmetic the summary leaves implicit — the
+// niche percentages come off a 41-review base, so "2.4%" is one review (§05).
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GapMap } from "./GapMap";
+import { DocPreview } from "@/app/components/DocPreview";
+import { ExecutiveSummary } from "./ExecutiveSummary";
 import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
 
 const TITLE = "Padel, and the moat nobody has dug";
@@ -276,190 +281,48 @@ export default function PadelPage() {
         <Section number="04" title="Pondok Labu: the other side of the same map">
           <p>
             A few kilometres east the question inverts. Sense Padel Margasatwa
-            is not in a gap. It is in a saturated field, and the numbers say so
-            without needing interpretation.
-          </p>
-          <Rows
-            head={["Drive time", "Courts within", "Read"]}
-            rows={[
-              ["≈10 min (3 km)", "41", "Dense"],
-              ["≈15 min (5 km)", "86", "Dense"],
-              ["≈20 min (10 km)", "140", "Saturated"],
-            ]}
-          />
-          <p>
-            Hannan and Freeman&apos;s density-dependence model is the useful
-            frame here. Early on, every new entrant adds{" "}
-            <em>legitimacy</em> — in 2018 each new court helped prove padel was
-            a real sport, and everyone benefited. Past a threshold that flips
-            to <em>competition</em>: a new court no longer grows the market, it
-            takes a slice of one that is no longer growing as fast. Margins
-            compress, and the weakest operator goes first.
+            is not in a gap — it is in a saturated field, with 140 courts
+            inside twenty minutes of it.
           </p>
           <p>
-            At 140 courts inside twenty minutes, the flip has already happened.
+            What follows is the strategic snapshot itself rather than my
+            summary of it: the density table, the review classification, the
+            moat ranking, the blind spots, and the four questions it ends on
+            instead of a recommendation. It is in the Indonesian it was
+            written in.
           </p>
+          <DocPreview
+            title="ExecutiveSummary_PondokLabu.md"
+            meta="From Untamed98x/Padel_Courts_Bintaro. Rendered from the markdown rather than the generated PDF, which lives in a gitignored output/ directory."
+          >
+            <ExecutiveSummary />
+          </DocPreview>
         </Section>
 
-        <Section number="05" title="What people actually write about">
+        <Section number="05" title="One number the document does not sharpen">
           <p>
-            Reviews were classified into three dimensions: the facility itself,
-            the service around it, and anything social — community, leagues,
-            friends.
-          </p>
-          <Rows
-            head={["Dimension", "Sense Padel", "Competitors"]}
-            rows={[
-              ["Experience — courts, facilities", "80%", "77%"],
-              ["Service — staff, booking, price", "10%", "6%"],
-              ["Social — community, league, event", "10%", "10%"],
-            ]}
-          />
-          <p>
-            Almost everyone writes about the surface and the lighting. Almost
-            nobody writes about the people. That can mean the community is not
-            there — or that it has moved somewhere Google Maps cannot see it,
-            into Reclub or a WhatsApp group. Those are very different
-            situations and this data cannot separate them.
-          </p>
-        </Section>
-
-        <Section number="06" title="The moat nobody has dug">
-          <p>
-            A moat is whatever makes a customer stay when a cheaper option
-            opens. A good court is a shallow one — it can be copied by anyone
-            with capital. A community is a deep one, because leaving costs you
-            your Tuesday game and the people in it.
-          </p>
-          <p>
-            Scoring each venue on how much of its review text is social rather
-            than facility gives a rough ranking of how deep that moat is:
-          </p>
-          <Bars
-            rows={[
-              ["Quattro Padel", 59.1],
-              ["Hi Padel Andara", 39.8],
-              ["three one three padel court", 36.7],
-              ["Sense Padel Margasatwa", 35.7],
-              ["Sense Padel Kemang", 19.4],
-            ]}
-            max={60}
-            suffix=" / 100"
-            highlight="Sense Padel Margasatwa"
-          />
-          <p>
-            Sense Padel sits just above the field average of 25.7, which is
-            worth very little. The finding that matters is the shape of the
-            column, not the position in it:{" "}
+            The niche table is the part of that summary most likely to be
+            misread, so here it is in plain arithmetic. The base is 41 reviews.{" "}
             <strong className="font-medium text-fg">
-              nobody is above 60
-            </strong>
-            . In a market of 140 courts, not one has built the thing that would
-            make it hard to leave. That window is still open, which is the only
-            genuinely good news in this study.
-          </p>
-        </Section>
-
-        <Section number="07" title="The niche gap, and how thin it is">
-          <p>
-            Comparing what reviewers ask for against what venues advertise
-            gives four candidate niches:
-          </p>
-          <Rows
-            head={["Niche", "Demand", "Coverage"]}
-            rows={[
-              ["Beginner academy", "2.4%", "0.0%"],
-              ["League & competition", "4.9%", "6.5%"],
-              ["Ladies community", "0.0%", "0.0%"],
-              ["Business networking", "0.0%", "0.0%"],
-            ]}
-          />
-          <p>
-            A beginner academy is the only niche with demand and no supply. It
-            is also the finding that needs the loudest caveat on this page, so
-            here it is in plain arithmetic: the base is 41 reviews.{" "}
-            <strong className="font-medium text-fg">
-              2.4% is one review. 4.9% is two.
+              A 2.4% demand signal is one review. 4.9% is two.
             </strong>
           </p>
           <p>
-            That is not a market signal, it is an anecdote wearing a percent
-            sign. It is worth writing down as a hypothesis to go and test — ask
-            twenty regulars whether they started as beginners and where they
-            learned — and it is not worth spending capital on until someone
+            A beginner academy really is the only niche with demand and no
+            supply — but at that base it is an anecdote wearing a percent sign,
+            not a market signal. Worth writing down as a hypothesis to go and
+            test: ask twenty regulars whether they started as beginners and
+            where they learned. Not worth spending capital on until someone
             does.
           </p>
-        </Section>
-
-        <Section number="08" title="What this data structurally cannot say">
           <p>
-            Public review data has four holes, and none of them close by
-            collecting more of it.
-          </p>
-          <p>
-            <strong className="font-medium text-fg">The silent majority.</strong>{" "}
-            Most customers never write anything. Reviews over-represent the
-            delighted and the furious and skip everyone in between.
-          </p>
-          <p>
-            <strong className="font-medium text-fg">Retention.</strong> A review
-            cannot tell you who came back. Survival is a function of returning
-            players, and this dataset has no way to see them.
-          </p>
-          <p>
-            <strong className="font-medium text-fg">Invisible tribes.</strong>{" "}
-            The loyal group that organises informal tournaments over WhatsApp
-            leaves no public trace at all — which is precisely the group the
-            moat score is trying to measure.
-          </p>
-          <p>
-            <strong className="font-medium text-fg">Pricing.</strong> No
-            promotion, discount or price elasticity shows up in any of this.
+            The document already says the sample is small and
+            survivorship-biased in its footnote. This is that footnote, moved
+            to where the number is.
           </p>
         </Section>
 
-        <Section number="09" title="Questions worth more than the conclusions">
-          <p>
-            The honest output of a small sample is a better question list, not
-            a recommendation deck.
-          </p>
-          <ol className="list-decimal pl-5 space-y-2 marker:text-fg-muted">
-            <li>
-              Who are the regulars right now, and what do they do at the venue
-              besides play?
-            </li>
-            <li>
-              What is Quattro Padel doing differently to reach 59.1 when the
-              field average is 25.7?
-            </li>
-            <li>
-              Why do people stop coming? Far more valuable than another
-              five-star rating.
-            </li>
-            <li>
-              Is the beginner academy gap a real gap, or an operational
-              constraint everyone has already hit and quietly abandoned?
-            </li>
-          </ol>
-        </Section>
-
-        <Section number="10" title="If forced to pick one direction">
-          <blockquote className="border-l-2 border-border-strong pl-5 my-2">
-            <p className="text-fg">
-              Build on the regulars you already have, not on acquiring new
-              players.
-            </p>
-          </blockquote>
-          <p>
-            In a saturated field, acquisition is buying customers from the
-            venue next door at whatever the going discount is. Retention is the
-            only spend that compounds — and it is also the only way the moat
-            gets dug, because a community is made of people who kept turning
-            up.
-          </p>
-        </Section>
-
-        <Section number="11" title="Method, sources and limits">
+        <Section number="06" title="Method, sources and limits">
           <p>
             Google Maps scrape, May 2026: 142 venues located, of which 41
             reviews across 9 courts were classified. Distances by Haversine,
@@ -468,31 +331,14 @@ export default function PadelPage() {
             Selatan.
           </p>
           <p>
-            The review sample is small and survivorship-biased. Section 07
-            should be read as a hypothesis, section 06 as a ranking with wide
-            error bars, and section 04 as the only part robust enough to act on
-            without further work — court counts are a census, not a sample.
+            What is safe to act on and what is not: the court counts are a
+            census, so the density table holds. The moat ranking is a ranking
+            with wide error bars. The niche table is a hypothesis. The document
+            names its own four blind spots — silent majority, retention,
+            invisible tribes, pricing — and none of them close by collecting
+            more reviews.
           </p>
-          <p>Grounded in four books rather than invented from scratch:</p>
-          <ul className="list-disc pl-5 space-y-1.5 marker:text-fg-muted">
-            <li>
-              Hannan &amp; Freeman, <em>Organizational Ecology</em> (1989) —
-              density dependence, legitimacy against competition
-            </li>
-            <li>
-              Porter, <em>Competitive Advantage</em> (1985) — moats and industry
-              structure
-            </li>
-            <li>
-              Putnam, <em>Bowling Alone</em> (2000) — social capital and
-              belonging in sport
-            </li>
-            <li>
-              Aldrich &amp; Ruef, <em>Organizations Evolving</em> (2006) —
-              adaptation through niches
-            </li>
-          </ul>
-          <p className="pt-2">
+          <p>
             Scrapers, the kelurahan master list, the isochrone and gap-analysis
             scripts, and the full executive summary are in the repository.
           </p>
@@ -528,7 +374,7 @@ export default function PadelPage() {
           </p>
         </Section>
 
-        <Section number="12" title="Related">
+        <Section number="07" title="Related">
           <p>
             The same isochrone method applied to coffee rather than courts is{" "}
             <Link href="/work/coffee-access" className={linkish}>

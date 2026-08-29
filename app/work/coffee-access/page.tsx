@@ -2,15 +2,18 @@
 //
 // "15 Minutes to Coffee" — Fauzy's isochrone study of Tomoro Coffee against
 // housing around Bintaro, from the WIP_Projects Notion database (Oct 2025).
-// The question, the method, the three findings and the closing argument are
-// his; this page puts them in the site's own type scale and language.
 //
-// Deliberately framed as a field note, not a case study: the findings are
-// read off a map rather than counted, and §6 says so. Nothing here is
-// quantified beyond what his own notes quantify — no invented figures, and
-// no chart, because the map was never exported.
+// The note is embedded as the document it is (§02) rather than paraphrased.
+// An earlier draft rewrote it across four sections of my own prose, which was
+// longer than the note and told the reader less about it.
+//
+// What is left around the document is an English lead-in for a reader who
+// cannot read it, and the limits it does not state about itself (§03). No
+// chart, because the map was never exported.
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DocPreview } from "@/app/components/DocPreview";
+import { FieldNote } from "./FieldNote";
 
 const TITLE = "15 minutes to coffee";
 const DESCRIPTION =
@@ -139,20 +142,18 @@ export default function CoffeeAccessPage() {
           </p>
         </Section>
 
-        <Section number="02" title="Measuring reach in minutes, not metres">
+        <Section number="02" title="The note itself">
           <p>
-            A radius drawn on a map is a lie in a city — 800 metres across a
-            toll road is not 800 metres along it. So the unit here is travel
-            time, not distance: isochrones at five, ten and fifteen minutes
-            from each branch, computed over the actual Jabodetabek road
-            network.
+            Rather than restate it: here is the field note as written — the
+            background, the method, the three preliminary findings and the
+            argument it closes on. It is in the Indonesian it was written in.
           </p>
-          <p>
-            The fifteen-minute figure is borrowed on purpose. It is the
-            headline number of the <em>15-minute city</em>, and the point of
-            using it here is to see what it means somewhere it was never
-            designed for.
-          </p>
+          <DocPreview
+            title="15 Minutes to Coffee — Bintaro"
+            meta="From the WIP_Projects database in Notion, October 2025. Trimmed of the four alternative framings drafted before this one, and of the assistant chatter the page trails off into. The article itself is unedited."
+          >
+            <FieldNote />
+          </DocPreview>
           <Rows
             head={["Layer", "Where it came from"]}
             rows={[
@@ -162,70 +163,15 @@ export default function CoffeeAccessPage() {
               ["Everything else residential", "OpenStreetMap residential tags"],
             ]}
           />
-          <p>
-            The isochrone layers were then overlaid on the housing points, and
-            the overlaps read off by zone.
-          </p>
         </Section>
 
-        <Section number="03" title="What the map showed">
-          <p>Three things, in the order they became obvious.</p>
-          <p>
-            <strong className="font-medium text-fg">
-              The branches cluster inside ten minutes of sectors 3 to 9.
-            </strong>{" "}
-            That band is the known pocket of mid-to-upper housing, and the one
-            with the most small-business activity around it. The coffee is
-            where the estates are, not spread evenly across the map.
-          </p>
-          <p>
-            <strong className="font-medium text-fg">
-              East Ciputat and Pondok Cabe fall outside fifteen minutes.
-            </strong>{" "}
-            Both are densely housed. Neither has a branch within a
-            quarter-hour&apos;s drive. Read one way that is an expansion gap;
-            read the other, it is the same gap that separates two kinds of
-            household living four kilometres apart.
-          </p>
-          <p>
-            <strong className="font-medium text-fg">
-              The branches sit on private-car routes, not transit routes.
-            </strong>{" "}
-            Almost every location is on a road you would drive rather than one
-            you would arrive at by angkot or KRL. Which means the fifteen
-            minutes being measured is fifteen minutes <em>with a car</em>.
-            Access to coffee is standing in for access to a vehicle.
-          </p>
-        </Section>
-
-        <Section number="04" title="Why this is worth mapping at all">
-          <p>
-            An isochrone is not a distance, it is a claim about time — and in a
-            city time is the expensive thing. Mapping where a coffee chain can
-            be reached in fifteen minutes turns out to be a cheap proxy for
-            mapping who can spend fifteen minutes that way at all.
-          </p>
-          <p>
-            The 15-minute city arrives in Bintaro in translated form. It is not
-            about every civic function being close by. It is about whether the
-            lifestyle infrastructure is inside a distance you can cover without
-            losing the part of the evening you were trying to keep.
-          </p>
-          <blockquote className="border-l-2 border-border-strong pl-5 my-2">
-            <p className="text-fg">
-              Map the coffee and you are really mapping class, and the rhythm
-              that comes with it.
-            </p>
-          </blockquote>
-        </Section>
-
-        <Section number="05" title="Where this stops">
+        <Section number="03" title="Where this stops">
           <p>
             These are preliminary findings and they should be read as such.
             They are patterns read off an overlay, not counts: no share of
             estates inside each band has been computed, and no significance
-            has been tested. The three statements above are what the map
-            plainly shows, and no more than that.
+            has been tested. The three findings in the note are what the map
+            plainly showed, and no more than that.
           </p>
           <p>
             Two limits in the data underneath. Tapera only covers subsidised
@@ -236,7 +182,7 @@ export default function CoffeeAccessPage() {
           </p>
         </Section>
 
-        <Section number="06" title="What would finish it">
+        <Section number="04" title="What would finish it">
           <p>
             Counting, first: the share of housing inside the ten-minute band
             per zone, so the first finding becomes a number rather than an
@@ -251,7 +197,7 @@ export default function CoffeeAccessPage() {
           </p>
         </Section>
 
-        <Section number="07" title="Related">
+        <Section number="05" title="Related">
           <p>
             The same isochrone method, applied to padel courts rather than
             coffee, is the{" "}
