@@ -82,6 +82,29 @@ const FINANCE_SHEETS = [
     },
 ];
 
+// Work with a page of its own on this site. Order is strongest first, not
+// chronological — this is the list a stranger reads top-down.
+const WRITTEN_UP = [
+    {
+        href: "/work/padel",
+        title: "Padel, and the moat nobody has dug",
+        kind: "Strategic snapshot",
+        note: "Isochrone · competitive density · review NLP",
+    },
+    {
+        href: "/work/tracker-doc",
+        title: "TrackerDoc",
+        kind: "Internal tool",
+        note: "Next.js · Google Sheets as the store · approval queue",
+    },
+    {
+        href: "/work/coffee-access",
+        title: "15 minutes to coffee",
+        kind: "Field note",
+        note: "Isochrone · spatial analysis · Bintaro",
+    },
+];
+
 export function ProjectSection({ projects }: Props) {
     const [selectedProject, setSelectedProject] = useState<NotionProject | null>(null);
 
@@ -112,27 +135,30 @@ export function ProjectSection({ projects }: Props) {
             {/* ── Tier two: everything else, as a list ──────────────────── */}
             <div data-reveal style={{ ["--reveal-delay" as string]: "90ms" }} className="mt-20">
             <div data-spot>
-            <SectionLabel note={`${projects.length + 1} ${projects.length === 0 ? "project" : "projects"}.`}>
+            <SectionLabel note={`${projects.length + WRITTEN_UP.length} projects.`}>
                 Other work
             </SectionLabel>
             </div>
 
             <ul className="border-t border-border">
-                {/* Written up on this site rather than in Notion, so it is a
-                    plain link rather than a row that opens the modal. */}
-                <li data-spot-row className="group relative border-b border-border last:border-b-0">
-                <Link href="/work/coffee-access" className="w-full text-left py-6 block no-underline text-fg">
+                {/* Written up on this site rather than left as a Notion row.
+                    ProjectSectionWrapper filters the matching rows out of the
+                    Notion list so each of these appears exactly once. */}
+                {WRITTEN_UP.map((w) => (
+                <li key={w.href} data-spot-row className="group relative border-b border-border last:border-b-0">
+                    <Link href={w.href} className="w-full text-left py-6 block no-underline text-fg">
                     <span className="text-[15px] leading-[24px] tracking-[-0.02em]">
-                    <span className="font-medium text-fg group-hover:underline underline-offset-4 decoration-1">
-                        15 minutes to coffee
-                    </span>
-                    <span className="text-fg-secondary"> — Field note</span>
+                        <span className="font-medium text-fg group-hover:underline underline-offset-4 decoration-1">
+                        {w.title}
+                        </span>
+                        <span className="text-fg-secondary"> — {w.kind}</span>
                     </span>
                     <span className="block text-[13px] leading-[1.8] text-fg-body mt-2.5">
-                    Isochrone · spatial analysis · Bintaro
+                        {w.note}
                     </span>
-                </Link>
+                    </Link>
                 </li>
+                ))}
 
                 {projects.map((project) => (
                 <ProjectRow

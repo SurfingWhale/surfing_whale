@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# OpenWolf — per-project context index. Regenerate with `openwolf init`;
+# the hooks are vendored JS and settings.json hardcodes an absolute project
+# path, so neither is portable. This repo is public and part of the
+# portfolio, so tooling state stays out of it.
+.wolf/
+.claude/settings.json
+.claude/commands/
+.claude/rules/
+.claude/skills/
+CLAUDE.md
