@@ -19,8 +19,8 @@ export function DocPreview({
 }: {
   /** Shown in the sheet's header strip, like a filename. */
   title: string;
-  /** Source line — where the document actually lives. */
-  meta?: string;
+  /** Source line under the sheet. Takes nodes so it can carry a link. */
+  meta?: React.ReactNode;
   /** Collapsed height in px. */
   peek?: number;
   children: React.ReactNode;

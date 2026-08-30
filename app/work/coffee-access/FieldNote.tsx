@@ -55,11 +55,11 @@ export function FieldNote() {
       </p>
 
       <h2>🧩 Metodologi</h2>
-      <h3>1. Data &amp; Sumber</h3>
+      <h3>1. Data & Sumber</h3>
       <ul>
         <li>
           Lokasi cabang Tomoro Coffee: hasil scraping lokasi dari Google Maps
-          &amp; OpenStreetMap.
+          & OpenStreetMap.
         </li>
         <li>
           Isochrone 5–10–15 menit: dihasilkan menggunakan API CARTO dengan
@@ -100,15 +100,15 @@ export function FieldNote() {
             Area Ciputat Timur dan Pondok Cabe belum banyak ter-cover.
           </strong>{" "}
           Masih ada perumahan padat tapi tanpa akses kopi modern dalam radius
-          15 menit. Ini menandakan potensi ekspansi sekaligus &ldquo;ketimpangan
-          gaya hidup.&rdquo;
+          15 menit. Ini menandakan potensi ekspansi sekaligus “ketimpangan
+          gaya hidup.”
         </li>
         <li>
           <strong>Korelasi antara akses kopi dan mobilitas pribadi.</strong>{" "}
           Mayoritas titik Tomoro berlokasi di sepanjang jalur kendaraan pribadi
-          (bukan jalur transportasi publik), menandakan bahwa &ldquo;akses
-          terhadap kopi&rdquo; masih identik dengan &ldquo;akses terhadap
-          kendaraan.&rdquo;
+          (bukan jalur transportasi publik), menandakan bahwa “akses
+          terhadap kopi” masih identik dengan “akses terhadap
+          kendaraan.”
         </li>
       </ol>
 
@@ -143,7 +143,7 @@ export function FieldNote() {
         </li>
         <li>
           Area dengan perumahan padat tapi tanpa cabang Tomoro (seperti Ciputat
-          Timur) menjadi indikator &ldquo;zona under-served&rdquo; secara gaya
+          Timur) menjadi indikator “zona under-served” secara gaya
           hidup.
         </li>
         <li>

@@ -73,7 +73,7 @@ export function ExecutiveSummary() {
     <>
       <h1>Strategic Snapshot: Sense Padel Pondok Labu</h1>
       <p>
-        <strong>Community Moat &amp; Survival Intelligence Analysis</strong>
+        <strong>Community Moat & Survival Intelligence Analysis</strong>
         <br />
         Analytic by: Muhammad Fauzy
       </p>
@@ -162,8 +162,8 @@ export function ExecutiveSummary() {
         (parit) adalah keunggulan kompetitif. Jika Fasilitas adalah parit yang
         dangkal, maka <strong>Community Moat</strong> adalah parit yang paling
         dalam. Ini adalah kondisi di mana nilai sebuah tempat bukan lagi soal
-        kualitas lapangan, tapi karena &ldquo;teman-teman saya enjoy main di
-        sini&rdquo;. Ketika komunitas terbentuk, <em>switching cost</em>{" "}
+        kualitas lapangan, tapi karena “teman-teman saya enjoy main di
+        sini”. Ketika komunitas terbentuk, <em>switching cost</em>{" "}
         emosional menjadi sangat tinggi.
       </p>
       <Table
@@ -266,7 +266,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h3>Referensi &amp; Catatan Kaki</h3>
+      <h3>Referensi & Catatan Kaki</h3>
       <p>
         Analisis ini berpijak pada kerangka kerja sosiologi industri dan
         manajemen strategis berikut:
@@ -274,7 +274,7 @@ export function ExecutiveSummary() {
       <ol>
         <li>
           <strong>
-            Hannan, M. T., &amp; Freeman, J. (1989). <em>Organizational Ecology</em>.
+            Hannan, M. T., & Freeman, J. (1989). <em>Organizational Ecology</em>.
             Harvard University Press.
           </strong>{" "}
           (Teori <em>Density Dependence</em> untuk menjelaskan fase Legitimasi
@@ -288,14 +288,14 @@ export function ExecutiveSummary() {
         </li>
         <li>
           <strong>
-            Putnam, R. D. (2000). <em>Bowling Alone</em>. Simon &amp; Schuster.
+            Putnam, R. D. (2000). <em>Bowling Alone</em>. Simon & Schuster.
           </strong>{" "}
           (Konsep <em>Social Capital</em> dan pentingnya <em>belonging</em>{" "}
           dalam komunitas olahraga).
         </li>
         <li>
           <strong>
-            Aldrich, H., &amp; Ruef, M. (2006). <em>Organizations Evolving</em>.
+            Aldrich, H., & Ruef, M. (2006). <em>Organizations Evolving</em>.
             SAGE Publications.
           </strong>{" "}
           (Adaptasi organisasi melalui ceruk pasar/<em>niche</em>).

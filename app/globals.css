@@ -488,6 +488,18 @@ body:has(.photo-row) {
      itself must never scroll sideways. */
   .doc .doc-table { overflow-x: auto; }
 
+  /* Figures inside a document run full measure and keep a hairline, so a
+     white-background chart does not bleed into white paper. */
+  .doc figure { margin: 1.5em 0; }
+  .doc img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
   .doc figcaption {
     font-size: 11px;
     line-height: 1.7;
