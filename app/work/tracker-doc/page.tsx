@@ -1,6 +1,6 @@
 // app/work/tracker-doc/page.tsx
 //
-// TrackerDoc, from Untamed98x/Tracker-TSM (private). A document approval
+// TrackerDoc, from the Tracker-TSM repo (private). A document approval
 // tracker built on Google Sheets because the office already lived there.
 // Included on the site because it is the product-shaped work — the finance
 // dashboard and the analyses are both things I built for myself; this is one

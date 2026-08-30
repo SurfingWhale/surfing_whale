@@ -1,7 +1,7 @@
 // app/work/padel/kelurahan.ts
 //
 // The 22 kelurahan of the Bintaro Jaya scope, lifted out of the folium map in
-// Untamed98x/Padel_Courts_Bintaro (archive/bintaro/padel-visual). Every field
+// the Padel_Courts_Bintaro repo (archive/bintaro/padel-visual). Every field
 // is his: gap score, BPS population, court count, centroid.
 //
 // Sorted by gap score, which is how the analysis ranks them.

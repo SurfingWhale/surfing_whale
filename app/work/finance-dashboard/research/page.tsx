@@ -1,5 +1,5 @@
 // app/work/finance-dashboard/research/page.tsx
-// Fauzy's own executive summary, from Untamed98x/analisa-finance-app. The
+// Fauzy's own executive summary, from the Analisa-Finance-App repo. The
 // findings, figures and positioning lines are his; this page presents them in
 // the site's own language and type scale. The charts are the ones his
 // notebook produced, re-encoded but not redrawn.
@@ -361,17 +361,8 @@ export default function ResearchPage() {
           <p>
             Scrapers for both markets, a notebook for the analysis, the raw
             review sets, and every chart on this page — all of it in the
-            repository, alongside the summary this page is drawn from.
-          </p>
-          <p>
-            <a
-              href="https://github.com/Untamed98x/Analisa-Finance-App"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-            >
-              Untamed98x/Analisa-Finance-App
-            </a>
+            project repository, alongside the summary this page is drawn from.
+            It is not linked from here — ask and I will send it.
           </p>
         </Section>
       </article>

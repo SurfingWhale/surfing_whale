@@ -5,7 +5,7 @@
 // in Notion (market research Apr 2026, the security audit of 2026-05-15, the
 // UI/UX self-review of 2026-05-29, and the Finku teardown of 2026-05-31).
 // Nothing here is invented: the prorate model comes from the PRD in
-// Untamed98x/Personal_Finance_Dashboard, the forecasting rule is printed on
+// the Personal_Finance_Dashboard repo, the forecasting rule is printed on
 // the planning screen itself, and the research is his own executive summary.
 
 import type { Metadata } from "next";

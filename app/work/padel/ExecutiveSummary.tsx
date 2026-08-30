@@ -2,6 +2,11 @@
 //
 // Fauzy's ExecutiveSummary_PondokLabu.md, rendered as the document it is.
 //
+// One thing is changed from the source: the byline carried his GitHub handle
+// and now carries his name. That handle belongs to his creative account and he
+// asked for it off the site; his name is already in the footer, the author
+// meta and the page title, so the byline still means something.
+//
 // Kept in the Indonesian he wrote it in. Translating it would turn the
 // artefact back into my prose, which is the opposite of the point — and the
 // site already quotes his Indonesian verbatim inside English framing
@@ -70,7 +75,7 @@ export function ExecutiveSummary() {
       <p>
         <strong>Community Moat &amp; Survival Intelligence Analysis</strong>
         <br />
-        Analytic by: Untamed98x
+        Analytic by: Muhammad Fauzy
       </p>
 
       <blockquote>

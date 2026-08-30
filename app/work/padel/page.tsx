@@ -1,6 +1,6 @@
 // app/work/padel/page.tsx
 //
-// Two padel studies from Untamed98x/Padel_Courts_Bintaro: the Bintaro gap
+// Two padel studies from the Padel_Courts_Bintaro repo: the Bintaro gap
 // analysis (22 kelurahan, BPS population, Google Maps supply) and the Pondok
 // Labu strategic snapshot for Sense Padel Margasatwa.
 //
@@ -293,7 +293,7 @@ export default function PadelPage() {
           </p>
           <DocPreview
             title="ExecutiveSummary_PondokLabu.md"
-            meta="From Untamed98x/Padel_Courts_Bintaro. Rendered from the markdown rather than the generated PDF, which lives in a gitignored output/ directory."
+            meta="Rendered from the markdown in the project repository rather than from the generated PDF, which lives in a gitignored output/ directory."
           >
             <ExecutiveSummary />
           </DocPreview>
@@ -339,18 +339,10 @@ export default function PadelPage() {
             more reviews.
           </p>
           <p>
-            Scrapers, the kelurahan master list, the isochrone and gap-analysis
-            scripts, and the full executive summary are in the repository.
-          </p>
-          <p>
-            <a
-              href="https://github.com/Untamed98x/Padel_Courts_Bintaro"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={linkish}
-            >
-              Untamed98x/Padel_Courts_Bintaro
-            </a>
+            The scrapers, the kelurahan master list, the isochrone and
+            gap-analysis scripts and the full executive summary all live in the
+            project repository. It is not linked from here — ask and I will
+            send it.
           </p>
           <p>
             Both maps are live:{" "}
