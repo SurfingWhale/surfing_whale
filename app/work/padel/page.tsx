@@ -14,6 +14,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GapMap } from "./GapMap";
+import { IsochroneMap } from "./IsochroneMap";
 import { DocPreview } from "@/app/components/DocPreview";
 import { ExecutiveSummary } from "./ExecutiveSummary";
 import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
@@ -281,9 +282,12 @@ export default function PadelPage() {
         <Section number="04" title="Pondok Labu: the other side of the same map">
           <p>
             A few kilometres east the question inverts. Sense Padel Margasatwa
-            is not in a gap — it is in a saturated field, with 140 courts
-            inside twenty minutes of it.
+            is not in a gap — it is in a saturated field. This is what that
+            looks like: every court&rsquo;s ten-minute drive-time area, drawn
+            over every other court&rsquo;s, with the two Sense Padel venues
+            picked out.
           </p>
+          <IsochroneMap />
           <p>
             What follows is the strategic snapshot itself rather than my
             summary of it: the density table, the review classification, the

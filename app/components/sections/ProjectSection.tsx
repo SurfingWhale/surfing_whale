@@ -15,7 +15,7 @@ import { ProjectModal } from "@/app/components/Projectmodal";
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { CaseFolder } from "@/app/components/CaseFolder";
 import { MarkSheet } from "@/app/components/FinanceSheets";
-import { MapSheet, MoatSheet } from "@/app/components/PadelSheets";
+import { MapSheet, IsoSheet } from "@/app/components/PadelSheets";
 
 interface Props { projects: NotionProject[]; }
 
@@ -83,13 +83,14 @@ const FINANCE_SHEETS = [
     },
 ];
 
-// Map left and right, the moat ranking in the middle. Listed last is painted
-// on top, and only the sheet's top fifth clears the flap while the folder is
-// shut — a horizontal bar survives that crop, scattered dots do not.
+// The Bintaro gap map on the outer sheets, the saturated core of the Pondok
+// Labu isochrone map on top. Only the sheet's top fifth clears the flap when
+// the folder is shut, and a slab of overlapping isochrone lines survives that
+// crop where the previous artwork — grey bars — just read as a skeleton.
 const PADEL_SHEETS = [
     { art: <MapSheet />, closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" } },
     { art: <MapSheet />, closed: { x: "11%", r: "4deg" }, open: { x: "50%", r: "9deg" } },
-    { art: <MoatSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
+    { art: <IsoSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
 ];
 
 // Work with a page of its own on this site. Order is strongest first, not

@@ -1,13 +1,50 @@
 // app/components/PadelSheets.tsx
 //
-// Artwork for the padel folder, drawn from the same data as the case study's
-// map rather than invented: MapSheet is the 22 kelurahan at their real
-// centroids, MoatSheet is the community-moat ranking.
+// Artwork for the padel folder, drawn from the case study's own data.
 //
-// Both are drawn rather than screenshotted because a folder sheet is ~150px
-// wide — a screenshot of a map at that size is a grey smear, while a dot
-// pattern and five bars still read.
+// The first version of this file put grey bars and scattered dots on the
+// sheets and they read as a loading skeleton, not as content — which is fair,
+// because that is exactly what low-opacity rounded bars look like. These are
+// crops of the real maps instead.
+//
+// Only about the top fifth of a sheet clears the folder flap while it is shut,
+// so IsoSheet is framed on the dense core of the isochrone map rather than on
+// the whole thing: the strip that shows is textured, not empty.
+import { SHEET_RIVALS, SHEET_SENSE } from "@/app/work/padel/isochrone-sheet";
 import { KELURAHAN, perCapita } from "@/app/work/padel/kelurahan";
+
+// The thinned, hard-simplified copy — see isochrone-sheet.ts for why the full
+// set must not be imported here.
+/** The saturated core of the isochrone map. */
+export function IsoSheet() {
+  return (
+    <svg viewBox="300 205 500 625" className="w-full h-full block" aria-hidden="true">
+      {SHEET_RIVALS.map((d, i) => (
+        <path
+          key={i}
+          d={d}
+          fill="#111"
+          fillOpacity={0.02}
+          stroke="#111"
+          strokeOpacity={0.2}
+          strokeWidth={2.4}
+          strokeLinejoin="round"
+        />
+      ))}
+      {SHEET_SENSE.map((d, i) => (
+        <path
+          key={`s${i}`}
+          d={d}
+          fill="none"
+          stroke="#111"
+          strokeOpacity={0.9}
+          strokeWidth={7}
+          strokeLinejoin="round"
+        />
+      ))}
+    </svg>
+  );
+}
 
 const LATS = KELURAHAN.map((k) => k.lat);
 const LNGS = KELURAHAN.map((k) => k.lng);
@@ -16,7 +53,7 @@ const [minLng, maxLng] = [Math.min(...LNGS), Math.max(...LNGS)];
 const MAX_POP = Math.max(...KELURAHAN.map((k) => k.pop));
 const MAX_PC = Math.max(...KELURAHAN.map(perCapita));
 
-/** The gap map, reduced to what survives at thumbnail size. */
+/** The Bintaro gap map, filling the sheet. */
 export function MapSheet() {
   return (
     <svg viewBox="0 0 80 100" className="w-full h-full block" aria-hidden="true">
@@ -40,49 +77,6 @@ export function MapSheet() {
           />
         );
       })}
-    </svg>
-  );
-}
-
-/** The moat ranking. Sense Padel is the one picked out. */
-const MOAT: [string, number][] = [
-  ["Quattro Padel", 59.1],
-  ["Hi Padel Andara", 39.8],
-  ["three one three", 36.7],
-  ["Sense Padel Margasatwa", 35.7],
-  ["Sense Padel Kemang", 19.4],
-];
-
-export function MoatSheet() {
-  return (
-    <svg viewBox="0 0 80 100" className="w-full h-full block" aria-hidden="true">
-      {MOAT.map(([name, v], i) => {
-        const on = name === "Sense Padel Margasatwa";
-        return (
-          <g key={name}>
-            <rect
-              x="10"
-              y={9 + i * 17}
-              width={(v / 60) * 56}
-              height="6.4"
-              rx="3.2"
-              fill="#111"
-              opacity={on ? 0.62 : 0.2}
-            />
-          </g>
-        );
-      })}
-      {/* The 60 nobody reaches — the finding the sheet is standing in for. */}
-      <line
-        x1="70"
-        y1="5"
-        x2="70"
-        y2="93"
-        stroke="#111"
-        strokeOpacity="0.3"
-        strokeWidth="0.6"
-        strokeDasharray="1.6 1.6"
-      />
     </svg>
   );
 }
