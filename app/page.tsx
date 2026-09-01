@@ -14,6 +14,8 @@ import { AccessProvider } from "./components/AccessGate";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { VisitorCard } from "./components/VisitorCard";
 import { Reveal } from "./components/Reveal";
+import { listPosts } from "./lib/writing";
+import { listEssays } from "./lib/darkroom";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -25,7 +27,17 @@ const NAV_LINKS: NavLink[] = [
   { label: "Contact", href: "#contact" },
 ];
 
-export default function Home() {
+// Writing and the darkroom are both Notion-backed and both start empty. A nav
+// item that lands on "Nothing published yet" reads as an unfinished site, so
+// each is advertised only once it has something behind it. Both listers return
+// [] when their database is unconfigured, so this needs no extra guard and the
+// links reappear on their own once posts exist.
+export default async function Home() {
+  const [posts, essays] = await Promise.all([listPosts(), listEssays()]);
+  const navLinks = NAV_LINKS.filter(
+    (l) => l.href !== "/writing" || posts.length > 0
+  );
+
   return (
     <main className="relative min-h-screen bg-bg text-fg">
       <a href="#project" className="skip-link text-[13px] font-medium">
@@ -35,11 +47,11 @@ export default function Home() {
         <div className="container mx-auto px-6 h-14 flex items-center justify-between gap-6 max-w-[720px]">
           <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">Surfing Whale</span>
 
-          <GlassNav links={NAV_LINKS} />
+          <GlassNav links={navLinks} />
 
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <MobileNav links={NAV_LINKS} />
+            <MobileNav links={navLinks} />
           </div>
         </div>
       </nav>
@@ -56,7 +68,7 @@ export default function Home() {
                 <CVSection />
               </>
             }
-            captureContent={<PhotographySection />}
+            captureContent={<PhotographySection hasDarkroom={essays.length > 0} />}
           />
         </ProfileModeProvider>
         </AccessProvider>

@@ -20,7 +20,7 @@ const AVAILABLE = ORDER.filter((c) => photographs.some((p) => p.category === c))
 
 type Filter = "all" | PhotoCategory;
 
-export function PhotographySection() {
+export function PhotographySection({ hasDarkroom = false }: { hasDarkroom?: boolean }) {
   const [filter, setFilter] = useState<Filter>("all");
   // Index runs against the filtered set, so arrows walk what is on screen.
   const [viewing, setViewing] = useState<number | null>(null);
@@ -64,17 +64,19 @@ export function PhotographySection() {
           Selected photography
         </SectionLabel>
 
-        <p className="text-[13px] leading-[2] text-fg-body mb-8 -mt-4">
-          Longer pieces, where the writing and the frames go together, live in
-          the{" "}
-          <a
-            href="/photo"
-            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-          >
-            darkroom
-          </a>
-          .
-        </p>
+        {hasDarkroom && (
+          <p className="text-[13px] leading-[2] text-fg-body mb-8 -mt-4">
+            Longer pieces, where the writing and the frames go together, live in
+            the{" "}
+            <a
+              href="/photo"
+              className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
+            >
+              darkroom
+            </a>
+            .
+          </p>
+        )}
 
         <div className="flex gap-5 mb-8 flex-wrap text-[13px]" role="group" aria-label="Filter photographs">
           {filters.map((f) => (
