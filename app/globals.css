@@ -399,6 +399,17 @@ body:has(.photo-row) {
    button off the top of the screen. In the components layer, utilities win,
    which is what a caller expects. */
 @layer components {
+  /* Inline code in running prose is frequently a long identifier — the case
+     study quotes `sessionStorage.getItem('sw_bio_unlocked')`, 361px wide in a
+     390px viewport, which pushed the whole page sideways. Inline mono may
+     break mid-token rather than overflow. Block code is unaffected: inside a
+     <pre> the computed white-space is `pre`, which overflow-wrap does not
+     apply to, so fenced blocks keep their own overflow-x container. */
+  .font-mono {
+    overflow-wrap: anywhere;
+  }
+
+
   /* ---- Document type --------------------------------------------------
      A document embedded in the page is not the page. The site runs at
      11/13/15px with `letter-spacing: 1px` from body; inside `.doc` that

@@ -50,6 +50,42 @@ const SCREENS = [
   },
 ];
 
+/** A phone capture, placed beside the section it illustrates rather than in a
+    gallery at the end. Constrained to 260px — a full-width phone screenshot in
+    a 680px column is a tower the reader has to scroll past. */
+function Screen({
+  src,
+  alt,
+  caption,
+  side = "center",
+}: {
+  src: string;
+  alt: string;
+  caption: string;
+  side?: "center" | "left";
+}) {
+  return (
+    <figure
+      className={`my-7 flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-6 ${
+        side === "center" ? "sm:justify-center" : ""
+      }`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        width={780}
+        height={1688}
+        loading="lazy"
+        className="w-full max-w-[220px] sm:max-w-[240px] h-auto block rounded-xl border border-border bg-bg-muted flex-none"
+      />
+      <figcaption className="text-[11px] leading-[1.8] text-fg-muted sm:pt-1 sm:max-w-[260px]">
+        {caption}
+      </figcaption>
+    </figure>
+  );
+}
+
 function Section({
   number,
   title,
@@ -156,6 +192,12 @@ export default function FinanceDashboardCaseStudy() {
           </a>
         </header>
 
+        <Screen
+          src={SCREENS[0].src}
+          alt={SCREENS[0].alt}
+          caption={SCREENS[0].caption}
+        />
+
         <Section number="01" title="Starting from reviews, not features">
           <p>
             I did not begin with a feature list. I began by reading{" "}
@@ -234,6 +276,11 @@ export default function FinanceDashboardCaseStudy() {
             tell you where money went. A ledger tells you whether the story adds
             up — and when it does not, it says so out loud.
           </p>
+          <Screen
+            src={SCREENS[1].src}
+            alt={SCREENS[1].alt}
+            caption={SCREENS[1].caption}
+          />
           <p>
             A PPh 21 and final-tax estimator runs on top of the same data. As
             far as I can find, no other consumer finance app in Indonesia
@@ -296,6 +343,11 @@ export default function FinanceDashboardCaseStudy() {
             is me correcting the books, not me spending money; averaging it in
             would let my own bookkeeping mistakes forecast my future.
           </p>
+          <Screen
+            src={SCREENS[2].src}
+            alt={SCREENS[2].alt}
+            caption={SCREENS[2].caption}
+          />
           <p>
             Printing the rule on the screen rather than burying it is the same
             instinct. A projected number that will not say where it came from
@@ -514,31 +566,6 @@ export default function FinanceDashboardCaseStudy() {
           </p>
         </Section>
 
-        <Section number="10" title="Screens">
-          <p>
-            Captured on a phone rather than mocked up, which is why the status
-            bar is still in them.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-2">
-            {SCREENS.map((screen) => (
-              <figure key={screen.src} className="m-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={screen.src}
-                  alt={screen.alt}
-                  width={780}
-                  height={1688}
-                  loading="lazy"
-                  className="w-full h-auto block rounded-xl border border-border bg-bg-muted"
-                />
-                <figcaption className="text-[11px] leading-[1.7] text-fg-body mt-2.5">
-                  {screen.caption}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </Section>
       </article>
     </main>
   );
