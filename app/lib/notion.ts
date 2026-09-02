@@ -233,9 +233,28 @@ export interface NotionProject {
     /\b(password|passcode|passwd|sandi)\b\s*[:=]\s*\S{3,}/i,
     ];
 
+    /**
+     * The handle rule applies to prose too, not just image URLs. A project page
+     * links its own repo, and one of them writes the personal account into a
+     * sentence — text no image allowlist would ever see.
+     *
+     * Same shape as IMAGE_HOSTS: name the account whose repos may be linked,
+     * and every other owner is withheld. Allowlisting what is public means
+     * never writing down what is private, so the handle stays out of this file
+     * and out of the source map built from it. A third-party repo mentioned in
+     * a story is caught too — widen this list rather than loosening the rule.
+     */
+    const REPO_OWNERS = ["SurfingWhale"];
+
+    const FOREIGN_REPO = new RegExp(
+    `(?:github\\.com/(?!(?:${REPO_OWNERS.join("|")})\\b)[A-Za-z0-9_.-]+` +
+        `|\\b(?!(?:${REPO_OWNERS.join("|")})\\b)[A-Za-z0-9_-]+\\.github\\.io)`,
+    "i"
+    );
+
     const carriesSecret = (b: NotionBlock) => {
-    const text = `${b.text ?? ""} ${b.caption ?? ""}`;
-    return SECRETS.some((re) => re.test(text));
+    const text = `${b.text ?? ""} ${b.caption ?? ""} ${b.url ?? ""}`;
+    return FOREIGN_REPO.test(text) || SECRETS.some((re) => re.test(text));
     };
 
     export interface PageContent {
