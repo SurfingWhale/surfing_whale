@@ -138,7 +138,12 @@ export interface NotionProject {
             multi_select: { contains: "#Finished" },
             },
         }),
-        next: { revalidate: 3600 },
+        // One minute, not an hour. Visibility is a safety control, and a
+        // safety control you cannot see take effect is one you cannot trust:
+        // an hour of "I marked it Restricted, why is it still up?" is exactly
+        // the wrong feeling to design in. A portfolio's read volume makes the
+        // extra Notion calls free.
+        next: { revalidate: 60 },
         }
     );
     if (!res.ok) {
@@ -192,7 +197,12 @@ export interface NotionProject {
             Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
             "Notion-Version": "2022-06-28",
         },
-        next: { revalidate: 3600 },
+        // One minute, not an hour. Visibility is a safety control, and a
+        // safety control you cannot see take effect is one you cannot trust:
+        // an hour of "I marked it Restricted, why is it still up?" is exactly
+        // the wrong feeling to design in. A portfolio's read volume makes the
+        // extra Notion calls free.
+        next: { revalidate: 60 },
         }
     );
     if (!res.ok) return [];
