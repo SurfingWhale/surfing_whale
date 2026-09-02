@@ -251,6 +251,11 @@ export interface NotionProject {
     // Vendor prefixes that are never anything but a live credential.
     /\b(ntn_|secret_|sk-|ghp_|gho_|github_pat_|AKIA|xox[baprs]-)[A-Za-z0-9_-]{6,}/,
     /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
+    // Absolute paths off someone's own machine. A notebook written in place
+    // keeps them — "/Users/<name>/Documents/..." — and the username is usually
+    // the author's real name. Not a credential, but not the site's to publish,
+    // and it tells a reader the layout of a private disk.
+    /(?:^|[\s"'`(])(?:\/Users\/|\/home\/|[A-Za-z]:\\+Users\\+)[A-Za-z0-9._-]+[\/\\]/,
     /\bBearer\s+[A-Za-z0-9._-]{12,}/,
     // "input password 123" — Notion strips the backticks, so the value has to
     // be matched on its shape. A nearby token containing a digit, or anything

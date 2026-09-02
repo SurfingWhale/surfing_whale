@@ -95,6 +95,10 @@ right tag:
   an actual value.
 - **The private account handle**, in prose as well as in URLs. Only repos
   under an allowlisted owner may be linked; every other owner is withheld.
+- **Absolute paths off a personal machine** — `/Users/<name>/…`,
+  `/home/<name>/…`, `C:\Users\<name>\…`. A notebook written in place keeps
+  them, and the username is usually the author's real name. Not a credential,
+  but not the site's to publish either.
 - **Images from unknown hosts.** Only allowlisted hosts are loaded, because an
   `<img src>` is a request the visitor's browser makes to whatever host is
   named.
