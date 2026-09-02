@@ -217,9 +217,9 @@ export default function PadelPage() {
             distance, then reach was checked with OpenRouteService isochrones.
           </p>
           <EmbedFrame
-            src="https://padel-visual.vercel.app/Visualization/isochrone_map_v2.html"
+            src="/work/padel/isochrone-multirange.html"
             title="Every padel court in the Bintaro scope with its ten-minute isochrone"
-            caption="The supply side, before any scoring: each court found by the scrape, with the ten minutes of road network around it. Tap one for its name and rating."
+            caption="The supply side, before any scoring: every court the scrape found, with the drive-time band around it. Use the range control to change the reach. Served from this site rather than another deployment, so it cannot go dark on its own."
           />
           <p>The gap score is deliberately simple, and weighted on purpose:</p>
           <pre className="my-3 -mx-6 sm:mx-0 overflow-x-auto bg-bg-muted border-y sm:border border-border sm:rounded-lg px-6 sm:px-5 py-4">
@@ -243,9 +243,9 @@ export default function PadelPage() {
             up its gap score, population and court count on a tap.
           </p>
           <EmbedFrame
-            src="https://padel-visual.vercel.app/Visualization/gap_map_pretty.html"
+            src="/work/padel/gap-map.html"
             title="Gap analysis map — 22 kelurahan around Bintaro"
-            caption="The gap map, live: every kelurahan with its gap score, population and court count in the popup."
+            caption="The gap map, live: every kelurahan with its gap score, population and court count in the popup. Also served from this site."
           />
           <p>
             The gap score ranks Pondok Aren first at 0.79, then Perigi Lama at

@@ -10,13 +10,11 @@
 // What is left around the document is an English lead-in for a reader who
 // cannot read it, and the limits it does not state about itself (§03).
 //
-// There is no map on this page and there cannot be one yet. Checked, in
-// order: the Notion page carries no embed, Learn_Spatial_Data_Analytics
-// holds a single 0-byte notebook with empty data directories, no Tomoro
-// deployment exists (only the two padel ones), and Overpass, Google Maps,
-// CARTO and ORS are all unreachable or need keys. Drawing something that
-// merely illustrates the three findings would look like evidence and not be
-// any, so §03 tells the reader the overlay is gone instead.
+// The map is a still. It was not on GitHub or Vercel — Fauzy had it locally
+// as a print-to-PDF and sent it over; public/work/coffee/isochrone-tomoro.jpg
+// is that single page rendered and cropped. The interactive Leaflet original
+// was never saved, and the caption says so, because a picture of a map is not
+// a map.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DocPreview } from "@/app/components/DocPreview";
@@ -152,9 +150,11 @@ export default function CoffeeAccessPage() {
 
         <Section number="02" title="The note itself">
           <EmbedFrame
-            title="Tomoro isochrone overlay — not published"
-            pending="The 5, 10 and 15-minute overlay these findings were read off was never exported — not to an image, a repository or a deployment. Nothing is drawn here in its place."
-            caption="Where the map goes. The padel study next door has three live ones; this study has none, and that is the honest difference between them."
+            image="/work/coffee/isochrone-tomoro.jpg"
+            alt="Isochrone map of Jabodetabek: around twenty-eight Tomoro Coffee branches, each with 5, 10 and 15-minute drive-time bands shading from pale to deep red over a CARTO basemap."
+            title="Tomoro Coffee — 5, 10 and 15-minute drive-time bands"
+            caption="The overlay the three findings were read off. Fauzy still had it as a PDF print; this is that page, cropped. It is a still, not the live Leaflet map — that one was never saved."
+            ratio="3 / 2"
           />
           <p>
             Rather than restate it: here is the field note as written — the
@@ -187,14 +187,12 @@ export default function CoffeeAccessPage() {
             plainly showed, and no more than that.
           </p>
           <p>
-            And the map itself is gone. The note says &ldquo;dari peta yang
-            dihasilkan&rdquo; — from the map produced — but that overlay was
-            never exported: not to an image, not to a repository, not to a
-            deployment. So this page cannot show you the thing the findings
-            were read from, and it is not going to draw a substitute and let
-            it pass for the original. That is the real difference between this
-            and the padel study next door, where the map is still live and
-            embedded.
+            The overlay above is the one those three statements came off, but
+            it is a print of it. The interactive Leaflet page it was taken
+            from was never saved, so the bands cannot be toggled and no branch
+            will give up its name on a tap. That is the difference between
+            this study and the padel one next door, where the map is still
+            live and embedded.
           </p>
           <p>
             Two limits in the data underneath. Tapera only covers subsidised

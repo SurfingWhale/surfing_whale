@@ -9,20 +9,27 @@
 // cannot honestly know it failed, and a link that always works beats a guess
 // that sometimes lies.
 //
-// Without `src` it is the same frame, the same border, the same caption
-// position, holding `pending` instead. That is for a study whose map was
-// never exported: the slot is where a map belongs, so the gap is a stated
-// part of the page rather than a silence, and publishing one later is a
-// one-prop change.
+// With `image` it holds a still export at the same dimensions — for a map
+// that exists but only as a print, where the interactive original was never
+// saved. The caption has to say so; a picture of a map is not a map.
+//
+// With neither it is the same frame again, holding `pending`, for a study
+// whose map was never exported at all.
 export function EmbedFrame({
   src,
+  image,
+  alt,
   title,
   caption,
   pending,
   ratio = "4 / 3",
 }: {
-  /** The live page. Omit to render the pending state. */
+  /** The live page, embedded as an iframe. */
   src?: string;
+  /** A still export, when there is no interactive original to embed. */
+  image?: string;
+  /** Alt text for `image`. Required whenever `image` is set. */
+  alt?: string;
   title: string;
   caption: string;
   /** Shown inside the frame when there is no `src` yet. */
@@ -36,7 +43,15 @@ export function EmbedFrame({
         className="relative w-full overflow-hidden border-y sm:border border-border sm:rounded-lg bg-bg-muted"
         style={{ aspectRatio: ratio }}
       >
-        {src ? (
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={image}
+            alt={alt ?? title}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : src ? (
           <iframe
             src={src}
             title={title}
