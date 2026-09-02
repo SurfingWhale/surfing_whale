@@ -20,6 +20,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DocPreview } from "@/app/components/DocPreview";
+import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { FieldNote } from "./FieldNote";
 
 const TITLE = "15 minutes to coffee";
@@ -150,6 +151,11 @@ export default function CoffeeAccessPage() {
         </Section>
 
         <Section number="02" title="The note itself">
+          <EmbedFrame
+            title="Tomoro isochrone overlay — not published"
+            pending="The 5, 10 and 15-minute overlay these findings were read off was never exported — not to an image, a repository or a deployment. Nothing is drawn here in its place."
+            caption="Where the map goes. The padel study next door has three live ones; this study has none, and that is the honest difference between them."
+          />
           <p>
             Rather than restate it: here is the field note as written — the
             background, the method, the three preliminary findings and the
