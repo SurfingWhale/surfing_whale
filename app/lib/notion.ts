@@ -189,6 +189,90 @@ export interface NotionProject {
     }));
     }
 
+    /**
+     * A project page has two audiences. The story — what the problem was, what
+     * was decided, what it looked like — is the part worth publishing. The
+     * technical half is notes to self: schemas, config, setup steps, the
+     * occasional credential typed in while thinking out loud. That half was
+     * being published too, in full.
+     *
+     * So a heading splits them. Everything under a Technical heading stays in
+     * Notion. The section ends at the next heading of the same or higher level,
+     * so Story / Technical / Story works as you would expect.
+     */
+    const TECHNICAL =
+    /^\s*[^\p{L}\p{N}]*\s*(technical|technicality|teknis|backend|implementation|implementasi|setup|environment\s*variabl|env\s*var|config|konfigurasi|credential)/iu;
+
+    const HEADING_LEVEL: Record<string, number> = {
+    heading_1: 1,
+    heading_2: 2,
+    heading_3: 3,
+    };
+
+    /**
+     * Things that must never reach a public page even when someone put them on
+     * the story side by accident — which is exactly how a tracker password
+     * ended up live. The heading split is the rule; this is the net under it.
+     *
+     * Deliberately narrow: it matches names that say credential and prefixes
+     * that only ever belong to real tokens, so ordinary prose and code (DAX
+     * assignments like `KALENDER =`) pass straight through.
+     */
+    const SECRETS: RegExp[] = [
+    // NOTION_API_KEY=..., DARKROOM_SECRET=..., NOTION_TOKEN=...
+    /\b[A-Z][A-Z0-9_]*(KEY|SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|AUTH|PRIVATE|DSN|DATABASE_ID|API)[A-Z0-9_]*\s*[:=]/,
+    // Vendor prefixes that are never anything but a live credential.
+    /\b(ntn_|secret_|sk-|ghp_|gho_|github_pat_|AKIA|xox[baprs]-)[A-Za-z0-9_-]{6,}/,
+    /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
+    /\bBearer\s+[A-Za-z0-9._-]{12,}/,
+    // "input password 123" — Notion strips the backticks, so the value has to
+    // be matched on its shape. A nearby token containing a digit, or anything
+    // introduced by a colon or equals. Naming a password is not leaking one,
+    // so "berbagi satu password" has to pass; "password 123" must not.
+    /\b(password|passcode|passwd|sandi)\b[^.\n]{0,20}\b(?=[A-Za-z!@#$%^&*_-]*\d)[A-Za-z0-9!@#$%^&*_-]{3,40}\b/i,
+    /\b(password|passcode|passwd|sandi)\b\s*[:=]\s*\S{3,}/i,
+    ];
+
+    const carriesSecret = (b: NotionBlock) => {
+    const text = `${b.text ?? ""} ${b.caption ?? ""}`;
+    return SECRETS.some((re) => re.test(text));
+    };
+
+    export interface PageContent {
+    blocks: NotionBlock[];
+    /** How many blocks were held back, so the page can say so rather than
+        just looking short. */
+    withheld: number;
+    }
+
+    export function storyOnly(blocks: NotionBlock[]): PageContent {
+    const out: NotionBlock[] = [];
+    let holdingAt = 0;
+    let withheld = 0;
+
+    for (const b of blocks) {
+        const level = HEADING_LEVEL[b.type] ?? 0;
+
+        if (level) {
+        // A heading at or above the held section's level ends it.
+        if (holdingAt && level <= holdingAt) holdingAt = 0;
+        if (!holdingAt && TECHNICAL.test(b.text ?? "")) {
+            holdingAt = level;
+            withheld++;
+            continue;
+        }
+        }
+
+        if (holdingAt || carriesSecret(b)) {
+        withheld++;
+        continue;
+        }
+        out.push(b);
+    }
+
+    return { blocks: out, withheld };
+    }
+
     export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {
     const res = await fetch(
         `https://api.notion.com/v1/blocks/${pageId}/children?page_size=50`,

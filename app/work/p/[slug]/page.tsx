@@ -10,7 +10,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProjectBySlug, getPageBlocks } from "@/app/lib/notion";
+import { getProjectBySlug, getPageBlocks, storyOnly } from "@/app/lib/notion";
 import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 import { AccessProvider } from "@/app/components/AccessGate";
 import { ReadMoreGate } from "@/app/components/ReadMoreGate";
@@ -29,7 +29,7 @@ export async function generateMetadata({
 
   // The description is the first paragraph of the page itself, so a link
   // pasted into a chat previews the actual opening rather than a slogan.
-  const blocks = await getPageBlocks(project.id).catch(() => []);
+  const { blocks } = storyOnly(await getPageBlocks(project.id).catch(() => []));
   const opening = blocks.find(
     (b) => b.type === "paragraph" && (b.text?.length ?? 0) > 40
   )?.text;
@@ -58,10 +58,14 @@ export default async function ProjectPage({
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  const blocks = await getPageBlocks(project.id).catch(() => []);
+  // Split before anything else: the description, the teaser and the full page
+  // all read from the story half, so none of them can quote the technical one.
+  const { blocks, withheld } = storyOnly(
+    await getPageBlocks(project.id).catch(() => [])
+  );
   const locked = gateEnabled() && !(await isReader());
   const shown = locked ? blocks.slice(0, FREE_BLOCKS) : blocks;
-  const withheld = locked && blocks.length > FREE_BLOCKS;
+  const withheldGate = locked && blocks.length > FREE_BLOCKS;
 
   return (
     <main className="min-h-screen bg-bg text-fg">
@@ -135,7 +139,18 @@ export default async function ProjectPage({
             shown.map((block, i) => <BlockRenderer key={i} block={block} />)
           )}
 
-          {withheld && (
+          {withheld > 0 && (
+            /* Said plainly, because a page that simply stops looks unfinished,
+               and "there is more, it is just not yours to read" is a different
+               thing to tell someone than nothing at all. */
+            <p className="text-[11px] leading-[1.8] text-fg-muted border-l-2 border-border-strong pl-4 mt-8">
+              The technical notes for this project — schemas, queries, setup —
+              stay in my own files. Happy to walk through them in a
+              conversation.
+            </p>
+          )}
+
+          {withheldGate && (
             <AccessProvider>
               <ReadMoreGate reason="Project" />
             </AccessProvider>

@@ -1,6 +1,6 @@
 // app/api/notion/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getPageBlocks, isPublishableId } from "@/app/lib/notion";
+import { getPageBlocks, isPublishableId, storyOnly } from "@/app/lib/notion";
 import { FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 import { gateEnabled, isReader } from "@/app/lib/accessSession";
 
@@ -19,7 +19,9 @@ export async function GET(
             return NextResponse.json({ error: "Not found." }, { status: 404 });
         }
 
-        const blocks = await getPageBlocks(id);
+        // The story half only. Technical notes stay in Notion, and anything
+        // shaped like a credential is dropped wherever it was written.
+        const { blocks, withheld } = storyOnly(await getPageBlocks(id));
 
         // With the gate on, the cut has to happen here. Sending the whole page
         // and hiding the tail in CSS would leave the gate as decoration —
@@ -28,6 +30,7 @@ export async function GET(
         const res = NextResponse.json({
             blocks: locked ? blocks.slice(0, FREE_BLOCKS) : blocks,
             truncated: locked && blocks.length > FREE_BLOCKS,
+            withheld,
         });
         // Approved and not approved get different answers from one URL, so
         // this must never sit in a shared cache.
