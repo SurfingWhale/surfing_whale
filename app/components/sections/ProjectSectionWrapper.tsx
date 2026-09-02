@@ -12,7 +12,7 @@ const FEATURED = /finance dashboard|personal dashboard/i;
 // Rows that now have a written-up page of their own in WRITTEN_UP. Without
 // this each would appear twice in one list: once as a link to the page, once
 // as a Notion row opening the modal.
-const WRITTEN_UP = /padel|tracker.?(doc|tsm)/i;
+const WRITTEN_UP = /padel|tracker.?(doc|tsm)|crime|unveiling/i;
 
 export default async function ProjectSectionWrapper() {
     const projects = (await getProjects()).filter(
