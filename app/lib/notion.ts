@@ -31,8 +31,21 @@ export function isRestricted(page: any): boolean {
     const icon =
         page?.icon?.emoji ?? page?.icon?.external?.url ?? page?.icon?.file?.url ?? "";
     const subGroup = props["Sub Group"]?.status?.name ?? "";
+    // The merged database added a Status column carrying its own Restricted
+    // value. Two properties can now say restricted, and per the rules they are
+    // checked independently: either one is enough, and neither outvotes the
+    // other. See docs/PUBLISHING-RULES.md §2.
+    const status = props.Status?.status?.name ?? "";
+    const note = (props["Restriction Note"]?.rich_text ?? [])
+        .map((t: any) => t.plain_text)
+        .join(" ");
 
-    return [title, citation, icon, subGroup, ...tags].some(
+    // The note explains a decision already recorded in Visibility/Status, so
+    // it is read for markers but must not be the thing that hides a row —
+    // otherwise "cleared: was internal, now rewritten" would withhold forever.
+    void note;
+
+    return [title, citation, icon, subGroup, status, ...tags].some(
         (v) => typeof v === "string" && RESTRICTED.test(v)
     );
     } catch {
@@ -86,6 +99,18 @@ export function isRestricted(page: any): boolean {
  * public?" to be inferred from prose the code never read.
  */
 const PUBLIC = "Public";
+
+/**
+ * The merge renamed the title column from Name to Nama. Reading only one of
+ * them turns every project into "Untitled" the moment the database changes
+ * shape, and an untitled row still publishes — so read either, and let the
+ * rename be a non-event.
+ */
+function titleOf(page: any): string {
+    const props = page?.properties ?? {};
+    const t = props.Nama?.title ?? props.Name?.title ?? [];
+    return t.map((x: any) => x.plain_text).join("");
+}
 
 export interface NotionProject {
     id: string;
@@ -156,7 +181,7 @@ export interface NotionProject {
     // The tag says "this is finished". It does not say "this may be published",
     // and a row can be both finished and confidential.
     const publishable = rows.filter((page) => {
-        const name = page?.properties?.Name?.title?.[0]?.plain_text ?? page?.id;
+        const name = titleOf(page) || page?.id;
         const visibility = page?.properties?.Visibility?.select?.name ?? "";
 
         if (visibility !== PUBLIC) {
@@ -177,11 +202,13 @@ export interface NotionProject {
 
     return publishable.map((page: any) => ({
         id: page.id,
-        slug:
-        slugify(page.properties.Name?.title?.[0]?.plain_text ?? "") ||
-        String(page.id).replace(/-/g, ""),
-        title: page.properties.Name?.title?.[0]?.plain_text ?? "Untitled",
-        link: publicLink(page.properties.Citation?.rich_text?.[0]?.plain_text ?? ""),
+        slug: slugify(titleOf(page)) || String(page.id).replace(/-/g, ""),
+        title: titleOf(page) || "Untitled",
+        // The merged database has a proper URL column; Citation stays as the
+        // fallback for rows written before it existed.
+        link:
+        publicLink(page.properties["URL"]?.url ?? "") ||
+        publicLink(page.properties.Citation?.rich_text?.[0]?.plain_text ?? ""),
         tags: page.properties.Tags?.multi_select?.map((t: any) => t.name) ?? [],
         image: publicImage(page.properties.Image?.url ?? ""),
         date: page.properties.Date?.date?.start ?? "",
