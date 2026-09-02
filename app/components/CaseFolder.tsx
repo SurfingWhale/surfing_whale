@@ -28,11 +28,17 @@ const DEFAULT_SHEETS: Sheet[] = [
 
 export function CaseFolder({
   href,
+  onActivate,
   title,
   subtitle,
   sheets = DEFAULT_SHEETS,
 }: {
-  href: string;
+  /** Where the folder leads. Omit when `onActivate` opens something in place. */
+  href?: string;
+  /** Opens a modal instead of navigating — for work that has no page of its
+      own, where the detail lives in Notion. The peek-then-open behaviour is
+      identical either way. */
+  onActivate?: () => void;
   title: string;
   subtitle: string;
   sheets?: Sheet[];
@@ -63,13 +69,21 @@ export function CaseFolder({
     setPeeking(true);
   };
 
+  // A button and a link differ only in the element; every gesture, the two-step
+  // touch guard and the styling are shared.
+  const Tag = (onActivate ? "button" : Link) as React.ElementType;
+  const nav = onActivate ? { type: "button" as const } : { href: href ?? "#" };
+
   return (
-    <Link
-      href={href}
-      onPointerDown={(e) => {
+    <Tag
+      {...nav}
+      onPointerDown={(e: React.PointerEvent) => {
         pointer.current = e.pointerType;
       }}
-      onClick={onClick}
+      onClick={(e: React.MouseEvent) => {
+        onClick(e);
+        if (!e.defaultPrevented) onActivate?.();
+      }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       onFocus={() => setOpen(true)}
@@ -77,7 +91,7 @@ export function CaseFolder({
       aria-label={
         peeking ? `Open: ${title} — ${subtitle}` : `${title} — ${subtitle}`
       }
-      className="group block max-w-[360px] no-underline text-fg active:scale-[0.97] transition-transform duration-150"
+      className="group block w-full text-left max-w-[360px] no-underline text-fg active:scale-[0.97] transition-transform duration-150"
     >
       <div className="relative w-full aspect-[20/17] [perspective:1000px]">
         {/* Folder body */}
@@ -167,6 +181,6 @@ export function CaseFolder({
           </div>
         </div>
       </div>
-    </Link>
+    </Tag>
   );
 }

@@ -19,55 +19,6 @@ import { MapSheet, IsoSheet } from "@/app/components/PadelSheets";
 
 interface Props { projects: NotionProject[]; }
 
-/** A thumbnail, then the name. The preview used to be `hidden xl:block` and
-    hover-only, parked in the gutter beside the list — so on a phone, which is
-    where this gets read, every row was text on an empty page. */
-function Thumb({ src, alt }: { src?: string; alt: string }) {
-    const real = Boolean(src) && !src!.includes("placeholder");
-    return (
-        <span className="flex-none w-[76px] h-[76px] sm:w-[92px] sm:h-[92px] rounded-lg overflow-hidden bg-bg-muted border border-border block">
-        {real ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-                src={src}
-                alt={alt}
-                loading="lazy"
-                className="w-full h-full object-cover block transition-transform duration-500 ease-[cubic-bezier(0.2,0,0,1)] group-hover:scale-[1.04]"
-            />
-        ) : (
-            <span aria-hidden="true" className="grid place-items-center w-full h-full">
-            <span className="block w-6 h-px bg-border-strong" />
-            </span>
-        )}
-        </span>
-    );
-}
-
-function ProjectRow({ project, onOpen }: {
-    project: NotionProject;
-    onOpen: () => void;
-}) {
-    return (
-        <li data-spot-row className="group relative border-b border-border last:border-b-0">
-        <button onClick={onOpen} className="w-full text-left py-5 flex items-center gap-4 sm:gap-5">
-            <Thumb src={project.image} alt="" />
-            <span className="min-w-0">
-            <span className="block text-[15px] leading-[24px] tracking-[-0.02em]">
-                <span className="font-medium text-fg group-hover:underline underline-offset-4 decoration-1">
-                {project.title}
-                </span>
-            </span>
-            {project.subGroup && (
-                <span className="block text-[13px] leading-[1.8] text-fg-body mt-1">
-                {project.subGroup}
-                </span>
-            )}
-            </span>
-        </button>
-        </li>
-    );
-}
-
 // The recap on the left, the mark on the right, Beranda in the middle. Order
 // here is paint order, not layout — Beranda is listed last so it is the sheet
 // on top of the pile while the folder is shut.
@@ -95,32 +46,47 @@ const PADEL_SHEETS = [
     { art: <IsoSheet />, closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
 ];
 
+// The three resting/opening offsets every folder uses, so a folder made from
+// two sheets fans the same way as one made from three.
+const FAN = [
+    { closed: { x: "-11%", r: "-4deg" }, open: { x: "-50%", r: "-9deg" } },
+    { closed: { x: "11%", r: "4deg" }, open: { x: "50%", r: "9deg" } },
+    { closed: { x: "0%", r: "0deg" }, open: { x: "0%", r: "0deg" } },
+];
+
+/** Build a folder's sheets from image paths, in paint order — last is on top. */
+const sheetsFrom = (srcs: string[], alt: string) =>
+    srcs.slice(0, 3).map((src, i) => ({ src, alt, ...FAN[i] }));
+
 // Work with a page of its own on this site. Order is strongest first, not
 // chronological — this is the list a stranger reads top-down.
 const WRITTEN_UP = [
     {
         href: "/work/coffee-access",
         title: "15 minutes to coffee",
-        kind: "Field note",
-        note: "Isochrone · spatial analysis · Bintaro",
-        thumb: "/work/coffee/isochrone-tomoro.jpg",
-        alt: "The Tomoro isochrone map: drive-time bands over Jabodetabek.",
+        subtitle: "Isochrone · Tomoro against the housing around Bintaro",
+        sheets: sheetsFrom(
+            ["/work/sheets/coffee-1.jpg", "/work/sheets/coffee-3.jpg", "/work/sheets/coffee-2.jpg"],
+            "The Tomoro isochrone map: drive-time bands over Jabodetabek."
+        ),
     },
     {
         href: "/work/crime-la",
         title: "Reading Los Angeles by its crime reports",
-        kind: "Early work",
-        note: "pandas · folium · a public dataset, 2023",
-        thumb: "/work/crime/thumb.jpg",
-        alt: "Bar chart of reported crime counts by Los Angeles police area.",
+        subtitle: "Early work · pandas, folium, a public dataset, 2023",
+        sheets: sheetsFrom(
+            ["/work/sheets/crime-1.jpg", "/work/sheets/crime-3.jpg", "/work/sheets/crime-2.jpg"],
+            "Charts from the Los Angeles crime analysis."
+        ),
     },
     {
         href: "/work/tracker-doc",
         title: "TrackerDoc",
-        kind: "Internal tool",
-        note: "Next.js · Google Sheets as the store · approval queue",
-        thumb: "/work/tracker/approval-flow.svg",
-        alt: "The document approval flow, as a diagram.",
+        subtitle: "Internal tool · Sheets as the store, an approval queue",
+        sheets: sheetsFrom(
+            ["/work/tracker/approval-flow.svg"],
+            "The document approval flow, as a diagram."
+        ),
     },
 ];
 
@@ -168,37 +134,30 @@ export function ProjectSection({ projects }: Props) {
             </SectionLabel>
             </div>
 
-            <ul className="border-t border-border">
-                {/* Written up on this site rather than left as a Notion row.
-                    ProjectSectionWrapper filters the matching rows out of the
-                    Notion list so each of these appears exactly once. */}
+            {/* Folders, not a list. The small square thumbnails read as a
+                different species from the two featured folders above; these
+                are the same component at the same scale. */}
+            <div className="grid gap-10 sm:grid-cols-2 sm:gap-8">
                 {WRITTEN_UP.map((w) => (
-                <li key={w.href} data-spot-row className="group relative border-b border-border last:border-b-0">
-                    <Link href={w.href} className="w-full text-left py-5 flex items-center gap-4 sm:gap-5 no-underline text-fg">
-                    <Thumb src={w.thumb} alt={w.alt} />
-                    <span className="min-w-0">
-                        <span className="block text-[15px] leading-[24px] tracking-[-0.02em]">
-                        <span className="font-medium text-fg group-hover:underline underline-offset-4 decoration-1">
-                            {w.title}
-                        </span>
-                        <span className="text-fg-secondary"> — {w.kind}</span>
-                        </span>
-                        <span className="block text-[13px] leading-[1.8] text-fg-body mt-1">
-                        {w.note}
-                        </span>
-                    </span>
-                    </Link>
-                </li>
+                <CaseFolder
+                    key={w.href}
+                    href={w.href}
+                    title={w.title}
+                    subtitle={w.subtitle}
+                    sheets={w.sheets}
+                />
                 ))}
 
                 {projects.map((project) => (
-                <ProjectRow
+                <CaseFolder
                     key={project.id}
-                    project={project}
-                    onOpen={() => openProject(project)}
+                    onActivate={() => openProject(project)}
+                    title={project.title}
+                    subtitle={project.subGroup || project.tags.filter((x) => !x.startsWith("#")).join(" · ")}
+                    sheets={sheetsFrom([project.image], "")}
                 />
                 ))}
-            </ul>
+            </div>
             </div>
         </div>
 
