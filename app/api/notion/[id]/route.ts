@@ -1,6 +1,6 @@
 // app/api/notion/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getPageBlocks } from "@/app/lib/notion";
+import { getPageBlocks, isPublishableId } from "@/app/lib/notion";
 import { FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 import { gateEnabled, isReader } from "@/app/lib/accessSession";
 
@@ -10,6 +10,15 @@ export async function GET(
     ) {
     try {
         const { id } = await params;
+
+        // This route used to hand back the blocks of any page id it was given,
+        // which meant every page the integration could read — including rows
+        // deliberately kept off the site. It now serves only what the project
+        // list itself publishes.
+        if (!(await isPublishableId(id))) {
+            return NextResponse.json({ error: "Not found." }, { status: 404 });
+        }
+
         const blocks = await getPageBlocks(id);
 
         // With the gate on, the cut has to happen here. Sending the whole page

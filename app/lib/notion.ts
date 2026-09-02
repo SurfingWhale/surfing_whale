@@ -1,4 +1,55 @@
 // app/lib/notion.ts
+/**
+ * Anything that marks a row as not-for-publication. The site reads a Notion
+ * database a person edits by hand, so "is this publishable?" cannot rest on
+ * one tag being right — a row marked restricted in any of the ways a person
+ * would naturally mark it must never reach the site.
+ *
+ * Checked against the title, the icon, every tag, and the Citation field.
+ */
+const RESTRICTED =
+    /🔒|🚫|\brestricted\b|\bconfidential\b|\binternal[\s-]*(only|use)?\b|\bprivate\b|\brahasia\b|\binternal\b|\bnda\b|jangan\s+di[\s-]*publish|do\s+not\s+publish|not\s+for\s+publication/i;
+
+/**
+ * True if the row carries any not-for-publication marker. Fails closed: an
+ * unreadable page counts as restricted, because the cost of hiding one
+ * publishable project is nothing next to the cost of showing one that is not.
+ */
+export function isRestricted(page: any): boolean {
+    try {
+    // Optional chaining never throws, so an unreadable page would otherwise
+    // slip through as "no markers found". A row the code cannot read is a row
+    // whose markers the code cannot read.
+    const props = page?.properties;
+    if (!props || typeof props !== "object") return true;
+
+    const title = props.Name?.title?.[0]?.plain_text ?? "";
+    const citation = (props.Citation?.rich_text ?? [])
+        .map((t: any) => t.plain_text)
+        .join(" ");
+    const tags: string[] = props.Tags?.multi_select?.map((t: any) => t.name) ?? [];
+    const icon =
+        page?.icon?.emoji ?? page?.icon?.external?.url ?? page?.icon?.file?.url ?? "";
+    const subGroup = props["Sub Group"]?.status?.name ?? "";
+
+    return [title, citation, icon, subGroup, ...tags].some(
+        (v) => typeof v === "string" && RESTRICTED.test(v)
+    );
+    } catch {
+    return true;
+    }
+    }
+
+    /**
+     * Citation holds a link on most rows, but it is a free-text field, so it
+     * also holds notes. Rendering a note as an href produced a live anchor whose
+     * address was the words "INTERNAL / RESTRICTED".
+     */
+    function publicLink(raw: string): string {
+    const v = raw.trim();
+    return /^https?:\/\//i.test(v) ? v : "";
+    }
+
 export interface NotionProject {
     id: string;
     /** Derived from the title, not stored in Notion — the shareable URL. */
@@ -58,13 +109,26 @@ export interface NotionProject {
         return [];
     }
     const data = await res.json();
-    return data.results.map((page: any) => ({
+    const rows: any[] = data.results ?? [];
+
+    // The tag says "this is finished". It does not say "this may be published",
+    // and a row can be both finished and confidential.
+    const publishable = rows.filter((page) => {
+        if (!isRestricted(page)) return true;
+        console.warn(
+        "Withheld restricted project:",
+        page?.properties?.Name?.title?.[0]?.plain_text ?? page?.id
+        );
+        return false;
+    });
+
+    return publishable.map((page: any) => ({
         id: page.id,
         slug:
         slugify(page.properties.Name?.title?.[0]?.plain_text ?? "") ||
         String(page.id).replace(/-/g, ""),
         title: page.properties.Name?.title?.[0]?.plain_text ?? "Untitled",
-        link: page.properties.Citation?.rich_text?.[0]?.plain_text ?? "#",
+        link: publicLink(page.properties.Citation?.rich_text?.[0]?.plain_text ?? ""),
         tags: page.properties.Tags?.multi_select?.map((t: any) => t.name) ?? [],
         image: page.properties.Image?.url ?? "/images/placeholder.png",
         date: page.properties.Date?.date?.start ?? "",
@@ -133,4 +197,15 @@ export async function getProjectBySlug(
 ): Promise<NotionProject | null> {
   const projects = await getProjects();
   return projects.find((p) => p.slug === slug) ?? null;
+}
+
+/**
+ * The page ids the site is allowed to render. Anything asking for blocks has to
+ * name an id on this list — without it, the blocks route was an open proxy to
+ * every page the integration could read, restricted rows included.
+ */
+export async function isPublishableId(pageId: string): Promise<boolean> {
+  const id = pageId.replace(/-/g, "");
+  const projects = await getProjects();
+  return projects.some((p) => p.id.replace(/-/g, "") === id);
 }
