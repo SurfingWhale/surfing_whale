@@ -216,6 +216,11 @@ export default function PadelPage() {
             for both cities. Courts were assigned to a kelurahan by Haversine
             distance, then reach was checked with OpenRouteService isochrones.
           </p>
+          <EmbedFrame
+            src="https://padel-visual.vercel.app/Visualization/isochrone_map_v2.html"
+            title="Every padel court in the Bintaro scope with its ten-minute isochrone"
+            caption="The supply side, before any scoring: each court found by the scrape, with the ten minutes of road network around it. Tap one for its name and rating."
+          />
           <p>The gap score is deliberately simple, and weighted on purpose:</p>
           <pre className="my-3 -mx-6 sm:mx-0 overflow-x-auto bg-bg-muted border-y sm:border border-border sm:rounded-lg px-6 sm:px-5 py-4">
             <code className="font-mono text-[11px] leading-[1.9] text-fg-body">
