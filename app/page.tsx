@@ -11,6 +11,7 @@ import { GlassNav, type NavLink } from "./components/GlassNav";
 import { ProfileContent } from "./components/ProfileContent";
 import { ProfileModeProvider } from "./components/ProfileMode";
 import { AccessProvider } from "./components/AccessGate";
+import { UnlockedBanner } from "./components/UnlockedBanner";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { VisitorCard } from "./components/VisitorCard";
 import { Reveal } from "./components/Reveal";
@@ -57,6 +58,7 @@ export default async function Home() {
       </nav>
 
       <div className="pt-14">
+        <UnlockedBanner />
         <AccessProvider>
         <ProfileModeProvider>
           <HeroSection />

@@ -1,6 +1,14 @@
 // app/api/access/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { recordAccess, isValidEmail, EMAIL_MAX, type AccessReason } from "@/app/lib/accessRequests";
+import {
+  recordAccess,
+  isValidEmail,
+  EMAIL_MAX,
+  NAME_MAX,
+  MESSAGE_MAX,
+  type AccessReason,
+} from "@/app/lib/accessRequests";
+import { gateEnabled, isReader } from "@/app/lib/accessSession";
 
 const REASONS: AccessReason[] = ["CV", "Project"];
 
@@ -9,11 +17,21 @@ const REASONS: AccessReason[] = ["CV", "Project"];
  * exposing it. Mirrors the status GET on /api/sync-images.
  */
 export async function GET(): Promise<NextResponse> {
-  return NextResponse.json({
+  const res = NextResponse.json({
     status: "ok",
     endpoint: "POST /api/access",
     notionConfigured: Boolean(process.env.NOTION_ACCESS_DATABASE_ID),
+    // Off, a request still records but the visitor is let straight in, which
+    // is how this behaved before approval existed.
+    gate: gateEnabled() ? "approval" : "open",
+    // The client cannot read the cookie — it is httpOnly — so the answer to
+    // "am I in?" has to come from here.
+    reader: await isReader(),
   });
+  // Two visitors differ only by cookie, so a shared cache would hand one
+  // person's answer to the next.
+  res.headers.set("Cache-Control", "no-store");
+  return res;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -38,16 +56,38 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const reason: AccessReason = REASONS.includes(body.reason) ? body.reason : "CV";
+  const name = String(body.name ?? "").trim().slice(0, NAME_MAX);
+  const message = String(body.message ?? "").trim().slice(0, MESSAGE_MAX);
+
+  const pending = gateEnabled();
 
   try {
-    // The visitor is let through regardless of whether the write lands — a
-    // Notion hiccup should not hold up access they have already asked for.
-    const saved = await recordAccess(email, reason);
-    if (!saved) console.warn("Access granted but not recorded:", reason);
-    return NextResponse.json({ ok: true });
+    const token = await recordAccess(email, reason, { name, message });
+
+    if (!pending) {
+      // Gate off: unchanged behaviour, in straight away.
+      if (!token) console.warn("Access granted but not recorded:", reason);
+      return NextResponse.json({ ok: true, pending: false });
+    }
+
+    // Gate on: a failed write must not read as "you're approved", because
+    // nothing would ever arrive for Fauzy to approve.
+    if (!token) {
+      return NextResponse.json(
+        { error: "Could not send your request. Try again in a moment." },
+        { status: 502 }
+      );
+    }
+    return NextResponse.json({ ok: true, pending: true });
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("Access route error:", message);
-    return NextResponse.json({ ok: true });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Access route error:", msg);
+    if (pending) {
+      return NextResponse.json(
+        { error: "Could not send your request. Try again in a moment." },
+        { status: 502 }
+      );
+    }
+    return NextResponse.json({ ok: true, pending: false });
   }
 }

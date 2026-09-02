@@ -7,8 +7,16 @@ import { useEffect, useState } from "react";
 import { Editor as DarkroomEditor, Lock } from "@/app/darkroom/Composer";
 import { Writer } from "./Writer";
 import { Notes } from "./Notes";
+import { Access } from "./Access";
 
-type Room = "write" | "darkroom" | "notes";
+type Room = "write" | "darkroom" | "notes" | "access";
+
+const LABEL: Record<Room, string> = {
+  write: "Write",
+  darkroom: "Darkroom",
+  notes: "Notes",
+  access: "Access",
+};
 
 export function Studio({ start = "write" }: { start?: Room }) {
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
@@ -45,7 +53,7 @@ export function Studio({ start = "write" }: { start?: Room }) {
   return (
     <Shell wide>
       <div className="flex gap-5 text-[13px] mb-8">
-        {(["write", "darkroom", "notes"] as Room[]).map((r) => (
+        {(["write", "darkroom", "notes", "access"] as Room[]).map((r) => (
           <button
             key={r}
             onClick={() => setRoom(r)}
@@ -56,13 +64,14 @@ export function Studio({ start = "write" }: { start?: Room }) {
                 : "text-fg-body hover:text-fg transition-colors duration-300"
             }
           >
-            {r === "write" ? "Write" : r === "darkroom" ? "Darkroom" : "Notes"}
+            {LABEL[r]}
           </button>
         ))}
       </div>
       {room === "write" && <Writer />}
       {room === "darkroom" && <DarkroomEditor />}
       {room === "notes" && <Notes />}
+      {room === "access" && <Access />}
     </Shell>
   );
 }

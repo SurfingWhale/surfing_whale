@@ -1,8 +1,11 @@
 // app/work/crime-la/page.tsx
 //
-// The Los Angeles crime analysis, from Untamed98x/Unveiling-Crime-Trends-in-
-// Lost-Angeles (2023). Tagged #Finished in Notion but it never appeared in
+// The Los Angeles crime analysis, from the Unveiling-Crime-Trends-in-Lost-
+// Angeles repo (2023). Tagged #Finished in Notion but it never appeared in
 // the site's project list, so it is written up here directly.
+//
+// The account handle stays out of this file on purpose — it ends up in the
+// server source map, and the rule is that it appears nowhere a build emits.
 //
 // This is deliberately framed as early work rather than dressed up as a
 // study. It is an exercise in loading, cleaning and plotting a public

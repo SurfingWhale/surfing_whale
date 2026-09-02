@@ -5,94 +5,34 @@ import { useEffect, useState } from "react";
 import type { NotionBlock, NotionProject } from "@/app/lib/notion";
 import { useAccess } from "@/app/components/AccessGate";
 import { ReadMoreGate } from "@/app/components/ReadMoreGate";
-
-// Enough of the story to judge whether it is worth an email — the opening
-// heading and the paragraphs under it, not a teaser line.
-const FREE_BLOCKS = 4;
+import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 
 interface Props {
     project: NotionProject | null;
     onClose: () => void;
     }
 
-    function BlockRenderer({ block }: { block: NotionBlock }) {
-    switch (block.type) {
-        case "heading_1":
-        return <h3 className="text-[15px] font-medium tracking-[-0.02em] mt-8 mb-2">{block.text}</h3>;
-        case "heading_2":
-        return <h4 className="text-[13px] font-medium tracking-[-0.02em] mt-6 mb-2">{block.text}</h4>;
-        case "heading_3":
-        return <h5 className="text-[13px] font-medium mt-5 mb-1">{block.text}</h5>;
-        case "paragraph":
-        return block.text
-            ? <p className="text-fg-secondary text-[13px] leading-[2] mb-4">{block.text}</p>
-            : <div className="mb-3" />;
-        case "bulleted_list_item":
-        return (
-            <div className="flex gap-3 mb-2">
-            <span className="text-fg-muted mt-0.5 flex-shrink-0">•</span>
-            <p className="text-fg-secondary text-[13px] leading-[2]">{block.text}</p>
-            </div>
-        );
-        case "numbered_list_item":
-        return (
-            <div className="flex gap-3 mb-2">
-            <span className="text-fg-muted text-[13px] flex-shrink-0">–</span>
-            <p className="text-fg-secondary text-[13px] leading-[2]">{block.text}</p>
-            </div>
-        );
-        case "code":
-        return (
-            <div className="my-4 rounded-lg overflow-hidden border border-border">
-            <div className="bg-bg-muted px-3 py-1.5">
-                <span className="font-mono text-[11px] text-fg-muted">{block.language}</span>
-            </div>
-            <pre className="p-4 overflow-x-auto bg-bg-subtle">
-                <code className="font-mono text-[11px] text-fg leading-[1.7] whitespace-pre">
-                {block.text}
-                </code>
-            </pre>
-            </div>
-        );
-        case "quote":
-        return (
-            <blockquote className="border-l-2 border-border-strong pl-4 my-4">
-            <p className="text-fg-secondary text-[13px] italic leading-[2]">{block.text}</p>
-            </blockquote>
-        );
-        case "image":
-        return (
-            <div className="my-5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-                src={block.url}
-                alt={block.caption ?? ""}
-                className="w-full rounded-lg border border-border object-cover"
-            />
-            {block.caption && (
-                <p className="text-fg-muted text-[11px] text-center mt-2">{block.caption}</p>
-            )}
-            </div>
-        );
-        case "divider":
-        return <hr className="border-border my-6" />;
-        default:
-        return null;
-    }
-    }
-
     export function ProjectModal({ project, onClose }: Props) {
     const [blocks, setBlocks] = useState<NotionBlock[]>([]);
+    // The server cuts the page short when the gate is on, so whether there is
+    // more to read is its answer to give, not something to infer from a count.
+    const [truncated, setTruncated] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [copied, setCopied] = useState(false);
     const { unlocked } = useAccess();
 
     useEffect(() => {
         if (!project) return;
         setBlocks([]);
+        setTruncated(false);
+        setCopied(false);
         setLoading(true);
         fetch(`/api/notion/${project.id}`)
         .then((r) => r.json())
-        .then((data) => setBlocks(data.blocks ?? []))
+        .then((data) => {
+            setBlocks(data.blocks ?? []);
+            setTruncated(Boolean(data.truncated));
+        })
         .catch(() => setBlocks([]))
         .finally(() => setLoading(false));
     }, [project]);
@@ -155,15 +95,35 @@ interface Props {
             </div>
             )}
 
-            <div className="px-6 py-4 border-b border-border">
+            <div className="px-6 py-4 border-b border-border flex flex-wrap items-center gap-x-6 gap-y-2">
             <a
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
+                className="text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
             >
                 Open project →
             </a>
+            {/* A panel has no URL of its own, so sharing one meant sharing the
+                homepage and saying "scroll, then click the third folder". */}
+            <a
+                href={`/work/p/${project.slug}`}
+                className="text-[13px] text-fg-body hover:text-fg transition-colors duration-300"
+            >
+                Its own page ↗
+            </a>
+            <button
+                type="button"
+                onClick={() => {
+                navigator.clipboard
+                    ?.writeText(`${window.location.origin}/work/p/${project.slug}`)
+                    .then(() => setCopied(true))
+                    .catch(() => setCopied(false));
+                }}
+                className="text-[13px] text-fg-body hover:text-fg transition-colors duration-300"
+            >
+                {copied ? "Link copied" : "Copy link"}
+            </button>
             </div>
 
             <div className="px-6 py-6 flex-1">
@@ -180,7 +140,7 @@ interface Props {
                 {(unlocked ? blocks : blocks.slice(0, FREE_BLOCKS)).map((block, i) => (
                     <BlockRenderer key={i} block={block} />
                 ))}
-                {!unlocked && blocks.length > FREE_BLOCKS && (
+                {!unlocked && (truncated || blocks.length > FREE_BLOCKS) && (
                     <ReadMoreGate reason="Project" />
                 )}
                 </div>

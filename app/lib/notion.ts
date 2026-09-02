@@ -1,12 +1,29 @@
 // app/lib/notion.ts
 export interface NotionProject {
     id: string;
+    /** Derived from the title, not stored in Notion — the shareable URL. */
+    slug: string;
     title: string;
     link: string;
     tags: string[];
     image: string;
     date: string;
     subGroup: string;
+    }
+
+    /**
+     * The page id is a UUID, which makes an ugly link and leaks the Notion
+     * page. Titles are short and unique enough in one portfolio, so the slug
+     * comes from there; a title that slugs to nothing falls back to the id.
+     */
+    export function slugify(title: string): string {
+    const slug = title
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+    return slug || "";
     }
 
     export interface NotionBlock {
@@ -43,6 +60,9 @@ export interface NotionProject {
     const data = await res.json();
     return data.results.map((page: any) => ({
         id: page.id,
+        slug:
+        slugify(page.properties.Name?.title?.[0]?.plain_text ?? "") ||
+        String(page.id).replace(/-/g, ""),
         title: page.properties.Name?.title?.[0]?.plain_text ?? "Untitled",
         link: page.properties.Citation?.rich_text?.[0]?.plain_text ?? "#",
         tags: page.properties.Tags?.multi_select?.map((t: any) => t.name) ?? [],
@@ -107,3 +127,10 @@ export interface NotionProject {
         }
     }).filter((b: NotionBlock) => b.type !== "unsupported");
     }
+/** Resolves a shareable slug back to the project it names. */
+export async function getProjectBySlug(
+  slug: string
+): Promise<NotionProject | null> {
+  const projects = await getProjects();
+  return projects.find((p) => p.slug === slug) ?? null;
+}
