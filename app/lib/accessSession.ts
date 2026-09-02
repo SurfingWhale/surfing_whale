@@ -53,6 +53,23 @@ export async function isReader(): Promise<boolean> {
   return verifyReaderToken(jar.get(COOKIE)?.value);
 }
 
+/**
+ * Everything the gate needs before it can honestly be switched on.
+ *
+ * DARKROOM_SECRET matters more than it looks. secret() falls back to a fresh
+ * random value on every call, so without it a cookie signed during one call
+ * cannot verify on the next — an approved reader would click their link, be
+ * handed a cookie, and still be locked out, with nothing anywhere saying why.
+ * A gate that cannot let anyone in is worse than no gate, so it stays off
+ * until it can actually work.
+ */
+export function gateBlockers(): string[] {
+  const missing: string[] = [];
+  if (!process.env.NOTION_ACCESS_DATABASE_ID) missing.push("NOTION_ACCESS_DATABASE_ID");
+  if (!process.env.DARKROOM_SECRET) missing.push("DARKROOM_SECRET");
+  return missing;
+}
+
 /** True once the gate is switched on. Off, everything stays open as before. */
 export const gateEnabled = () =>
-  process.env.ACCESS_GATE === "on" && Boolean(process.env.NOTION_ACCESS_DATABASE_ID);
+  process.env.ACCESS_GATE === "on" && gateBlockers().length === 0;

@@ -8,7 +8,7 @@ import {
   MESSAGE_MAX,
   type AccessReason,
 } from "@/app/lib/accessRequests";
-import { gateEnabled, isReader } from "@/app/lib/accessSession";
+import { gateEnabled, gateBlockers, isReader } from "@/app/lib/accessSession";
 
 const REASONS: AccessReason[] = ["CV", "Project"];
 
@@ -24,6 +24,11 @@ export async function GET(): Promise<NextResponse> {
     // Off, a request still records but the visitor is let straight in, which
     // is how this behaved before approval existed.
     gate: gateEnabled() ? "approval" : "open",
+    // ACCESS_GATE=on with something missing is the confusing case: the setting
+    // says approval, the behaviour says open. Say which variable is the reason
+    // rather than leaving it to be guessed from the outside.
+    gateBlockedBy:
+      process.env.ACCESS_GATE === "on" && !gateEnabled() ? gateBlockers() : [],
     // The client cannot read the cookie — it is httpOnly — so the answer to
     // "am I in?" has to come from here.
     reader: await isReader(),
