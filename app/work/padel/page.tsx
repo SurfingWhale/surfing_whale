@@ -13,8 +13,7 @@
 // niche percentages come off a 41-review base, so "2.4%" is one review (§05).
 import type { Metadata } from "next";
 import Link from "next/link";
-import { GapMap } from "./GapMap";
-import { IsochroneMap } from "./IsochroneMap";
+import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { DocPreview } from "@/app/components/DocPreview";
 import { ExecutiveSummary } from "./ExecutiveSummary";
 import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
@@ -235,9 +234,14 @@ export default function PadelPage() {
           <p>
             Across the 22 kelurahan there are {TOTAL_COURTS} courts serving{" "}
             {TOTAL_POP.toLocaleString("en-GB")} people. Plotted, the supply is
-            not close to even.
+            not close to even — the map is live, so every kelurahan will give
+            up its gap score, population and court count on a tap.
           </p>
-          <GapMap />
+          <EmbedFrame
+            src="https://padel-visual.vercel.app/Visualization/gap_map_pretty.html"
+            title="Gap analysis map — 22 kelurahan around Bintaro"
+            caption="The gap map, live: every kelurahan with its gap score, population and court count in the popup."
+          />
           <p>
             The gap score ranks Pondok Aren first at 0.79, then Perigi Lama at
             0.73. What the ranking hides is that those two are not merely
@@ -282,12 +286,16 @@ export default function PadelPage() {
         <Section number="04" title="Pondok Labu: the other side of the same map">
           <p>
             A few kilometres east the question inverts. Sense Padel Margasatwa
-            is not in a gap — it is in a saturated field. This is what that
-            looks like: every court&rsquo;s ten-minute drive-time area, drawn
-            over every other court&rsquo;s, with the two Sense Padel venues
-            picked out.
+            is not in a gap — it is in a saturated field. The map below is
+            the live one: pan it, and tap a court to see whose ten-minute
+            reach you are standing in.
           </p>
-          <IsochroneMap />
+          <EmbedFrame
+            src="https://sense-padel-pondoklabu.vercel.app"
+            title="Isochrone map — Sense Padel Pondok Labu against 140 competitors"
+            caption="Red is Sense Padel Margasatwa's ten-minute reach, blue is every competitor's, and the heat underneath is court density."
+            ratio="3 / 4"
+          />
           <p>
             What follows is the strategic snapshot itself rather than my
             summary of it: the density table, the review classification, the

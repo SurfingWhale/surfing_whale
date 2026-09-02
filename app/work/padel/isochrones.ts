@@ -4,9 +4,11 @@
 // 142 polygons, 140 competitors and the 2 Sense Padel venues, generated from
 // OpenRouteService over the Jabodetabek road network.
 //
-// Lifted from the deployed page's inline GeoJSON because the folium original
-// cannot render here — Leaflet and the OSM tiles are both blocked — and a
-// screenshot of a tiled basemap would not match this site anyway.
+// Lifted from the deployed page's inline GeoJSON. Nothing imports this at
+// runtime any more — the case study embeds Fauzy's live folium map instead of
+// a drawing of it. It is kept because isochrone-sheet.ts, the cut-down copy
+// the folder thumbnail draws, is generated from this file; regenerating that
+// without this would mean re-extracting the GeoJSON from the deployment.
 //
 // Projected once at build time (plate carree, x scaled by cos(lat)) and
 // simplified with Ramer-Douglas-Peucker at ~0.11% of the map width:
