@@ -50,6 +50,43 @@ export function isRestricted(page: any): boolean {
     return /^https?:\/\//i.test(v) ? v : "";
     }
 
+    /**
+     * Image is a free-text URL field too, and whatever it holds becomes an
+     * <img src> — a request the visitor's browser makes, to whatever host is
+     * named. One row points at a personal GitHub Pages domain, which would put
+     * that hostname in the network tab of everyone who loaded the page.
+     *
+     * So: an allowlist of hosts the site is willing to make a visitor call.
+     * Everything else falls back to the placeholder. Naming the hosts we trust
+     * needs no list of the hosts we do not, which keeps the private domain out
+     * of this file and out of the source map built from it.
+     */
+    const IMAGE_HOSTS = ["res.cloudinary.com", "images.unsplash.com"];
+
+    function publicImage(raw: string): string {
+    const v = (raw ?? "").trim();
+    if (!v) return PLACEHOLDER;
+    if (v.startsWith("/")) return v; // served by this site
+    try {
+        const { protocol, hostname } = new URL(v);
+        if (protocol !== "https:") return PLACEHOLDER;
+        return IMAGE_HOSTS.includes(hostname) ? v : PLACEHOLDER;
+    } catch {
+        return PLACEHOLDER;
+    }
+    }
+
+    const PLACEHOLDER = "/images/placeholder.png";
+
+/**
+ * The one property that decides publication. Visibility must say Public — a
+ * blank stays off the site, so a row nobody has classified yet is hidden by
+ * default rather than published by default. That is the whole point: the
+ * previous design published anything tagged #Finished and left "should this be
+ * public?" to be inferred from prose the code never read.
+ */
+const PUBLIC = "Public";
+
 export interface NotionProject {
     id: string;
     /** Derived from the title, not stored in Notion — the shareable URL. */
@@ -114,12 +151,23 @@ export interface NotionProject {
     // The tag says "this is finished". It does not say "this may be published",
     // and a row can be both finished and confidential.
     const publishable = rows.filter((page) => {
-        if (!isRestricted(page)) return true;
+        const name = page?.properties?.Name?.title?.[0]?.plain_text ?? page?.id;
+        const visibility = page?.properties?.Visibility?.select?.name ?? "";
+
+        if (visibility !== PUBLIC) {
         console.warn(
-        "Withheld restricted project:",
-        page?.properties?.Name?.title?.[0]?.plain_text ?? page?.id
+            `Withheld "${name}": Visibility is ${visibility || "unset"}, not ${PUBLIC}`
         );
         return false;
+        }
+        // Belt and braces. Visibility is the gate; the text markers stay as a
+        // second net, because a row can be marked Public by mistake and the
+        // padlock in its title is then the last thing standing.
+        if (isRestricted(page)) {
+        console.warn(`Withheld "${name}": marked Public but carries a restriction marker`);
+        return false;
+        }
+        return true;
     });
 
     return publishable.map((page: any) => ({
@@ -130,7 +178,7 @@ export interface NotionProject {
         title: page.properties.Name?.title?.[0]?.plain_text ?? "Untitled",
         link: publicLink(page.properties.Citation?.rich_text?.[0]?.plain_text ?? ""),
         tags: page.properties.Tags?.multi_select?.map((t: any) => t.name) ?? [],
-        image: page.properties.Image?.url ?? "/images/placeholder.png",
+        image: publicImage(page.properties.Image?.url ?? ""),
         date: page.properties.Date?.date?.start ?? "",
         subGroup: page.properties["Sub Group"]?.status?.name ?? "",
     }));
