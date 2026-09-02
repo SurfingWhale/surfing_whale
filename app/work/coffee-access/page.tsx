@@ -8,8 +8,15 @@
 // longer than the note and told the reader less about it.
 //
 // What is left around the document is an English lead-in for a reader who
-// cannot read it, and the limits it does not state about itself (§03). No
-// chart, because the map was never exported.
+// cannot read it, and the limits it does not state about itself (§03).
+//
+// There is no map on this page and there cannot be one yet. Checked, in
+// order: the Notion page carries no embed, Learn_Spatial_Data_Analytics
+// holds a single 0-byte notebook with empty data directories, no Tomoro
+// deployment exists (only the two padel ones), and Overpass, Google Maps,
+// CARTO and ORS are all unreachable or need keys. Drawing something that
+// merely illustrates the three findings would look like evidence and not be
+// any, so §03 tells the reader the overlay is gone instead.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DocPreview } from "@/app/components/DocPreview";
@@ -172,6 +179,16 @@ export default function CoffeeAccessPage() {
             estates inside each band has been computed, and no significance
             has been tested. The three findings in the note are what the map
             plainly showed, and no more than that.
+          </p>
+          <p>
+            And the map itself is gone. The note says &ldquo;dari peta yang
+            dihasilkan&rdquo; — from the map produced — but that overlay was
+            never exported: not to an image, not to a repository, not to a
+            deployment. So this page cannot show you the thing the findings
+            were read from, and it is not going to draw a substitute and let
+            it pass for the original. That is the real difference between this
+            and the padel study next door, where the map is still live and
+            embedded.
           </p>
           <p>
             Two limits in the data underneath. Tapera only covers subsidised
