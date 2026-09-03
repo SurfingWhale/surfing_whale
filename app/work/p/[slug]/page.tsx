@@ -12,6 +12,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProjectBySlug, getPageBlocks, storyOnly } from "@/app/lib/notion";
 import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
+import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { AccessProvider } from "@/app/components/AccessGate";
 import { ReadMoreGate } from "@/app/components/ReadMoreGate";
 import { gateEnabled, isReader } from "@/app/lib/accessSession";
@@ -63,6 +64,13 @@ export default async function ProjectPage({
   const { blocks, withheld } = storyOnly(
     await getPageBlocks(project.id).catch(() => [])
   );
+  // The placeholder is a grey square standing in for nothing; the frame says
+  // "nothing" better and more honestly than a picture of nothing does.
+  const hero =
+    project.image && !project.image.includes("placeholder")
+      ? project.image
+      : undefined;
+
   const locked = gateEnabled() && !(await isReader());
   const shown = locked ? blocks.slice(0, FREE_BLOCKS) : blocks;
   const withheldGate = locked && blocks.length > FREE_BLOCKS;
@@ -117,18 +125,25 @@ export default async function ProjectPage({
           )}
         </header>
 
-        {project.image && !project.image.includes("placeholder") && (
-          <div className={`${column} mb-10`}>
-            <div className="aspect-video w-full overflow-hidden rounded-lg border border-border bg-bg-muted">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        )}
+        {/* Every project gets the frame, whether or not there is anything to
+            put in it. A study that opens with a picture and one that opens
+            with a paragraph should still look like the same site — and the
+            empty frame says what is missing instead of pretending nothing is.
+            Same component the hand-written case studies use. */}
+        <div className={`${column} mb-10`}>
+          <EmbedFrame
+            image={hero}
+            alt={hero ? `${project.title} — project visual` : undefined}
+            title={project.title}
+            ratio="16 / 9"
+            caption={
+              hero
+                ? "The visual saved with this project in Notion."
+                : "No visual saved for this one yet. The work exists; a picture of it does not."
+            }
+            pending="Nothing has been exported for this project yet — no screenshot, no map, no chart."
+          />
+        </div>
 
         <div className={column}>
           {shown.length === 0 ? (

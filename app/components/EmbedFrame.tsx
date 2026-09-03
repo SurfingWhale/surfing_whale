@@ -44,13 +44,31 @@ export function EmbedFrame({
         style={{ aspectRatio: ratio }}
       >
         {image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={image}
-            alt={alt ?? title}
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          // The frame crops to a fixed ratio so every study lines up, which
+          // means the picture is always showing less than it has. Opening it
+          // is a plain link to the file: no viewer to load, no state to get
+          // wrong, and it survives a middle-click like any other link.
+          <a
+            href={image}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute inset-0 block group"
+            aria-label={`Open the full image: ${title}`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={image}
+              alt={alt ?? title}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <span
+              aria-hidden="true"
+              className="absolute bottom-3 right-3 rounded-md bg-bg/85 backdrop-blur-sm border border-border px-2 py-1 text-[11px] leading-none text-fg-body opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+            >
+              Expand ↗
+            </span>
+          </a>
         ) : src ? (
           <iframe
             src={src}
@@ -80,16 +98,16 @@ export function EmbedFrame({
       </div>
       <figcaption className="text-[11px] leading-[1.7] text-fg-muted mt-2 px-6 sm:px-0">
         {caption}
-        {src && (
+        {(src || image) && (
           <>
             {" "}
             <a
-              href={src}
+              href={src ?? image}
               target="_blank"
               rel="noopener noreferrer"
               className="text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
             >
-              Open it full screen ↗
+              {src ? "Open it full screen ↗" : "Open the full image ↗"}
             </a>
           </>
         )}
