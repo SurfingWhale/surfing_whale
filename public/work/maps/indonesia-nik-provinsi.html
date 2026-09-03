@@ -1,0 +1,3071 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_eff21434de619e1caf5c923b55777793 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ardhi/Leaflet.MousePosition/src/L.Control.MousePosition.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css"/>
+</head>
+<body>
+    
+    
+<div style="
+    position: fixed;
+    top: 10px; left: 10px; width: 320px; max-height: 70vh;
+    overflow-y: auto; z-index: 9999;
+    background: white; border-radius: 10px; padding: 12px 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+    font-family: -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    font-size: 14px;">
+  <div style="font-weight:700; font-size:15px; margin-bottom:6px;">🆔 Struktur NIK</div>
+  <div style="font-size:13px; margin-bottom:8px; line-height:1.4em;">
+    NIK = <b>PP-RR-DDMMYY-XXXX</b><br>
+    <b>PP</b> = Kode Provinsi &nbsp;|&nbsp; <b>RR</b> = Kode Kab/Kota<br>
+    <b>DDMMYY</b> = Tanggal-Bulan-Tahun Lahir &nbsp;|&nbsp; <b>XXXX</b> = No. urut
+  </div>
+  <div style="font-weight:700; font-size:15px; margin:8px 0 6px;">📍 Kode Provinsi (PP)</div>
+  <ul style='margin:0; padding-left:18px; font-size:12px; line-height:1.35em;'><li><b>11</b> = Aceh</li><li><b>12</b> = Sumatera Utara</li><li><b>13</b> = Sumatera Barat</li><li><b>14</b> = Riau</li><li><b>15</b> = Jambi</li><li><b>16</b> = Sumatera Selatan</li><li><b>17</b> = Bengkulu</li><li><b>18</b> = Lampung</li><li><b>19</b> = Kep. Bangka Belitung</li><li><b>21</b> = Kep. Riau</li><li><b>31</b> = DKI Jakarta</li><li><b>32</b> = Jawa Barat</li><li><b>33</b> = Jawa Tengah</li><li><b>34</b> = DI Yogyakarta</li><li><b>35</b> = Jawa Timur</li><li><b>36</b> = Banten</li><li><b>51</b> = Bali</li><li><b>52</b> = Nusa Tenggara Barat</li><li><b>53</b> = Nusa Tenggara Timur</li><li><b>61</b> = Kalimantan Barat</li><li><b>62</b> = Kalimantan Tengah</li><li><b>63</b> = Kalimantan Selatan</li><li><b>64</b> = Kalimantan Timur</li><li><b>65</b> = Kalimantan Utara</li><li><b>71</b> = Sulawesi Utara</li><li><b>72</b> = Sulawesi Tengah</li><li><b>73</b> = Sulawesi Selatan</li><li><b>74</b> = Sulawesi Tenggara</li><li><b>75</b> = Gorontalo</li><li><b>76</b> = Sulawesi Barat</li><li><b>81</b> = Maluku</li><li><b>82</b> = Maluku Utara</li><li><b>91</b> = Papua</li><li><b>92</b> = Papua Barat</li><li><b>93</b> = Papua Selatan</li><li><b>94</b> = Papua Tengah</li><li><b>95</b> = Papua Pegunungan</li><li><b>96</b> = Papua Barat Daya</li></ul>
+</div>
+    
+            <div class="folium-map" id="map_eff21434de619e1caf5c923b55777793" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_eff21434de619e1caf5c923b55777793 = L.map(
+                "map_eff21434de619e1caf5c923b55777793",
+                {
+                    center: [-2.5, 117.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 5,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_eff21434de619e1caf5c923b55777793);
+
+            
+
+        
+    
+            var tile_layer_8f55e332fc3014516e13e3d070d0286e = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8f55e332fc3014516e13e3d070d0286e.addTo(map_eff21434de619e1caf5c923b55777793);
+        
+    
+            var marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var marker_2d26aa0da8f52a18936f7ad3f0319f1f = L.marker(
+                [5.5483, 95.3238],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_6062f0a343353383335fd4326a4864be = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d1497a3cd404acefd1b6c2ac3e5f9bac = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_bf0456cea48b33985e3abd10b13378d0 = $(`<div id="html_bf0456cea48b33985e3abd10b13378d0" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Aceh</h4>       <div><b>Kode PP (NIK):</b> 11</div>       <div><b>Ibu Kota:</b> Banda Aceh</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 5.5483, 95.3238</div>     </div>     </div>`)[0];
+                popup_d1497a3cd404acefd1b6c2ac3e5f9bac.setContent(html_bf0456cea48b33985e3abd10b13378d0);
+            
+        
+
+        marker_2d26aa0da8f52a18936f7ad3f0319f1f.bindPopup(popup_d1497a3cd404acefd1b6c2ac3e5f9bac)
+        ;
+
+        
+    
+    
+            marker_2d26aa0da8f52a18936f7ad3f0319f1f.bindTooltip(
+                `<div>
+                     Aceh — PP 11
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2d26aa0da8f52a18936f7ad3f0319f1f.setIcon(icon_6062f0a343353383335fd4326a4864be);
+            
+    
+            var marker_8667b9ca96b6137bcc92e1928d0d8b19 = L.marker(
+                [3.5952, 98.6722],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_59300a536c6ae89ebeff153c7ca68463 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d0cde22cbade7b5ed31b29d4034147b3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_3163ee8829945c7ab2ab3d92a993b2a6 = $(`<div id="html_3163ee8829945c7ab2ab3d92a993b2a6" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sumatera Utara</h4>       <div><b>Kode PP (NIK):</b> 12</div>       <div><b>Ibu Kota:</b> Medan</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 3.5952, 98.6722</div>     </div>     </div>`)[0];
+                popup_d0cde22cbade7b5ed31b29d4034147b3.setContent(html_3163ee8829945c7ab2ab3d92a993b2a6);
+            
+        
+
+        marker_8667b9ca96b6137bcc92e1928d0d8b19.bindPopup(popup_d0cde22cbade7b5ed31b29d4034147b3)
+        ;
+
+        
+    
+    
+            marker_8667b9ca96b6137bcc92e1928d0d8b19.bindTooltip(
+                `<div>
+                     Sumatera Utara — PP 12
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8667b9ca96b6137bcc92e1928d0d8b19.setIcon(icon_59300a536c6ae89ebeff153c7ca68463);
+            
+    
+            var marker_efaeeba99483eefebf2209d2db11468a = L.marker(
+                [-0.9471, 100.4172],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_6cd9d8a5abf4314a0d90197d32a3f1af = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7ca669e4e6735295411aec53406ee9ec = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_87224818b073cb974ee614f5e47eb9d1 = $(`<div id="html_87224818b073cb974ee614f5e47eb9d1" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sumatera Barat</h4>       <div><b>Kode PP (NIK):</b> 13</div>       <div><b>Ibu Kota:</b> Padang</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -0.9471, 100.4172</div>     </div>     </div>`)[0];
+                popup_7ca669e4e6735295411aec53406ee9ec.setContent(html_87224818b073cb974ee614f5e47eb9d1);
+            
+        
+
+        marker_efaeeba99483eefebf2209d2db11468a.bindPopup(popup_7ca669e4e6735295411aec53406ee9ec)
+        ;
+
+        
+    
+    
+            marker_efaeeba99483eefebf2209d2db11468a.bindTooltip(
+                `<div>
+                     Sumatera Barat — PP 13
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_efaeeba99483eefebf2209d2db11468a.setIcon(icon_6cd9d8a5abf4314a0d90197d32a3f1af);
+            
+    
+            var marker_733ce66bafcda008fc20eb6142959d56 = L.marker(
+                [0.5071, 101.4478],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_e37612551bca37014d092c8a27918e16 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c84358b97d87ebede1bc3c3c7dbde65f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2432acae3737e605acc138cd60366899 = $(`<div id="html_2432acae3737e605acc138cd60366899" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Riau</h4>       <div><b>Kode PP (NIK):</b> 14</div>       <div><b>Ibu Kota:</b> Pekanbaru</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 0.5071, 101.4478</div>     </div>     </div>`)[0];
+                popup_c84358b97d87ebede1bc3c3c7dbde65f.setContent(html_2432acae3737e605acc138cd60366899);
+            
+        
+
+        marker_733ce66bafcda008fc20eb6142959d56.bindPopup(popup_c84358b97d87ebede1bc3c3c7dbde65f)
+        ;
+
+        
+    
+    
+            marker_733ce66bafcda008fc20eb6142959d56.bindTooltip(
+                `<div>
+                     Riau — PP 14
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_733ce66bafcda008fc20eb6142959d56.setIcon(icon_e37612551bca37014d092c8a27918e16);
+            
+    
+            var marker_4bb02720b7d656c89f577ee7d2c746fb = L.marker(
+                [-1.6101, 103.6131],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_e56490a83eee669a71b62e159ba5dfc4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_63fc6563f9256d6376d288d8c89c036d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8c7da5aea0c20d2853859b89e01a8482 = $(`<div id="html_8c7da5aea0c20d2853859b89e01a8482" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Jambi</h4>       <div><b>Kode PP (NIK):</b> 15</div>       <div><b>Ibu Kota:</b> Jambi</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -1.6101, 103.6131</div>     </div>     </div>`)[0];
+                popup_63fc6563f9256d6376d288d8c89c036d.setContent(html_8c7da5aea0c20d2853859b89e01a8482);
+            
+        
+
+        marker_4bb02720b7d656c89f577ee7d2c746fb.bindPopup(popup_63fc6563f9256d6376d288d8c89c036d)
+        ;
+
+        
+    
+    
+            marker_4bb02720b7d656c89f577ee7d2c746fb.bindTooltip(
+                `<div>
+                     Jambi — PP 15
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4bb02720b7d656c89f577ee7d2c746fb.setIcon(icon_e56490a83eee669a71b62e159ba5dfc4);
+            
+    
+            var marker_15dc2927696a00b5c88b06527fcdbdc6 = L.marker(
+                [-2.9909, 104.7566],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_112e63903b4fa4872663ff530a750ae5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_efbb45edce0f1b81e959cf3a19ba5234 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6787c6cea15850fb1e76fa361e046764 = $(`<div id="html_6787c6cea15850fb1e76fa361e046764" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sumatera Selatan</h4>       <div><b>Kode PP (NIK):</b> 16</div>       <div><b>Ibu Kota:</b> Palembang</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -2.9909, 104.7566</div>     </div>     </div>`)[0];
+                popup_efbb45edce0f1b81e959cf3a19ba5234.setContent(html_6787c6cea15850fb1e76fa361e046764);
+            
+        
+
+        marker_15dc2927696a00b5c88b06527fcdbdc6.bindPopup(popup_efbb45edce0f1b81e959cf3a19ba5234)
+        ;
+
+        
+    
+    
+            marker_15dc2927696a00b5c88b06527fcdbdc6.bindTooltip(
+                `<div>
+                     Sumatera Selatan — PP 16
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_15dc2927696a00b5c88b06527fcdbdc6.setIcon(icon_112e63903b4fa4872663ff530a750ae5);
+            
+    
+            var marker_dae5d2548cf6acfe21696bdc4e35a5df = L.marker(
+                [-3.8006, 102.2655],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_a5d4f825e7c3bb00b716b788b79e44c1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bc56f09b713a899d9edc37bf20a52c5d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f54d6ab9b0e3ff8d0ce912817f2f1ed4 = $(`<div id="html_f54d6ab9b0e3ff8d0ce912817f2f1ed4" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Bengkulu</h4>       <div><b>Kode PP (NIK):</b> 17</div>       <div><b>Ibu Kota:</b> Bengkulu</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -3.8006, 102.2655</div>     </div>     </div>`)[0];
+                popup_bc56f09b713a899d9edc37bf20a52c5d.setContent(html_f54d6ab9b0e3ff8d0ce912817f2f1ed4);
+            
+        
+
+        marker_dae5d2548cf6acfe21696bdc4e35a5df.bindPopup(popup_bc56f09b713a899d9edc37bf20a52c5d)
+        ;
+
+        
+    
+    
+            marker_dae5d2548cf6acfe21696bdc4e35a5df.bindTooltip(
+                `<div>
+                     Bengkulu — PP 17
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dae5d2548cf6acfe21696bdc4e35a5df.setIcon(icon_a5d4f825e7c3bb00b716b788b79e44c1);
+            
+    
+            var marker_8e6df5361c2d0cb800a502f06b7763e8 = L.marker(
+                [-5.3971, 105.2668],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_560e8eddccfb1a09bc1c60e2dc663f01 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_25e7242060eb710d6081b82e1a4f345d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fac3d808f373991814b8254593174e51 = $(`<div id="html_fac3d808f373991814b8254593174e51" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Lampung</h4>       <div><b>Kode PP (NIK):</b> 18</div>       <div><b>Ibu Kota:</b> Bandar Lampung</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -5.3971, 105.2668</div>     </div>     </div>`)[0];
+                popup_25e7242060eb710d6081b82e1a4f345d.setContent(html_fac3d808f373991814b8254593174e51);
+            
+        
+
+        marker_8e6df5361c2d0cb800a502f06b7763e8.bindPopup(popup_25e7242060eb710d6081b82e1a4f345d)
+        ;
+
+        
+    
+    
+            marker_8e6df5361c2d0cb800a502f06b7763e8.bindTooltip(
+                `<div>
+                     Lampung — PP 18
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8e6df5361c2d0cb800a502f06b7763e8.setIcon(icon_560e8eddccfb1a09bc1c60e2dc663f01);
+            
+    
+            var marker_475c91fd474baf19cfc02f09c3dc3818 = L.marker(
+                [-2.1291, 106.1099],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_b522ef1d05794773fd2cc0160ab1f7cf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ab4022853433d0edbbafde930ff6979a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_784497e2af15060e91ccda5572d098eb = $(`<div id="html_784497e2af15060e91ccda5572d098eb" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Kep. Bangka Belitung</h4>       <div><b>Kode PP (NIK):</b> 19</div>       <div><b>Ibu Kota:</b> Pangkalpinang</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -2.1291, 106.1099</div>     </div>     </div>`)[0];
+                popup_ab4022853433d0edbbafde930ff6979a.setContent(html_784497e2af15060e91ccda5572d098eb);
+            
+        
+
+        marker_475c91fd474baf19cfc02f09c3dc3818.bindPopup(popup_ab4022853433d0edbbafde930ff6979a)
+        ;
+
+        
+    
+    
+            marker_475c91fd474baf19cfc02f09c3dc3818.bindTooltip(
+                `<div>
+                     Kep. Bangka Belitung — PP 19
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_475c91fd474baf19cfc02f09c3dc3818.setIcon(icon_b522ef1d05794773fd2cc0160ab1f7cf);
+            
+    
+            var marker_e12b32734f4ef844f045bfe8dc8e57ea = L.marker(
+                [0.9173, 104.446],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_e0a4e8e7bf24be62fa7887d24bb943ba = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a794c91b8fb0f4c483cbe43814f0bcd2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_3c6b3b4938a570d102d408853ae4b7a2 = $(`<div id="html_3c6b3b4938a570d102d408853ae4b7a2" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Kep. Riau</h4>       <div><b>Kode PP (NIK):</b> 21</div>       <div><b>Ibu Kota:</b> Tanjung Pinang</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 0.9173, 104.446</div>     </div>     </div>`)[0];
+                popup_a794c91b8fb0f4c483cbe43814f0bcd2.setContent(html_3c6b3b4938a570d102d408853ae4b7a2);
+            
+        
+
+        marker_e12b32734f4ef844f045bfe8dc8e57ea.bindPopup(popup_a794c91b8fb0f4c483cbe43814f0bcd2)
+        ;
+
+        
+    
+    
+            marker_e12b32734f4ef844f045bfe8dc8e57ea.bindTooltip(
+                `<div>
+                     Kep. Riau — PP 21
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e12b32734f4ef844f045bfe8dc8e57ea.setIcon(icon_e0a4e8e7bf24be62fa7887d24bb943ba);
+            
+    
+            var marker_55023660c7e3b0aa2651bf026eb256aa = L.marker(
+                [-6.1754, 106.8272],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_6e9375b569926fb2a45e691521b679cf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c92b05c5dd62b5efcd7a716e61eb09d6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4940e22a1a0aeea30170b38d77746403 = $(`<div id="html_4940e22a1a0aeea30170b38d77746403" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>DKI Jakarta</h4>       <div><b>Kode PP (NIK):</b> 31</div>       <div><b>Ibu Kota:</b> Jakarta</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -6.1754, 106.8272</div>     </div>     </div>`)[0];
+                popup_c92b05c5dd62b5efcd7a716e61eb09d6.setContent(html_4940e22a1a0aeea30170b38d77746403);
+            
+        
+
+        marker_55023660c7e3b0aa2651bf026eb256aa.bindPopup(popup_c92b05c5dd62b5efcd7a716e61eb09d6)
+        ;
+
+        
+    
+    
+            marker_55023660c7e3b0aa2651bf026eb256aa.bindTooltip(
+                `<div>
+                     DKI Jakarta — PP 31
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_55023660c7e3b0aa2651bf026eb256aa.setIcon(icon_6e9375b569926fb2a45e691521b679cf);
+            
+    
+            var marker_69b9572e2dea003d14ed951f02eee1e3 = L.marker(
+                [-6.9175, 107.6191],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_1f2f97961b6b656217b961c47126413d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e12291143168773db50e13ff7536e736 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0159777b386508af8e27a06fb59f0089 = $(`<div id="html_0159777b386508af8e27a06fb59f0089" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Jawa Barat</h4>       <div><b>Kode PP (NIK):</b> 32</div>       <div><b>Ibu Kota:</b> Bandung</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -6.9175, 107.6191</div>     </div>     </div>`)[0];
+                popup_e12291143168773db50e13ff7536e736.setContent(html_0159777b386508af8e27a06fb59f0089);
+            
+        
+
+        marker_69b9572e2dea003d14ed951f02eee1e3.bindPopup(popup_e12291143168773db50e13ff7536e736)
+        ;
+
+        
+    
+    
+            marker_69b9572e2dea003d14ed951f02eee1e3.bindTooltip(
+                `<div>
+                     Jawa Barat — PP 32
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_69b9572e2dea003d14ed951f02eee1e3.setIcon(icon_1f2f97961b6b656217b961c47126413d);
+            
+    
+            var marker_19a2f9c17817f4269f86b074ff34d73c = L.marker(
+                [-6.9667, 110.4167],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_84837686316147a146d0b7140f8e31c9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bc08f437a49749e5fdd2e8714a0f7e01 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ebac05d05ff9ad9de525bb0b0c6d69a0 = $(`<div id="html_ebac05d05ff9ad9de525bb0b0c6d69a0" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Jawa Tengah</h4>       <div><b>Kode PP (NIK):</b> 33</div>       <div><b>Ibu Kota:</b> Semarang</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -6.9667, 110.4167</div>     </div>     </div>`)[0];
+                popup_bc08f437a49749e5fdd2e8714a0f7e01.setContent(html_ebac05d05ff9ad9de525bb0b0c6d69a0);
+            
+        
+
+        marker_19a2f9c17817f4269f86b074ff34d73c.bindPopup(popup_bc08f437a49749e5fdd2e8714a0f7e01)
+        ;
+
+        
+    
+    
+            marker_19a2f9c17817f4269f86b074ff34d73c.bindTooltip(
+                `<div>
+                     Jawa Tengah — PP 33
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_19a2f9c17817f4269f86b074ff34d73c.setIcon(icon_84837686316147a146d0b7140f8e31c9);
+            
+    
+            var marker_8b91a350cc3d76ac3cdc98a47fbc98f1 = L.marker(
+                [-7.7956, 110.3695],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_27bce2402e230874ec5513c0ce587bf9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5c1efa8f6d06130474631d92577bbf7b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_152b5b5f6c69278f3a5b4315252b9d44 = $(`<div id="html_152b5b5f6c69278f3a5b4315252b9d44" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>DI Yogyakarta</h4>       <div><b>Kode PP (NIK):</b> 34</div>       <div><b>Ibu Kota:</b> Yogyakarta</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -7.7956, 110.3695</div>     </div>     </div>`)[0];
+                popup_5c1efa8f6d06130474631d92577bbf7b.setContent(html_152b5b5f6c69278f3a5b4315252b9d44);
+            
+        
+
+        marker_8b91a350cc3d76ac3cdc98a47fbc98f1.bindPopup(popup_5c1efa8f6d06130474631d92577bbf7b)
+        ;
+
+        
+    
+    
+            marker_8b91a350cc3d76ac3cdc98a47fbc98f1.bindTooltip(
+                `<div>
+                     DI Yogyakarta — PP 34
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8b91a350cc3d76ac3cdc98a47fbc98f1.setIcon(icon_27bce2402e230874ec5513c0ce587bf9);
+            
+    
+            var marker_596abb0d273ccd31582bd1c7b147fd27 = L.marker(
+                [-7.2575, 112.7521],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_90ec4866b5004edf3971dc49895463a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ca39207c1fa311d0f5dd00400f472f50 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_45740d5c7c20d624892d2fe604272b84 = $(`<div id="html_45740d5c7c20d624892d2fe604272b84" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Jawa Timur</h4>       <div><b>Kode PP (NIK):</b> 35</div>       <div><b>Ibu Kota:</b> Surabaya</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -7.2575, 112.7521</div>     </div>     </div>`)[0];
+                popup_ca39207c1fa311d0f5dd00400f472f50.setContent(html_45740d5c7c20d624892d2fe604272b84);
+            
+        
+
+        marker_596abb0d273ccd31582bd1c7b147fd27.bindPopup(popup_ca39207c1fa311d0f5dd00400f472f50)
+        ;
+
+        
+    
+    
+            marker_596abb0d273ccd31582bd1c7b147fd27.bindTooltip(
+                `<div>
+                     Jawa Timur — PP 35
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_596abb0d273ccd31582bd1c7b147fd27.setIcon(icon_90ec4866b5004edf3971dc49895463a2);
+            
+    
+            var marker_d579a2d49d259bf08174f52c68de23cb = L.marker(
+                [-6.12, 106.1503],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_e5ad36d73c8b346ab664a54e9941c410 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_51ae77823a287a2fc2c8e79e00dded44 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9133d395ce377c1b1d6bf381a64a4b1c = $(`<div id="html_9133d395ce377c1b1d6bf381a64a4b1c" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Banten</h4>       <div><b>Kode PP (NIK):</b> 36</div>       <div><b>Ibu Kota:</b> Serang</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -6.12, 106.1503</div>     </div>     </div>`)[0];
+                popup_51ae77823a287a2fc2c8e79e00dded44.setContent(html_9133d395ce377c1b1d6bf381a64a4b1c);
+            
+        
+
+        marker_d579a2d49d259bf08174f52c68de23cb.bindPopup(popup_51ae77823a287a2fc2c8e79e00dded44)
+        ;
+
+        
+    
+    
+            marker_d579a2d49d259bf08174f52c68de23cb.bindTooltip(
+                `<div>
+                     Banten — PP 36
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d579a2d49d259bf08174f52c68de23cb.setIcon(icon_e5ad36d73c8b346ab664a54e9941c410);
+            
+    
+            var marker_ba2ca393d6eb6104bd39ee9df2812039 = L.marker(
+                [-8.65, 115.2167],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_1e80d965de2b317b2974c3a1beb6dcf8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_756126890d1e1ce4a59a9eafe12c5b74 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_da2fb4a2da0e8069eee82bb136738b6d = $(`<div id="html_da2fb4a2da0e8069eee82bb136738b6d" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Bali</h4>       <div><b>Kode PP (NIK):</b> 51</div>       <div><b>Ibu Kota:</b> Denpasar</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -8.65, 115.2167</div>     </div>     </div>`)[0];
+                popup_756126890d1e1ce4a59a9eafe12c5b74.setContent(html_da2fb4a2da0e8069eee82bb136738b6d);
+            
+        
+
+        marker_ba2ca393d6eb6104bd39ee9df2812039.bindPopup(popup_756126890d1e1ce4a59a9eafe12c5b74)
+        ;
+
+        
+    
+    
+            marker_ba2ca393d6eb6104bd39ee9df2812039.bindTooltip(
+                `<div>
+                     Bali — PP 51
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ba2ca393d6eb6104bd39ee9df2812039.setIcon(icon_1e80d965de2b317b2974c3a1beb6dcf8);
+            
+    
+            var marker_9937e455b127eb8873c4cd14a47d8c06 = L.marker(
+                [-8.5833, 116.1167],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_98b1e97b9aed654a290f0086d74ad095 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7b85170b80c34c1acf21bde1a8b3153f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_16eb0ea450ee026d724937fd09251e8a = $(`<div id="html_16eb0ea450ee026d724937fd09251e8a" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Nusa Tenggara Barat</h4>       <div><b>Kode PP (NIK):</b> 52</div>       <div><b>Ibu Kota:</b> Mataram</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -8.5833, 116.1167</div>     </div>     </div>`)[0];
+                popup_7b85170b80c34c1acf21bde1a8b3153f.setContent(html_16eb0ea450ee026d724937fd09251e8a);
+            
+        
+
+        marker_9937e455b127eb8873c4cd14a47d8c06.bindPopup(popup_7b85170b80c34c1acf21bde1a8b3153f)
+        ;
+
+        
+    
+    
+            marker_9937e455b127eb8873c4cd14a47d8c06.bindTooltip(
+                `<div>
+                     Nusa Tenggara Barat — PP 52
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9937e455b127eb8873c4cd14a47d8c06.setIcon(icon_98b1e97b9aed654a290f0086d74ad095);
+            
+    
+            var marker_3628c817d4c820aba37eba16dd12f7ac = L.marker(
+                [-10.1788, 123.607],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_b3d4a8551195ca0b3c112c55bfc6063b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0601e611bac8a5a3214aabd17cd2d3ba = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_20127f545c8583652a3cc1b3b6a7c84e = $(`<div id="html_20127f545c8583652a3cc1b3b6a7c84e" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Nusa Tenggara Timur</h4>       <div><b>Kode PP (NIK):</b> 53</div>       <div><b>Ibu Kota:</b> Kupang</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -10.1788, 123.607</div>     </div>     </div>`)[0];
+                popup_0601e611bac8a5a3214aabd17cd2d3ba.setContent(html_20127f545c8583652a3cc1b3b6a7c84e);
+            
+        
+
+        marker_3628c817d4c820aba37eba16dd12f7ac.bindPopup(popup_0601e611bac8a5a3214aabd17cd2d3ba)
+        ;
+
+        
+    
+    
+            marker_3628c817d4c820aba37eba16dd12f7ac.bindTooltip(
+                `<div>
+                     Nusa Tenggara Timur — PP 53
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3628c817d4c820aba37eba16dd12f7ac.setIcon(icon_b3d4a8551195ca0b3c112c55bfc6063b);
+            
+    
+            var marker_e0e20641505d2980cabe80fc1bf39fc3 = L.marker(
+                [-0.0227, 109.3306],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_bc59838774d7bb7c6b5b103bc8cddd79 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f4311147ede63d33503b4399d4d2d57e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8db84251c52ee9d58e080599072faaf3 = $(`<div id="html_8db84251c52ee9d58e080599072faaf3" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Kalimantan Barat</h4>       <div><b>Kode PP (NIK):</b> 61</div>       <div><b>Ibu Kota:</b> Pontianak</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -0.0227, 109.3306</div>     </div>     </div>`)[0];
+                popup_f4311147ede63d33503b4399d4d2d57e.setContent(html_8db84251c52ee9d58e080599072faaf3);
+            
+        
+
+        marker_e0e20641505d2980cabe80fc1bf39fc3.bindPopup(popup_f4311147ede63d33503b4399d4d2d57e)
+        ;
+
+        
+    
+    
+            marker_e0e20641505d2980cabe80fc1bf39fc3.bindTooltip(
+                `<div>
+                     Kalimantan Barat — PP 61
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e0e20641505d2980cabe80fc1bf39fc3.setIcon(icon_bc59838774d7bb7c6b5b103bc8cddd79);
+            
+    
+            var marker_ef2a70fa8452d124ab1004355be0363f = L.marker(
+                [-2.2096, 113.9108],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_0eca27eb606fbf91ee9004aa4076d8f5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e47a82b79aab17eddd77c48b450147ed = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d4144084a81067172f16cf98f2e87e1c = $(`<div id="html_d4144084a81067172f16cf98f2e87e1c" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Kalimantan Tengah</h4>       <div><b>Kode PP (NIK):</b> 62</div>       <div><b>Ibu Kota:</b> Palangka Raya</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -2.2096, 113.9108</div>     </div>     </div>`)[0];
+                popup_e47a82b79aab17eddd77c48b450147ed.setContent(html_d4144084a81067172f16cf98f2e87e1c);
+            
+        
+
+        marker_ef2a70fa8452d124ab1004355be0363f.bindPopup(popup_e47a82b79aab17eddd77c48b450147ed)
+        ;
+
+        
+    
+    
+            marker_ef2a70fa8452d124ab1004355be0363f.bindTooltip(
+                `<div>
+                     Kalimantan Tengah — PP 62
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ef2a70fa8452d124ab1004355be0363f.setIcon(icon_0eca27eb606fbf91ee9004aa4076d8f5);
+            
+    
+            var marker_959e388187b3179858155a8db9ca3bad = L.marker(
+                [-3.442, 114.845],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_304c8443d72ca7689b94d77d2bb1f1db = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e8d4bb14079b779ab7e9d064c7531d56 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5398f836ee621c966f330cce16953f08 = $(`<div id="html_5398f836ee621c966f330cce16953f08" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Kalimantan Selatan</h4>       <div><b>Kode PP (NIK):</b> 63</div>       <div><b>Ibu Kota:</b> Banjarbaru</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -3.442, 114.845</div>     </div>     </div>`)[0];
+                popup_e8d4bb14079b779ab7e9d064c7531d56.setContent(html_5398f836ee621c966f330cce16953f08);
+            
+        
+
+        marker_959e388187b3179858155a8db9ca3bad.bindPopup(popup_e8d4bb14079b779ab7e9d064c7531d56)
+        ;
+
+        
+    
+    
+            marker_959e388187b3179858155a8db9ca3bad.bindTooltip(
+                `<div>
+                     Kalimantan Selatan — PP 63
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_959e388187b3179858155a8db9ca3bad.setIcon(icon_304c8443d72ca7689b94d77d2bb1f1db);
+            
+    
+            var marker_866a44661e26b8e5105c27a0c83e56b2 = L.marker(
+                [-0.5022, 117.1536],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_27ef7ea86c40f2b9c77d0ba1d3bccafa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5bc26f6804bbf333ddc22ff33d261f58 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_61132223a548dcde2351dff1bba2d64a = $(`<div id="html_61132223a548dcde2351dff1bba2d64a" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Kalimantan Timur</h4>       <div><b>Kode PP (NIK):</b> 64</div>       <div><b>Ibu Kota:</b> Samarinda</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -0.5022, 117.1536</div>     </div>     </div>`)[0];
+                popup_5bc26f6804bbf333ddc22ff33d261f58.setContent(html_61132223a548dcde2351dff1bba2d64a);
+            
+        
+
+        marker_866a44661e26b8e5105c27a0c83e56b2.bindPopup(popup_5bc26f6804bbf333ddc22ff33d261f58)
+        ;
+
+        
+    
+    
+            marker_866a44661e26b8e5105c27a0c83e56b2.bindTooltip(
+                `<div>
+                     Kalimantan Timur — PP 64
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_866a44661e26b8e5105c27a0c83e56b2.setIcon(icon_27ef7ea86c40f2b9c77d0ba1d3bccafa);
+            
+    
+            var marker_ce4886fc00d784305049ebddb78268cc = L.marker(
+                [2.8371, 117.3711],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_986248cd0b9342bfc29e4d055b881201 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_de4fa3ff51e3a656aeb9aec60e443499 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_196c9afbee8f23c6dea5fd753fe769f7 = $(`<div id="html_196c9afbee8f23c6dea5fd753fe769f7" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Kalimantan Utara</h4>       <div><b>Kode PP (NIK):</b> 65</div>       <div><b>Ibu Kota:</b> Tanjung Selor</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 2.8371, 117.3711</div>     </div>     </div>`)[0];
+                popup_de4fa3ff51e3a656aeb9aec60e443499.setContent(html_196c9afbee8f23c6dea5fd753fe769f7);
+            
+        
+
+        marker_ce4886fc00d784305049ebddb78268cc.bindPopup(popup_de4fa3ff51e3a656aeb9aec60e443499)
+        ;
+
+        
+    
+    
+            marker_ce4886fc00d784305049ebddb78268cc.bindTooltip(
+                `<div>
+                     Kalimantan Utara — PP 65
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ce4886fc00d784305049ebddb78268cc.setIcon(icon_986248cd0b9342bfc29e4d055b881201);
+            
+    
+            var marker_55c80c52957f45f1b696912f1564d89a = L.marker(
+                [1.4748, 124.8421],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_ff8a2b69d3fc8acba2b6b66a9bd00423 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1f98c06a9eebf4ea5d00bb85b61a8055 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8d647c2a197e8923a935212fe5063916 = $(`<div id="html_8d647c2a197e8923a935212fe5063916" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sulawesi Utara</h4>       <div><b>Kode PP (NIK):</b> 71</div>       <div><b>Ibu Kota:</b> Manado</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 1.4748, 124.8421</div>     </div>     </div>`)[0];
+                popup_1f98c06a9eebf4ea5d00bb85b61a8055.setContent(html_8d647c2a197e8923a935212fe5063916);
+            
+        
+
+        marker_55c80c52957f45f1b696912f1564d89a.bindPopup(popup_1f98c06a9eebf4ea5d00bb85b61a8055)
+        ;
+
+        
+    
+    
+            marker_55c80c52957f45f1b696912f1564d89a.bindTooltip(
+                `<div>
+                     Sulawesi Utara — PP 71
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_55c80c52957f45f1b696912f1564d89a.setIcon(icon_ff8a2b69d3fc8acba2b6b66a9bd00423);
+            
+    
+            var marker_58cb90122380bc7088301c7f7d8d4550 = L.marker(
+                [-0.9003, 119.877],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_66fe44d37ced018ee3db90007492b4a5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2eaca74bee10f7c119b61e22bcbbcb81 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_50138ac68b4eebf7dc5ab9aa6038aa05 = $(`<div id="html_50138ac68b4eebf7dc5ab9aa6038aa05" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sulawesi Tengah</h4>       <div><b>Kode PP (NIK):</b> 72</div>       <div><b>Ibu Kota:</b> Palu</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -0.9003, 119.877</div>     </div>     </div>`)[0];
+                popup_2eaca74bee10f7c119b61e22bcbbcb81.setContent(html_50138ac68b4eebf7dc5ab9aa6038aa05);
+            
+        
+
+        marker_58cb90122380bc7088301c7f7d8d4550.bindPopup(popup_2eaca74bee10f7c119b61e22bcbbcb81)
+        ;
+
+        
+    
+    
+            marker_58cb90122380bc7088301c7f7d8d4550.bindTooltip(
+                `<div>
+                     Sulawesi Tengah — PP 72
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_58cb90122380bc7088301c7f7d8d4550.setIcon(icon_66fe44d37ced018ee3db90007492b4a5);
+            
+    
+            var marker_d895152556e9042c04621cd7e9fcc0d5 = L.marker(
+                [-5.1477, 119.4327],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_39ee54e2c08fcd6d1538fcbb1f1ea11b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fedaf2a314bc99308e9632e9686a9921 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_02c527c1214c0ef586aa308eb115e43e = $(`<div id="html_02c527c1214c0ef586aa308eb115e43e" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sulawesi Selatan</h4>       <div><b>Kode PP (NIK):</b> 73</div>       <div><b>Ibu Kota:</b> Makassar</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -5.1477, 119.4327</div>     </div>     </div>`)[0];
+                popup_fedaf2a314bc99308e9632e9686a9921.setContent(html_02c527c1214c0ef586aa308eb115e43e);
+            
+        
+
+        marker_d895152556e9042c04621cd7e9fcc0d5.bindPopup(popup_fedaf2a314bc99308e9632e9686a9921)
+        ;
+
+        
+    
+    
+            marker_d895152556e9042c04621cd7e9fcc0d5.bindTooltip(
+                `<div>
+                     Sulawesi Selatan — PP 73
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d895152556e9042c04621cd7e9fcc0d5.setIcon(icon_39ee54e2c08fcd6d1538fcbb1f1ea11b);
+            
+    
+            var marker_fde03ec27cf3fed3665136e5ceeccbfe = L.marker(
+                [-3.9985, 122.512],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_58742de5d0d3f79b849ecbf14cf10743 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0b16165be111c78b4a363d6224d57f5f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_00ef06406dcd7487919c19157967858b = $(`<div id="html_00ef06406dcd7487919c19157967858b" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sulawesi Tenggara</h4>       <div><b>Kode PP (NIK):</b> 74</div>       <div><b>Ibu Kota:</b> Kendari</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -3.9985, 122.512</div>     </div>     </div>`)[0];
+                popup_0b16165be111c78b4a363d6224d57f5f.setContent(html_00ef06406dcd7487919c19157967858b);
+            
+        
+
+        marker_fde03ec27cf3fed3665136e5ceeccbfe.bindPopup(popup_0b16165be111c78b4a363d6224d57f5f)
+        ;
+
+        
+    
+    
+            marker_fde03ec27cf3fed3665136e5ceeccbfe.bindTooltip(
+                `<div>
+                     Sulawesi Tenggara — PP 74
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fde03ec27cf3fed3665136e5ceeccbfe.setIcon(icon_58742de5d0d3f79b849ecbf14cf10743);
+            
+    
+            var marker_4049de605a1eaf0326448b1158b72560 = L.marker(
+                [0.5333, 123.0667],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_27054881e3629ca62b72640c46835b9e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0720e000257b17409ee49f97548dbb96 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1cb720133021e6803ae8734fe6b62520 = $(`<div id="html_1cb720133021e6803ae8734fe6b62520" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Gorontalo</h4>       <div><b>Kode PP (NIK):</b> 75</div>       <div><b>Ibu Kota:</b> Gorontalo</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 0.5333, 123.0667</div>     </div>     </div>`)[0];
+                popup_0720e000257b17409ee49f97548dbb96.setContent(html_1cb720133021e6803ae8734fe6b62520);
+            
+        
+
+        marker_4049de605a1eaf0326448b1158b72560.bindPopup(popup_0720e000257b17409ee49f97548dbb96)
+        ;
+
+        
+    
+    
+            marker_4049de605a1eaf0326448b1158b72560.bindTooltip(
+                `<div>
+                     Gorontalo — PP 75
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4049de605a1eaf0326448b1158b72560.setIcon(icon_27054881e3629ca62b72640c46835b9e);
+            
+    
+            var marker_fdcc10303c371ac58a53606faf4caaa8 = L.marker(
+                [-2.6746, 118.8889],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_b30ed2ea4de0c99f58431cc7b4fbd1c0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8d941d87f394953c4e8119d12e6bdb7e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1d97a1a445abbff455b26e3e1bf9f511 = $(`<div id="html_1d97a1a445abbff455b26e3e1bf9f511" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Sulawesi Barat</h4>       <div><b>Kode PP (NIK):</b> 76</div>       <div><b>Ibu Kota:</b> Mamuju</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -2.6746, 118.8889</div>     </div>     </div>`)[0];
+                popup_8d941d87f394953c4e8119d12e6bdb7e.setContent(html_1d97a1a445abbff455b26e3e1bf9f511);
+            
+        
+
+        marker_fdcc10303c371ac58a53606faf4caaa8.bindPopup(popup_8d941d87f394953c4e8119d12e6bdb7e)
+        ;
+
+        
+    
+    
+            marker_fdcc10303c371ac58a53606faf4caaa8.bindTooltip(
+                `<div>
+                     Sulawesi Barat — PP 76
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fdcc10303c371ac58a53606faf4caaa8.setIcon(icon_b30ed2ea4de0c99f58431cc7b4fbd1c0);
+            
+    
+            var marker_7409e458a76d4ecd765f166d0f257649 = L.marker(
+                [-3.695, 128.1822],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_fbdda9ef16aa8f7d06e60460ac78b7bc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d00ac6688aabc91f11f88869859d3815 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_eff2c8762cb942097677dbc480dca65b = $(`<div id="html_eff2c8762cb942097677dbc480dca65b" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Maluku</h4>       <div><b>Kode PP (NIK):</b> 81</div>       <div><b>Ibu Kota:</b> Ambon</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -3.695, 128.1822</div>     </div>     </div>`)[0];
+                popup_d00ac6688aabc91f11f88869859d3815.setContent(html_eff2c8762cb942097677dbc480dca65b);
+            
+        
+
+        marker_7409e458a76d4ecd765f166d0f257649.bindPopup(popup_d00ac6688aabc91f11f88869859d3815)
+        ;
+
+        
+    
+    
+            marker_7409e458a76d4ecd765f166d0f257649.bindTooltip(
+                `<div>
+                     Maluku — PP 81
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7409e458a76d4ecd765f166d0f257649.setIcon(icon_fbdda9ef16aa8f7d06e60460ac78b7bc);
+            
+    
+            var marker_dd47ff69f3d58d6db6e196b1e7b4e846 = L.marker(
+                [0.7376, 127.558],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_858bbc703d94eab0e7a5f06e804c437e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1d932695a8b64d0de4beaed4d02d78cb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_423cf59fcc560abd8f4305d687f1c308 = $(`<div id="html_423cf59fcc560abd8f4305d687f1c308" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Maluku Utara</h4>       <div><b>Kode PP (NIK):</b> 82</div>       <div><b>Ibu Kota:</b> Sofifi</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: 0.7376, 127.558</div>     </div>     </div>`)[0];
+                popup_1d932695a8b64d0de4beaed4d02d78cb.setContent(html_423cf59fcc560abd8f4305d687f1c308);
+            
+        
+
+        marker_dd47ff69f3d58d6db6e196b1e7b4e846.bindPopup(popup_1d932695a8b64d0de4beaed4d02d78cb)
+        ;
+
+        
+    
+    
+            marker_dd47ff69f3d58d6db6e196b1e7b4e846.bindTooltip(
+                `<div>
+                     Maluku Utara — PP 82
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dd47ff69f3d58d6db6e196b1e7b4e846.setIcon(icon_858bbc703d94eab0e7a5f06e804c437e);
+            
+    
+            var marker_e8f92fec55b85625013a67ed4dd3542f = L.marker(
+                [-2.5337, 140.7181],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_643d0a1fa92cb28f147848b14d2ebc14 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_68f8d58fcadd3b9f37c745248f3075b3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2703dce067162d8054ab1ec9bc45e3e0 = $(`<div id="html_2703dce067162d8054ab1ec9bc45e3e0" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Papua</h4>       <div><b>Kode PP (NIK):</b> 91</div>       <div><b>Ibu Kota:</b> Jayapura</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -2.5337, 140.7181</div>     </div>     </div>`)[0];
+                popup_68f8d58fcadd3b9f37c745248f3075b3.setContent(html_2703dce067162d8054ab1ec9bc45e3e0);
+            
+        
+
+        marker_e8f92fec55b85625013a67ed4dd3542f.bindPopup(popup_68f8d58fcadd3b9f37c745248f3075b3)
+        ;
+
+        
+    
+    
+            marker_e8f92fec55b85625013a67ed4dd3542f.bindTooltip(
+                `<div>
+                     Papua — PP 91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e8f92fec55b85625013a67ed4dd3542f.setIcon(icon_643d0a1fa92cb28f147848b14d2ebc14);
+            
+    
+            var marker_b2e87625e64a40174982dfc0157d4694 = L.marker(
+                [-0.8615, 134.0781],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_1fc183bc423548077095d3d80c67d259 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_432d29e91b57b31326da0087c469b89f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_41db3e15f97bd2e6c76b26969c9ef016 = $(`<div id="html_41db3e15f97bd2e6c76b26969c9ef016" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Papua Barat</h4>       <div><b>Kode PP (NIK):</b> 92</div>       <div><b>Ibu Kota:</b> Manokwari</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -0.8615, 134.0781</div>     </div>     </div>`)[0];
+                popup_432d29e91b57b31326da0087c469b89f.setContent(html_41db3e15f97bd2e6c76b26969c9ef016);
+            
+        
+
+        marker_b2e87625e64a40174982dfc0157d4694.bindPopup(popup_432d29e91b57b31326da0087c469b89f)
+        ;
+
+        
+    
+    
+            marker_b2e87625e64a40174982dfc0157d4694.bindTooltip(
+                `<div>
+                     Papua Barat — PP 92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b2e87625e64a40174982dfc0157d4694.setIcon(icon_1fc183bc423548077095d3d80c67d259);
+            
+    
+            var marker_ece33757b01898a84d71c7effe094c0d = L.marker(
+                [-8.4932, 140.4018],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_9d1495cfbaede00bec7429acecad318d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cae80c0de4c38137fa5b62364c05c2e6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_29c545c302a461f122f9e4d073ad472f = $(`<div id="html_29c545c302a461f122f9e4d073ad472f" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Papua Selatan</h4>       <div><b>Kode PP (NIK):</b> 93</div>       <div><b>Ibu Kota:</b> Merauke</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -8.4932, 140.4018</div>     </div>     </div>`)[0];
+                popup_cae80c0de4c38137fa5b62364c05c2e6.setContent(html_29c545c302a461f122f9e4d073ad472f);
+            
+        
+
+        marker_ece33757b01898a84d71c7effe094c0d.bindPopup(popup_cae80c0de4c38137fa5b62364c05c2e6)
+        ;
+
+        
+    
+    
+            marker_ece33757b01898a84d71c7effe094c0d.bindTooltip(
+                `<div>
+                     Papua Selatan — PP 93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ece33757b01898a84d71c7effe094c0d.setIcon(icon_9d1495cfbaede00bec7429acecad318d);
+            
+    
+            var marker_f60684aa5584a3f65f37fc099cd9be22 = L.marker(
+                [-3.3667, 135.5],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_a2bbc4ba08953a5cb19fc350edc102ca = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bfd3c796465e1f83e187351d0493ea8c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fb2f0000dd7ae1476a8b49a882398517 = $(`<div id="html_fb2f0000dd7ae1476a8b49a882398517" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Papua Tengah</h4>       <div><b>Kode PP (NIK):</b> 94</div>       <div><b>Ibu Kota:</b> Nabire</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -3.3667, 135.5</div>     </div>     </div>`)[0];
+                popup_bfd3c796465e1f83e187351d0493ea8c.setContent(html_fb2f0000dd7ae1476a8b49a882398517);
+            
+        
+
+        marker_f60684aa5584a3f65f37fc099cd9be22.bindPopup(popup_bfd3c796465e1f83e187351d0493ea8c)
+        ;
+
+        
+    
+    
+            marker_f60684aa5584a3f65f37fc099cd9be22.bindTooltip(
+                `<div>
+                     Papua Tengah — PP 94
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f60684aa5584a3f65f37fc099cd9be22.setIcon(icon_a2bbc4ba08953a5cb19fc350edc102ca);
+            
+    
+            var marker_fd467c4af9b2c3b1059e60593995581b = L.marker(
+                [-4.1, 138.95],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_a34351715048aa429db994388db08694 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c06a175113cff6f5d171c38ff2a27d25 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f86f8ffa00c820a2a9698cf6a4eaa149 = $(`<div id="html_f86f8ffa00c820a2a9698cf6a4eaa149" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Papua Pegunungan</h4>       <div><b>Kode PP (NIK):</b> 95</div>       <div><b>Ibu Kota:</b> Wamena</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -4.1, 138.95</div>     </div>     </div>`)[0];
+                popup_c06a175113cff6f5d171c38ff2a27d25.setContent(html_f86f8ffa00c820a2a9698cf6a4eaa149);
+            
+        
+
+        marker_fd467c4af9b2c3b1059e60593995581b.bindPopup(popup_c06a175113cff6f5d171c38ff2a27d25)
+        ;
+
+        
+    
+    
+            marker_fd467c4af9b2c3b1059e60593995581b.bindTooltip(
+                `<div>
+                     Papua Pegunungan — PP 95
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fd467c4af9b2c3b1059e60593995581b.setIcon(icon_a34351715048aa429db994388db08694);
+            
+    
+            var marker_3a967b9d9365d4885f3c94e867ed03ec = L.marker(
+                [-0.8762, 131.2558],
+                {
+}
+            ).addTo(marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c);
+        
+    
+            var icon_242a3e02e2174eaa95a27aa68fd529c4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "glyphicon-map-marker",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_266a23587fdbe866841453c1a3749afc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_881c931b2c6bc66fa61cbec8bb798b83 = $(`<div id="html_881c931b2c6bc66fa61cbec8bb798b83" style="width: 100.0%; height: 100.0%;">     <div style='font-family:Inter,Arial,sans-serif; width: 240px;'>       <h4 style='margin:0 0 6px 0; font-size:15px;'>Papua Barat Daya</h4>       <div><b>Kode PP (NIK):</b> 96</div>       <div><b>Ibu Kota:</b> Sorong</div>       <div style="margin-top:6px; font-size:12px; opacity:.75;">Koordinat: -0.8762, 131.2558</div>     </div>     </div>`)[0];
+                popup_266a23587fdbe866841453c1a3749afc.setContent(html_881c931b2c6bc66fa61cbec8bb798b83);
+            
+        
+
+        marker_3a967b9d9365d4885f3c94e867ed03ec.bindPopup(popup_266a23587fdbe866841453c1a3749afc)
+        ;
+
+        
+    
+    
+            marker_3a967b9d9365d4885f3c94e867ed03ec.bindTooltip(
+                `<div>
+                     Papua Barat Daya — PP 96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3a967b9d9365d4885f3c94e867ed03ec.setIcon(icon_242a3e02e2174eaa95a27aa68fd529c4);
+            
+    
+            marker_cluster_8169d39d4592bcc033742cbf4aa8ac7c.addTo(map_eff21434de619e1caf5c923b55777793);
+        
+    
+            var feature_group_303481ea63ada6b9d79920ef9856be33 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_7913597455dde271733e7a80097a8fe0 = L.marker(
+                [5.5483, 95.3238],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_1a25fc1a70074bc028d0b3ad11c40f4e = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_7913597455dde271733e7a80097a8fe0.bindTooltip(
+                `<div>
+                     Aceh — PP 11
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7913597455dde271733e7a80097a8fe0.setIcon(div_icon_1a25fc1a70074bc028d0b3ad11c40f4e);
+            
+    
+            var marker_07aac62857b7f49aca39265d734e6b7f = L.marker(
+                [3.5952, 98.6722],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_642317c26ccfa38bc2d62e2c1c455e28 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_07aac62857b7f49aca39265d734e6b7f.bindTooltip(
+                `<div>
+                     Sumatera Utara — PP 12
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_07aac62857b7f49aca39265d734e6b7f.setIcon(div_icon_642317c26ccfa38bc2d62e2c1c455e28);
+            
+    
+            var marker_f6818f0f0035acd22fb962c0c479541c = L.marker(
+                [-0.9471, 100.4172],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_59a0c7079eb0a11dfd7acce494c8f84f = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_f6818f0f0035acd22fb962c0c479541c.bindTooltip(
+                `<div>
+                     Sumatera Barat — PP 13
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f6818f0f0035acd22fb962c0c479541c.setIcon(div_icon_59a0c7079eb0a11dfd7acce494c8f84f);
+            
+    
+            var marker_240a7eedddbbf1d28d7c64d25bc7e12d = L.marker(
+                [0.5071, 101.4478],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_b445eaec19672063ce9f46cef8b1c3c9 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_240a7eedddbbf1d28d7c64d25bc7e12d.bindTooltip(
+                `<div>
+                     Riau — PP 14
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_240a7eedddbbf1d28d7c64d25bc7e12d.setIcon(div_icon_b445eaec19672063ce9f46cef8b1c3c9);
+            
+    
+            var marker_d2ae56c3730a98abda9ecb7c5c82bb44 = L.marker(
+                [-1.6101, 103.6131],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_81d0e35121b2997290827cf318186082 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_d2ae56c3730a98abda9ecb7c5c82bb44.bindTooltip(
+                `<div>
+                     Jambi — PP 15
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d2ae56c3730a98abda9ecb7c5c82bb44.setIcon(div_icon_81d0e35121b2997290827cf318186082);
+            
+    
+            var marker_0a73a82c3a7c767298e652a664cdc528 = L.marker(
+                [-2.9909, 104.7566],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_04b1699b14de4ef768bc92b801b5578c = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_0a73a82c3a7c767298e652a664cdc528.bindTooltip(
+                `<div>
+                     Sumatera Selatan — PP 16
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0a73a82c3a7c767298e652a664cdc528.setIcon(div_icon_04b1699b14de4ef768bc92b801b5578c);
+            
+    
+            var marker_77053dce7e9888e1da32010c4db0940a = L.marker(
+                [-3.8006, 102.2655],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_6047db33c6f9fa9c953711d3aab1f26a = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_77053dce7e9888e1da32010c4db0940a.bindTooltip(
+                `<div>
+                     Bengkulu — PP 17
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_77053dce7e9888e1da32010c4db0940a.setIcon(div_icon_6047db33c6f9fa9c953711d3aab1f26a);
+            
+    
+            var marker_838f3e29d2983b38b54a649e78921729 = L.marker(
+                [-5.3971, 105.2668],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_d646048fa5fc2bca590f0cb949132fca = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_838f3e29d2983b38b54a649e78921729.bindTooltip(
+                `<div>
+                     Lampung — PP 18
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_838f3e29d2983b38b54a649e78921729.setIcon(div_icon_d646048fa5fc2bca590f0cb949132fca);
+            
+    
+            var marker_2ac73bd18cda8472b4625fd0f8444537 = L.marker(
+                [-2.1291, 106.1099],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_3ed83323af67dc4a0f7c757c0dc51a0a = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_2ac73bd18cda8472b4625fd0f8444537.bindTooltip(
+                `<div>
+                     Kep. Bangka Belitung — PP 19
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2ac73bd18cda8472b4625fd0f8444537.setIcon(div_icon_3ed83323af67dc4a0f7c757c0dc51a0a);
+            
+    
+            var marker_48beda5260d403b3a294b46899fa0fc5 = L.marker(
+                [0.9173, 104.446],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_55f81c998f26ad613f03af5213fe32bb = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_48beda5260d403b3a294b46899fa0fc5.bindTooltip(
+                `<div>
+                     Kep. Riau — PP 21
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_48beda5260d403b3a294b46899fa0fc5.setIcon(div_icon_55f81c998f26ad613f03af5213fe32bb);
+            
+    
+            var marker_59657b610a7ed119ad37ef81fcd52713 = L.marker(
+                [-6.1754, 106.8272],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_e17f93c37a13596685592a3c6a6af7df = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_59657b610a7ed119ad37ef81fcd52713.bindTooltip(
+                `<div>
+                     DKI Jakarta — PP 31
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_59657b610a7ed119ad37ef81fcd52713.setIcon(div_icon_e17f93c37a13596685592a3c6a6af7df);
+            
+    
+            var marker_9aea2d7171410749b424a96d39d78e47 = L.marker(
+                [-6.9175, 107.6191],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_68b46c4a5943ac2b66a1bf87764db726 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_9aea2d7171410749b424a96d39d78e47.bindTooltip(
+                `<div>
+                     Jawa Barat — PP 32
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9aea2d7171410749b424a96d39d78e47.setIcon(div_icon_68b46c4a5943ac2b66a1bf87764db726);
+            
+    
+            var marker_e7b46cfec40a3f342c3c95780084f2bf = L.marker(
+                [-6.9667, 110.4167],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_e3de9c02ab890038030ca0bcbbdec5e0 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_e7b46cfec40a3f342c3c95780084f2bf.bindTooltip(
+                `<div>
+                     Jawa Tengah — PP 33
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e7b46cfec40a3f342c3c95780084f2bf.setIcon(div_icon_e3de9c02ab890038030ca0bcbbdec5e0);
+            
+    
+            var marker_9aed0f7403061ae5bee6b50cc5166a56 = L.marker(
+                [-7.7956, 110.3695],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_63c9833079af56167a014ef61f093f48 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_9aed0f7403061ae5bee6b50cc5166a56.bindTooltip(
+                `<div>
+                     DI Yogyakarta — PP 34
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9aed0f7403061ae5bee6b50cc5166a56.setIcon(div_icon_63c9833079af56167a014ef61f093f48);
+            
+    
+            var marker_0b0739a776195fb28d31f3235d664793 = L.marker(
+                [-7.2575, 112.7521],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_fde0e8fd050635ef3021bb2df34a96b9 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_0b0739a776195fb28d31f3235d664793.bindTooltip(
+                `<div>
+                     Jawa Timur — PP 35
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0b0739a776195fb28d31f3235d664793.setIcon(div_icon_fde0e8fd050635ef3021bb2df34a96b9);
+            
+    
+            var marker_2a4f33a14f32c406798918cebc9814a6 = L.marker(
+                [-6.12, 106.1503],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_157601c1d9da40c280802821a5b90757 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_2a4f33a14f32c406798918cebc9814a6.bindTooltip(
+                `<div>
+                     Banten — PP 36
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2a4f33a14f32c406798918cebc9814a6.setIcon(div_icon_157601c1d9da40c280802821a5b90757);
+            
+    
+            var marker_fae3ef06a94251aeb735b013e691ecc5 = L.marker(
+                [-8.65, 115.2167],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_0515d1c92e62f854f07ebf2a3af30c40 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_fae3ef06a94251aeb735b013e691ecc5.bindTooltip(
+                `<div>
+                     Bali — PP 51
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fae3ef06a94251aeb735b013e691ecc5.setIcon(div_icon_0515d1c92e62f854f07ebf2a3af30c40);
+            
+    
+            var marker_a75fa5dba0dfa416ee8dcec836f8c5b7 = L.marker(
+                [-8.5833, 116.1167],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_897ada540c1a962e4ad7b83f6a617aed = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_a75fa5dba0dfa416ee8dcec836f8c5b7.bindTooltip(
+                `<div>
+                     Nusa Tenggara Barat — PP 52
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a75fa5dba0dfa416ee8dcec836f8c5b7.setIcon(div_icon_897ada540c1a962e4ad7b83f6a617aed);
+            
+    
+            var marker_d8e93ef0384152213af2fa140458168c = L.marker(
+                [-10.1788, 123.607],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_430ba239dccfad11c363b21d358fe6db = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_d8e93ef0384152213af2fa140458168c.bindTooltip(
+                `<div>
+                     Nusa Tenggara Timur — PP 53
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d8e93ef0384152213af2fa140458168c.setIcon(div_icon_430ba239dccfad11c363b21d358fe6db);
+            
+    
+            var marker_351ca0410dc6db928e2e565416ac6004 = L.marker(
+                [-0.0227, 109.3306],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_79d92465bff95edf499735017dbcf04b = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_351ca0410dc6db928e2e565416ac6004.bindTooltip(
+                `<div>
+                     Kalimantan Barat — PP 61
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_351ca0410dc6db928e2e565416ac6004.setIcon(div_icon_79d92465bff95edf499735017dbcf04b);
+            
+    
+            var marker_9815d58f88b5d77aa341e277bc1d8914 = L.marker(
+                [-2.2096, 113.9108],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_11e7d887b5497cc8d6b1fa3ab26f9d2b = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_9815d58f88b5d77aa341e277bc1d8914.bindTooltip(
+                `<div>
+                     Kalimantan Tengah — PP 62
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9815d58f88b5d77aa341e277bc1d8914.setIcon(div_icon_11e7d887b5497cc8d6b1fa3ab26f9d2b);
+            
+    
+            var marker_7d5f3bc7ed3ec6aa2c97abc8d902655f = L.marker(
+                [-3.442, 114.845],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_584dcc27be06fefd8746f4a7c5b1ca34 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_7d5f3bc7ed3ec6aa2c97abc8d902655f.bindTooltip(
+                `<div>
+                     Kalimantan Selatan — PP 63
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7d5f3bc7ed3ec6aa2c97abc8d902655f.setIcon(div_icon_584dcc27be06fefd8746f4a7c5b1ca34);
+            
+    
+            var marker_6eae91dcf297fb928a182082f7f6af0a = L.marker(
+                [-0.5022, 117.1536],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_ebe3d3bd89820242d9e6586dac57367f = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_6eae91dcf297fb928a182082f7f6af0a.bindTooltip(
+                `<div>
+                     Kalimantan Timur — PP 64
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6eae91dcf297fb928a182082f7f6af0a.setIcon(div_icon_ebe3d3bd89820242d9e6586dac57367f);
+            
+    
+            var marker_d0d2cc654c3eca02cc927a88e62e04ce = L.marker(
+                [2.8371, 117.3711],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_6be57c6778a11a649767bc33b2b908b9 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_d0d2cc654c3eca02cc927a88e62e04ce.bindTooltip(
+                `<div>
+                     Kalimantan Utara — PP 65
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d0d2cc654c3eca02cc927a88e62e04ce.setIcon(div_icon_6be57c6778a11a649767bc33b2b908b9);
+            
+    
+            var marker_08907c5f73e6383c5ac559327f806968 = L.marker(
+                [1.4748, 124.8421],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_941c1a83d830323569fb4f1550f6287f = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_08907c5f73e6383c5ac559327f806968.bindTooltip(
+                `<div>
+                     Sulawesi Utara — PP 71
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_08907c5f73e6383c5ac559327f806968.setIcon(div_icon_941c1a83d830323569fb4f1550f6287f);
+            
+    
+            var marker_95a19624c487cd5f147a9cd55b49695b = L.marker(
+                [-0.9003, 119.877],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_681db743a5d9a08e58444a144c8c1fd7 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_95a19624c487cd5f147a9cd55b49695b.bindTooltip(
+                `<div>
+                     Sulawesi Tengah — PP 72
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_95a19624c487cd5f147a9cd55b49695b.setIcon(div_icon_681db743a5d9a08e58444a144c8c1fd7);
+            
+    
+            var marker_6538e930657f2fd755c68e8dc03a872f = L.marker(
+                [-5.1477, 119.4327],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_bf0ed3b5209d9fa6bbfed01696909994 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_6538e930657f2fd755c68e8dc03a872f.bindTooltip(
+                `<div>
+                     Sulawesi Selatan — PP 73
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6538e930657f2fd755c68e8dc03a872f.setIcon(div_icon_bf0ed3b5209d9fa6bbfed01696909994);
+            
+    
+            var marker_3d022a4cc6e2e6784cc84f855889ae50 = L.marker(
+                [-3.9985, 122.512],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_cc56580cf1321eb0f890cca7fd678004 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_3d022a4cc6e2e6784cc84f855889ae50.bindTooltip(
+                `<div>
+                     Sulawesi Tenggara — PP 74
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3d022a4cc6e2e6784cc84f855889ae50.setIcon(div_icon_cc56580cf1321eb0f890cca7fd678004);
+            
+    
+            var marker_f90e74352ac02bbc2d1510236f14e4de = L.marker(
+                [0.5333, 123.0667],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_058063d650137f7812d2f64534a32d44 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_f90e74352ac02bbc2d1510236f14e4de.bindTooltip(
+                `<div>
+                     Gorontalo — PP 75
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f90e74352ac02bbc2d1510236f14e4de.setIcon(div_icon_058063d650137f7812d2f64534a32d44);
+            
+    
+            var marker_f84332fb219921ec121210db1d56e606 = L.marker(
+                [-2.6746, 118.8889],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_97dd16a0d9e43682f6d16413b73de62e = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_f84332fb219921ec121210db1d56e606.bindTooltip(
+                `<div>
+                     Sulawesi Barat — PP 76
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f84332fb219921ec121210db1d56e606.setIcon(div_icon_97dd16a0d9e43682f6d16413b73de62e);
+            
+    
+            var marker_d5a1bfb66bfbd052d15fa795263b4c65 = L.marker(
+                [-3.695, 128.1822],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_6b983ab2331f2f66610ce04b3a6f508c = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_d5a1bfb66bfbd052d15fa795263b4c65.bindTooltip(
+                `<div>
+                     Maluku — PP 81
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d5a1bfb66bfbd052d15fa795263b4c65.setIcon(div_icon_6b983ab2331f2f66610ce04b3a6f508c);
+            
+    
+            var marker_380329a62f0420a6a2000d92114c8c65 = L.marker(
+                [0.7376, 127.558],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_679656c9694407bb645b25d2c19e30db = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_380329a62f0420a6a2000d92114c8c65.bindTooltip(
+                `<div>
+                     Maluku Utara — PP 82
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_380329a62f0420a6a2000d92114c8c65.setIcon(div_icon_679656c9694407bb645b25d2c19e30db);
+            
+    
+            var marker_748d9640f211306a86205332444d9368 = L.marker(
+                [-2.5337, 140.7181],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_d0ad7e069cea67217440b20a14cf5c79 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_748d9640f211306a86205332444d9368.bindTooltip(
+                `<div>
+                     Papua — PP 91
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_748d9640f211306a86205332444d9368.setIcon(div_icon_d0ad7e069cea67217440b20a14cf5c79);
+            
+    
+            var marker_74c212f0683520926f330bfc580da92f = L.marker(
+                [-0.8615, 134.0781],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_5823c2e8ca3c619f8d3dbe623764b2a5 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_74c212f0683520926f330bfc580da92f.bindTooltip(
+                `<div>
+                     Papua Barat — PP 92
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_74c212f0683520926f330bfc580da92f.setIcon(div_icon_5823c2e8ca3c619f8d3dbe623764b2a5);
+            
+    
+            var marker_7012df56d3b272cc14224b8479e3bdf2 = L.marker(
+                [-8.4932, 140.4018],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_51375a7ac09b5494a6c1b6a79c96d70d = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_7012df56d3b272cc14224b8479e3bdf2.bindTooltip(
+                `<div>
+                     Papua Selatan — PP 93
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7012df56d3b272cc14224b8479e3bdf2.setIcon(div_icon_51375a7ac09b5494a6c1b6a79c96d70d);
+            
+    
+            var marker_1c1b590fd0a82067d50db44a09064d9b = L.marker(
+                [-3.3667, 135.5],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_59700cc267e2bc22959fa2a4621c116f = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_1c1b590fd0a82067d50db44a09064d9b.bindTooltip(
+                `<div>
+                     Papua Tengah — PP 94
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1c1b590fd0a82067d50db44a09064d9b.setIcon(div_icon_59700cc267e2bc22959fa2a4621c116f);
+            
+    
+            var marker_7e848404cf9f931e9fc4e5ad5d934924 = L.marker(
+                [-4.1, 138.95],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_b26f3e6b439b383e293aa41c43e966d1 = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_7e848404cf9f931e9fc4e5ad5d934924.bindTooltip(
+                `<div>
+                     Papua Pegunungan — PP 95
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7e848404cf9f931e9fc4e5ad5d934924.setIcon(div_icon_b26f3e6b439b383e293aa41c43e966d1);
+            
+    
+            var marker_135f0c20af93ea836c62aa7811448536 = L.marker(
+                [-0.8762, 131.2558],
+                {
+}
+            ).addTo(feature_group_303481ea63ada6b9d79920ef9856be33);
+        
+    
+            var div_icon_d36459e6e6a0538f6fa83a5843c4154d = L.divIcon({
+  "html": "",
+  "className": "empty",
+});
+        
+    
+            marker_135f0c20af93ea836c62aa7811448536.bindTooltip(
+                `<div>
+                     Papua Barat Daya — PP 96
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_135f0c20af93ea836c62aa7811448536.setIcon(div_icon_d36459e6e6a0538f6fa83a5843c4154d);
+            
+    
+            feature_group_303481ea63ada6b9d79920ef9856be33.addTo(map_eff21434de619e1caf5c923b55777793);
+        
+    
+            var tile_layer_09ea4c75803bef903f4be8da8c0a1e1a = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_f3cfe93d48b1880b9471df6e14b9ccaa = new L.Control.MiniMap(
+                tile_layer_09ea4c75803bef903f4be8da8c0a1e1a,
+                {
+  "position": "bottomright",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": true,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_eff21434de619e1caf5c923b55777793.addControl(mini_map_f3cfe93d48b1880b9471df6e14b9ccaa);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_eff21434de619e1caf5c923b55777793);
+        
+    
+            var measure_control_05c5fc8ad482c3925d53e3196fe2eabf = new L.Control.Measure(
+                {
+  "position": "topleft",
+  "primaryLengthUnit": "kilometers",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_eff21434de619e1caf5c923b55777793.addControl(measure_control_05c5fc8ad482c3925d53e3196fe2eabf);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var mouse_position_f9db610eac2b3e60eb2582ace3108fcc = new L.Control.MousePosition(
+                {
+  "position": "bottomright",
+  "separator": " | ",
+  "emptyString": "Unavailable",
+  "lngFirst": false,
+  "numDigits": 5,
+  "prefix": "",
+}
+            );
+            mouse_position_f9db610eac2b3e60eb2582ace3108fcc.options["latFormatter"] =
+                undefined;
+            mouse_position_f9db610eac2b3e60eb2582ace3108fcc.options["lngFormatter"] =
+                undefined;
+            map_eff21434de619e1caf5c923b55777793.addControl(mouse_position_f9db610eac2b3e60eb2582ace3108fcc);
+        
+    
+            var feature_group_303481ea63ada6b9d79920ef9856be33searchControl = new L.Control.Search({
+                layer: feature_group_303481ea63ada6b9d79920ef9856be33,
+                
+                propertyName: 'tooltip',
+                
+                collapsed: false,
+                textPlaceholder: 'Cari provinsi…',
+                position:'topleft',
+            
+                initial: false,
+                
+                hideMarkerOnCollapse: true
+            
+                });
+                feature_group_303481ea63ada6b9d79920ef9856be33searchControl.on('search:locationfound', function(e) {
+                    feature_group_303481ea63ada6b9d79920ef9856be33.setStyle(function(feature){
+                        return feature.properties.style
+                    })
+                    
+                    if(e.layer._popup)
+                        e.layer.openPopup();
+                })
+                feature_group_303481ea63ada6b9d79920ef9856be33searchControl.on('search:collapsed', function(e) {
+                        feature_group_303481ea63ada6b9d79920ef9856be33.setStyle(function(feature){
+                            return feature.properties.style
+                    });
+                });
+            map_eff21434de619e1caf5c923b55777793.addControl( feature_group_303481ea63ada6b9d79920ef9856be33searchControl );
+
+        
+</script>
+</html>

@@ -178,13 +178,52 @@ export default function CoffeeAccessPage() {
           />
         </Section>
 
-        <Section number="03" title="Where this stops">
+        <Section number="03" title="What the map showed">
+          <p>
+            Three things, and they are worth stating rather than leaving in
+            the note for a reader to find.
+          </p>
+          <p>
+            <strong>Tomoro clusters in the ten-minute band around sectors
+            three to nine.</strong> That is the established middle of Bintaro:
+            mid-to-upper housing that has been there long enough to grow
+            shopfronts, small offices and daily services around itself. The
+            coffee is not spread evenly across the estates. It sits where the
+            estates have already turned into small economies.
+          </p>
+          <p>
+            <strong>Ciputat Timur and Pondok Cabe are not covered at all.</strong>{" "}
+            Dense housing, no fast-format coffee inside fifteen minutes. Read
+            one way that is an expansion gap, which is how a chain would read
+            it. Read the other way it is the more interesting finding: two
+            places of comparable density, one of which has the format and one
+            of which does not.
+          </p>
+          <p>
+            <strong>The branches follow private-vehicle routes, not public
+            transport.</strong> Almost every point sits on a road you would
+            drive rather than a corridor you would commute along. Which makes
+            the fifteen-minute figure quieter than it sounds: it is fifteen
+            minutes for someone with a car. Access to coffee, here, is still
+            access to a vehicle.
+          </p>
+          <p>
+            That last one is the one worth keeping. The 15-minute city is an
+            argument about proximity, and it gets repeated as though proximity
+            were the whole of it. What this overlay shows is that the same
+            distance is a different amount of time depending on what you can
+            afford to travel in — so mapping where the coffee is turns out to
+            be a way of mapping who has time to spare.
+          </p>
+        </Section>
+
+        <Section number="04" title="Where this stops">
           <p>
             These are preliminary findings and they should be read as such.
             They are patterns read off an overlay, not counts: no share of
             estates inside each band has been computed, and no significance
-            has been tested. The three findings in the note are what the map
-            plainly showed, and no more than that.
+            has been tested. The three above are what the map plainly showed,
+            and no more than that.
           </p>
           <p>
             The overlay above is the one those three statements came off, but
@@ -203,7 +242,7 @@ export default function CoffeeAccessPage() {
           </p>
         </Section>
 
-        <Section number="04" title="What would finish it">
+        <Section number="05" title="What would finish it">
           <p>
             Counting, first: the share of housing inside the ten-minute band
             per zone, so the first finding becomes a number rather than an
@@ -218,7 +257,7 @@ export default function CoffeeAccessPage() {
           </p>
         </Section>
 
-        <Section number="05" title="Related">
+        <Section number="06" title="Related">
           <p>
             The same isochrone method, applied to padel courts rather than
             coffee, is the{" "}
