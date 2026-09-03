@@ -9,6 +9,7 @@
 
 import { AvatarPicker } from "@/app/components/AvatarPicker";
 import { useProfileMode } from "@/app/components/ProfileMode";
+import { EmbedFrame } from "@/app/components/EmbedFrame";
 
 // Not a job title. "Data analyst with an accounting background" is a claim
 // about what I am; these are observations about how the work actually goes,
@@ -18,10 +19,30 @@ const COPY = {
     tagline:
       "I like building things that tell a story rather than report a number.",
     bio: "Most of it starts as a question — why is this happening, what is actually going on, does this add up. The work is turning something blurry into something that can be seen, compared and argued with. The tool comes after the question, not before it.",
+    // One piece of evidence, immediately. A stranger deciding whether to keep
+    // reading should not have to take the paragraph above on trust when there
+    // is a map two hundred pixels away that demonstrates it.
+    frame: {
+      image: "/work/maps/isochrone-tomoro-poster.jpg",
+      alt: "Isochrone map of Jabodetabek: Tomoro Coffee branches with 5, 10 and 15-minute drive-time bands shading from pale to deep red.",
+      title: "How far a coffee chain actually reaches",
+      caption:
+        "Drive-time bands around every Tomoro branch in Jabodetabek, laid over where people live. The finding was not the coffee — it was that almost every branch sits on a road you drive rather than a corridor you commute along.",
+      href: "/work/coffee-access",
+      cta: "Read how it was made",
+    },
   },
   capture: {
     tagline: "I love capturing moments — joie de vivre.",
     bio: "It is simply a photograph. Perhaps no one cares — I keep taking them anyway.",
+    frame: {
+      image: "/photos/cilincing-worker.jpg",
+      alt: "Documentary photograph: a worker in Cilincing.",
+      title: "Cilincing",
+      caption: "One frame, and the reason the other half of this site exists.",
+      href: "#photography",
+      cta: "See the rest",
+    },
   },
 } as const;
 
@@ -44,6 +65,22 @@ export function HeroSection() {
           {copy.bio}
         </p>
 
+        <EmbedFrame
+          image={copy.frame.image}
+          alt={copy.frame.alt}
+          title={copy.frame.title}
+          caption={copy.frame.caption}
+          ratio="16 / 9"
+        />
+
+        <p className="text-[13px] leading-[2]">
+          <a
+            href={copy.frame.href}
+            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
+          >
+            {copy.frame.cta} →
+          </a>
+        </p>
       </div>
     </section>
   );

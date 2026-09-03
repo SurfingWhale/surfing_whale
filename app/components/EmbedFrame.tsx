@@ -13,6 +13,12 @@
 // that exists but only as a print, where the interactive original was never
 // saved. The caption has to say so; a picture of a map is not a map.
 //
+// With both, `image` is a poster for `src`: the still is what loads, the live
+// page is what a click opens. That is the arrangement for anything heavy — a
+// folium export pulls Leaflet, jQuery and a tile server, and the home page has
+// no business making every visitor fetch five third-party origins to see a
+// picture of a map. The poster costs 80KB and nothing external.
+//
 // With neither it is the same frame again, holding `pending`, for a study
 // whose map was never exported at all.
 export function EmbedFrame({
@@ -37,6 +43,12 @@ export function EmbedFrame({
   /** CSS aspect-ratio for the frame. Maps want height; charts do not. */
   ratio?: string;
 }) {
+  // When a still stands in for a live page, both the picture and the caption
+  // open the live page. Sending one to the JPEG and the other to the map would
+  // make the same frame mean two things.
+  const opens = src ?? image;
+  const opensLive = Boolean(src);
+
   return (
     <figure className="my-7 -mx-6 sm:mx-0">
       <div
@@ -49,11 +61,13 @@ export function EmbedFrame({
           // is a plain link to the file: no viewer to load, no state to get
           // wrong, and it survives a middle-click like any other link.
           <a
-            href={image}
+            href={opens}
             target="_blank"
             rel="noopener noreferrer"
             className="absolute inset-0 block group"
-            aria-label={`Open the full image: ${title}`}
+            aria-label={
+              opensLive ? `Open the live map: ${title}` : `Open the full image: ${title}`
+            }
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -66,7 +80,7 @@ export function EmbedFrame({
               aria-hidden="true"
               className="absolute bottom-3 right-3 rounded-md bg-bg/85 backdrop-blur-sm border border-border px-2 py-1 text-[11px] leading-none text-fg-body opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
             >
-              Expand ↗
+              {opensLive ? "Open the live map ↗" : "Expand ↗"}
             </span>
           </a>
         ) : src ? (
@@ -98,16 +112,16 @@ export function EmbedFrame({
       </div>
       <figcaption className="text-[11px] leading-[1.7] text-fg-muted mt-2 px-6 sm:px-0">
         {caption}
-        {(src || image) && (
+        {opens && (
           <>
             {" "}
             <a
-              href={src ?? image}
+              href={opens}
               target="_blank"
               rel="noopener noreferrer"
               className="text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
             >
-              {src ? "Open it full screen ↗" : "Open the full image ↗"}
+              {opensLive ? "Open it full screen ↗" : "Open the full image ↗"}
             </a>
           </>
         )}
