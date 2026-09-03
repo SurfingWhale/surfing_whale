@@ -42,7 +42,6 @@ to withhold — they never outvote each other.
 | Signal | Where |
 | --- | --- |
 | `Visibility` is anything other than `Public` | Notion property |
-| `Status` is `Restricted` | Notion property |
 | A padlock or 🚫 | title or page icon |
 | restricted / confidential / internal / private / rahasia / NDA | title, tags, Sub Group, or Citation |
 | `jangan dipublish`, `do not publish`, `not for publication` | same fields |
@@ -50,6 +49,19 @@ to withhold — they never outvote each other.
 
 The last line is the important one: **unreadable means restricted.** A row
 whose markers cannot be read is not a row anyone can vouch for.
+
+`Status` was in this table and has been taken out. The September 2026 merge
+set `Status` to `Restricted` on thirty-four of fifty-three rows as a bulk
+default, including seven that Fauzy had deliberately marked `Visibility =
+Public` — so a single row was saying "show this" and "hide this" at once, and
+the half that won was the half nobody chose. A signal set by a migration is
+not a decision. `Status` is workflow; `Visibility` is the decision, it is set
+by hand, and it is the only property that speaks here.
+
+His words when he settled it: *"harusnya ga restricted kecuali yang
+berhubungan sama data kerjaan gw di bank"* — which is a rule about the
+content, not about a column. Rows touching the bank stay Restricted because
+someone marked them Restricted, not because a default happened to.
 
 `#Finished` is not in this table and never decides publication. It means the
 work is done. Work can be finished and confidential at the same time — the

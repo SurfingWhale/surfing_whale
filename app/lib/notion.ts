@@ -33,11 +33,10 @@ export function isRestricted(page: any): boolean {
     const icon =
         page?.icon?.emoji ?? page?.icon?.external?.url ?? page?.icon?.file?.url ?? "";
     const subGroup = props["Sub Group"]?.status?.name ?? "";
-    // The merged database added a Status column carrying its own Restricted
-    // value. Two properties can now say restricted, and per the rules they are
-    // checked independently: either one is enough, and neither outvotes the
-    // other. See docs/PUBLISHING-RULES.md §2.
-    const status = props.Status?.status?.name ?? "";
+    // Status is deliberately NOT read. The merge set it to Restricted in bulk,
+    // including on rows explicitly marked Visibility = Public, so it carried a
+    // migration's default rather than anyone's decision. Visibility is the one
+    // property set by hand, and the one that speaks. See PUBLISHING-RULES §2.
     const note = (props["Restriction Note"]?.rich_text ?? [])
         .map((t: any) => t.plain_text)
         .join(" ");
@@ -47,7 +46,7 @@ export function isRestricted(page: any): boolean {
     // otherwise "cleared: was internal, now rewritten" would withhold forever.
     void note;
 
-    return [title, citation, icon, subGroup, status, ...tags].some(
+    return [title, citation, icon, subGroup, ...tags].some(
         (v) => typeof v === "string" && RESTRICTED.test(v)
     );
     } catch {
@@ -217,6 +216,17 @@ export interface NotionProject {
     const publishable = rows.filter((page) => {
         const name = titleOf(page) || page?.id;
         const visibility = page?.properties?.Visibility?.select?.name ?? "";
+        const tags: string[] =
+        page?.properties?.Tags?.multi_select?.map((t: any) => t.name) ?? [];
+
+        // The query already asks Notion for #Finished, but a filter sent over
+        // the wire is a request, not a guarantee — one edit to the body and
+        // unfinished work publishes with nothing here to stop it. The rules
+        // name three conditions; all three are checked in this file.
+        if (!tags.includes("#Finished")) {
+        console.warn(`Withheld "${name}": not tagged #Finished`);
+        return false;
+        }
 
         if (visibility !== PUBLIC) {
         console.warn(
