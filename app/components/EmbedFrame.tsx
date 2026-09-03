@@ -14,10 +14,12 @@
 // saved. The caption has to say so; a picture of a map is not a map.
 //
 // With both, `image` is a poster for `src`: the still is what loads, the live
-// page is what a click opens. That is the arrangement for anything heavy — a
-// folium export pulls Leaflet, jQuery and a tile server, and the home page has
-// no business making every visitor fetch five third-party origins to see a
-// picture of a map. The poster costs 80KB and nothing external.
+// page is what a click opens. That is the arrangement for anything heavy or
+// anywhere else — a folium export pulls Leaflet, jQuery and a tile server, and
+// a deployed app is a whole other site. Neither belongs in an iframe on a page
+// a stranger landed on; a screenshot costs tens of kilobytes and reaches no
+// third party at all. The click is what crosses the boundary, and only if they
+// ask for it.
 //
 // With neither it is the same frame again, holding `pending`, for a study
 // whose map was never exported at all.
@@ -66,7 +68,9 @@ export function EmbedFrame({
             rel="noopener noreferrer"
             className="absolute inset-0 block group"
             aria-label={
-              opensLive ? `Open the live map: ${title}` : `Open the full image: ${title}`
+              opensLive
+                ? `Open the live version: ${title}`
+                : `Open the full image: ${title}`
             }
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -80,7 +84,7 @@ export function EmbedFrame({
               aria-hidden="true"
               className="absolute bottom-3 right-3 rounded-md bg-bg/85 backdrop-blur-sm border border-border px-2 py-1 text-[11px] leading-none text-fg-body opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
             >
-              {opensLive ? "Open the live map ↗" : "Expand ↗"}
+              {opensLive ? "Open it live ↗" : "Expand ↗"}
             </span>
           </a>
         ) : src ? (
@@ -121,7 +125,7 @@ export function EmbedFrame({
               rel="noopener noreferrer"
               className="text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
             >
-              {opensLive ? "Open it full screen ↗" : "Open the full image ↗"}
+              {opensLive ? "Open it live ↗" : "Open the full image ↗"}
             </a>
           </>
         )}

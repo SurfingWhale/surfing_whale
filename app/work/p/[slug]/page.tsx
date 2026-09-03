@@ -11,6 +11,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProjectBySlug, getPageBlocks, storyOnly } from "@/app/lib/notion";
+import { visualFor } from "@/app/lib/projectVisuals";
 import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { AccessProvider } from "@/app/components/AccessGate";
@@ -35,7 +36,10 @@ export async function generateMetadata({
     (b) => b.type === "paragraph" && (b.text?.length ?? 0) > 40
   )?.text;
   const description = opening?.slice(0, 200) ?? project.title;
-  const image = project.image?.includes("placeholder") ? "/og.png" : project.image;
+  const image = project.image?.includes("placeholder")
+    ? undefined
+    : project.image;
+  const preview = image ?? visualFor(slug)?.image ?? "/og.png";
 
   return {
     title: `${project.title} — Surfing Whale`,
@@ -44,9 +48,9 @@ export async function generateMetadata({
       title: project.title,
       description,
       type: "article",
-      images: [{ url: image || "/og.png", alt: project.title }],
+      images: [{ url: preview, alt: project.title }],
     },
-    twitter: { card: "summary_large_image", images: [image || "/og.png"] },
+    twitter: { card: "summary_large_image", images: [preview] },
   };
 }
 
@@ -66,10 +70,19 @@ export default async function ProjectPage({
   );
   // The placeholder is a grey square standing in for nothing; the frame says
   // "nothing" better and more honestly than a picture of nothing does.
-  const hero =
+  const fromNotion =
     project.image && !project.image.includes("placeholder")
       ? project.image
       : undefined;
+  // A picture committed here stands in only where he has not chosen one.
+  const local = fromNotion ? undefined : visualFor(slug);
+  const hero = fromNotion ?? local?.image;
+  // With a picture in the frame, the frame opens whatever "Open project" opens
+  // — the deployed thing itself. Without one, it does not: an empty frame
+  // pointed at someone else's site would load that site in an iframe for
+  // every visitor, which is not what "no visual saved" should mean.
+  const live =
+    hero && project.link && project.link !== "#" ? project.link : undefined;
 
   const locked = gateEnabled() && !(await isReader());
   const shown = locked ? blocks.slice(0, FREE_BLOCKS) : blocks;
@@ -133,13 +146,15 @@ export default async function ProjectPage({
         <div className={`${column} mb-10`}>
           <EmbedFrame
             image={hero}
-            alt={hero ? `${project.title} — project visual` : undefined}
+            src={live}
+            alt={local?.alt ?? (hero ? `${project.title} — project visual` : undefined)}
             title={project.title}
             ratio="16 / 9"
             caption={
-              hero
+              local?.caption ??
+              (hero
                 ? "The visual saved with this project in Notion."
-                : "No visual saved for this one yet. The work exists; a picture of it does not."
+                : "No visual saved for this one yet. The work exists; a picture of it does not.")
             }
             pending="Nothing has been exported for this project yet — no screenshot, no map, no chart."
           />
