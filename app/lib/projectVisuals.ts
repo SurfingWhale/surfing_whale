@@ -17,14 +17,17 @@ export interface ProjectVisual {
   image: string;
   alt: string;
   caption: string;
+  /** The product's own icon, if it has one. Shown small, beside the title. */
+  mark?: string;
 }
 
 export const PROJECT_VISUALS: Record<string, ProjectVisual> = {
   salespal: {
     image: "/work/salespal/lead-tracker.jpg",
-    alt: "Three phone screens from SalesPAL side by side: a pipeline dashboard, a lead database listing companies and contacts, and an outreach tracker counting sent, replied, seen and rejected.",
+    mark: "/work/salespal/logo-mark.png",
+    alt: "Four SalesPAL screens on phones: a pipeline dashboard, a lead database listing companies and contacts, an outreach tracker counting sent, replied, seen and rejected, and a rejection log recording why each one said no.",
     caption:
-      "The three screens the whole thing is built around — the pipeline, the leads, and what happened after you contacted them. Seeded with example companies, not real ones.",
+      "The four screens the whole thing is built around. The last one is the argument for the rest: every rejection gets a reason and a date to try again, so a no becomes something you can read later. Seeded with example companies, not real ones.",
   },
 };
 

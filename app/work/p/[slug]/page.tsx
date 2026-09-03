@@ -74,8 +74,10 @@ export default async function ProjectPage({
     project.image && !project.image.includes("placeholder")
       ? project.image
       : undefined;
-  // A picture committed here stands in only where he has not chosen one.
-  const local = fromNotion ? undefined : visualFor(slug);
+  // A picture committed here stands in only where he has not chosen one; the
+  // product's own mark is not a stand-in for anything, so it shows either way.
+  const visual = visualFor(slug);
+  const local = fromNotion ? undefined : visual;
   const hero = fromNotion ?? local?.image;
   // With a picture in the frame, the frame opens whatever "Open project" opens
   // — the deployed thing itself. Without one, it does not: an empty frame
@@ -109,9 +111,25 @@ export default async function ProjectPage({
               {project.date ? ` · ${project.date.slice(0, 4)}` : ""}
             </p>
           )}
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {project.title}
-          </h1>
+          <div className="flex items-center gap-2.5">
+            {visual?.mark && (
+              /* The product's own icon, at the size of the text beside it.
+                 Decorative: the title says the name, so a screen reader
+                 reading both would say it twice. */
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={visual.mark}
+                alt=""
+                aria-hidden="true"
+                width={22}
+                height={22}
+                className="w-[22px] h-[22px] shrink-0 rounded-[5px]"
+              />
+            )}
+            <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
+              {project.title}
+            </h1>
+          </div>
           {project.tags.length > 0 && (
             <div className="flex gap-2 mt-4 flex-wrap">
               {project.tags.map((tag) => (
