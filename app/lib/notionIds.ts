@@ -18,8 +18,10 @@ const pick = (fromEnv: string | undefined, fallback: string) => {
 };
 
 /** Portfolio projects — DA&WEB_Projects, after the September 2026 merge. */
+export const PROJECTS_DB_DEFAULT = "32d537d3e1fb8059b32bfb3e6f200479";
+
 export const PROJECTS_DB = () =>
-  pick(process.env.NOTION_DATABASE_ID, "32d537d3e1fb8059b32bfb3e6f200479");
+  pick(process.env.NOTION_DATABASE_ID, PROJECTS_DB_DEFAULT);
 
 /** Writing — Surfing Whale. */
 export const WRITING_DB = () =>

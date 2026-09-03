@@ -1,5 +1,5 @@
 // app/lib/notion.ts
-import { PROJECTS_DB } from "./notionIds";
+import { PROJECTS_DB, PROJECTS_DB_DEFAULT } from "./notionIds";
 
 /**
  * Anything that marks a row as not-for-publication. The site reads a Notion
@@ -149,9 +149,19 @@ export interface NotionProject {
     caption?: string;
     }
 
-    export async function getProjects(): Promise<NotionProject[]> {
-    const res = await fetch(
-        `https://api.notion.com/v1/databases/${PROJECTS_DB()}/query`,
+    /**
+     * One query, with one recovery.
+     *
+     * A configured id can stop existing — merging databases in Notion leaves
+     * the old one resolving to a 404 while every row lives somewhere else, and
+     * the site then reads as broken code rather than stale config. So a
+     * "could not find" is retried once against the id this repo knows, and says
+     * so in the log. Only that error: an auth failure or a sharing problem must
+     * keep failing, because retrying elsewhere would hide the real cause.
+     */
+    async function queryProjects(databaseId: string) {
+    return fetch(
+        `https://api.notion.com/v1/databases/${databaseId}/query`,
         {
         method: "POST",
         headers: {
@@ -173,10 +183,32 @@ export interface NotionProject {
         next: { revalidate: 60 },
         }
     );
-    if (!res.ok) {
-        console.error("Notion API error:", await res.text());
-        return [];
     }
+
+    export async function getProjects(): Promise<NotionProject[]> {
+    const configured = PROJECTS_DB();
+    let res = await queryProjects(configured);
+
+    if (!res.ok) {
+        const body = await res.text();
+        const missing = res.status === 404 && body.includes("object_not_found");
+
+        if (missing && configured !== PROJECTS_DB_DEFAULT) {
+        console.warn(
+            `Notion database ${configured} no longer exists — falling back to ` +
+            `${PROJECTS_DB_DEFAULT}. Update NOTION_DATABASE_ID to stop this.`
+        );
+        res = await queryProjects(PROJECTS_DB_DEFAULT);
+        if (!res.ok) {
+            console.error("Notion API error after fallback:", await res.text());
+            return [];
+        }
+        } else {
+        console.error("Notion API error:", body);
+        return [];
+        }
+    }
+
     const data = await res.json();
     const rows: any[] = data.results ?? [];
 
