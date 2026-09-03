@@ -1,4 +1,6 @@
 // app/lib/notion.ts
+import { PROJECTS_DB } from "./notionIds";
+
 /**
  * Anything that marks a row as not-for-publication. The site reads a Notion
  * database a person edits by hand, so "is this publishable?" cannot rest on
@@ -149,7 +151,7 @@ export interface NotionProject {
 
     export async function getProjects(): Promise<NotionProject[]> {
     const res = await fetch(
-        `https://api.notion.com/v1/databases/${process.env.NOTION_DATABASE_ID}/query`,
+        `https://api.notion.com/v1/databases/${PROJECTS_DB()}/query`,
         {
         method: "POST",
         headers: {

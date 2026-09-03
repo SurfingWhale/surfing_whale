@@ -64,7 +64,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
   if (!configured()) {
     return NextResponse.json(
-      { error: "NOTION_DARKROOM_DATABASE_ID is not set." },
+      { error: "The darkroom database is not configured." },
       { status: 503 }
     );
   }
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
   if (!configured()) {
     return NextResponse.json(
-      { error: "NOTION_DARKROOM_DATABASE_ID is not set." },
+      { error: "The darkroom database is not configured." },
       { status: 503 }
     );
   }

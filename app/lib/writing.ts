@@ -5,7 +5,9 @@ import { HEADERS, NOTION, readDocJson, toSlug, writeDocJson } from "./notionDoc"
 
 export { toSlug };
 
-const DB = () => process.env.NOTION_WRITING_DATABASE_ID ?? "";
+import { WRITING_DB } from "./notionIds";
+
+const DB = WRITING_DB;
 export const configured = () => Boolean(process.env.NOTION_API_KEY && DB());
 
 export type BlockKind =

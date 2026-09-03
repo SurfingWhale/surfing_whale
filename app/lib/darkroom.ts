@@ -8,6 +8,7 @@
 // The photographs themselves live on Cloudinary. Notion's own file URLs are
 // signed and expire within the hour, so anything stored here is already a
 // permanent URL.
+import { DARKROOM_DB } from "./notionIds";
 
 const NOTION = "https://api.notion.com/v1";
 const HEADERS = () => ({
@@ -16,7 +17,8 @@ const HEADERS = () => ({
   "Content-Type": "application/json",
 });
 
-export const DB = () => process.env.NOTION_DARKROOM_DATABASE_ID ?? "";
+
+export const DB = DARKROOM_DB;
 export const configured = () => Boolean(process.env.NOTION_API_KEY && DB());
 
 export interface Shot {

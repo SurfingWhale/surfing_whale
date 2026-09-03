@@ -4,9 +4,11 @@ import { Client } from "@notionhq/client";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { uploadToCloudinary } from "@/app/lib/cloudinary";
+import { PROJECTS_DB } from "@/app/lib/notionIds";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY! });
-const DATABASE_ID = process.env.NOTION_DATABASE_ID!;
+
+const DATABASE_ID = PROJECTS_DB();
 const SYNC_SECRET = process.env.SYNC_SECRET ?? "dev-secret";
 
 interface NotionProject {

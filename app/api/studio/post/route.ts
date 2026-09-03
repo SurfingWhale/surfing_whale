@@ -55,7 +55,7 @@ function cleanBlocks(raw: unknown): Block[] {
 function guard(): NextResponse | null {
   if (!configured()) {
     return NextResponse.json(
-      { error: "NOTION_WRITING_DATABASE_ID is not set." },
+      { error: "The writing database is not configured." },
       { status: 503 }
     );
   }
