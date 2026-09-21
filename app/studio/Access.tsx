@@ -140,12 +140,13 @@ export function Access() {
                          the same in both of them. */
                       <HoldButton
                         size="sm"
+                        className="hold-button--chip"
                         radius={6}
                         holdTime={1400}
                         waveAmplitude={3}
                         glow={false}
                         disabled={busy === r.id}
-                        backgroundColor="var(--bg-muted)"
+                        backgroundColor="transparent"
                         fillColor="var(--fg)"
                         textColor="var(--fg-body)"
                         fillTextColor="var(--bg)"

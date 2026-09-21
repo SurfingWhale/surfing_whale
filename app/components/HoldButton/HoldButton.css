@@ -272,3 +272,60 @@
     filter: none !important;
   }
 }
+
+/* ---- Local addition, not from React Bits -----------------------------
+   The studio's other buttons are 11px chips with a hairline and no fill.
+   At the stock `sm` — 36px tall, 13px, weight 500, solid background — this
+   sat beside them looking like a control from another product.
+
+   Matched to the chip instead, which leaves the sweep as the only thing
+   telling the two apart. That is the whole idea: at rest these are equals,
+   and the difference only shows once you press one of them. The hairline
+   comes through --hb-shadow rather than a border, because the base rule
+   already paints box-shadow and a border would change the box size. */
+.hold-button--chip {
+  /* The component owns its style attribute, so the hairline is set here
+     rather than passed in. --hb-shadow is what the base rule paints. */
+  --hb-shadow: inset 0 0 0 1px var(--border);
+  height: auto;
+  /* One pixel more than the chip's 4px, each side: the chip pays for a real
+     1px border inside its box and this pays for a box-shadow, which takes no
+     space. Without it the two sit 2px apart in height and half a pixel off
+     each other's centre line. */
+  padding: 5px 9px;
+  font-size: 11px;
+  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: 1px;
+  transition:
+    transform 160ms var(--hb-ease-out),
+    color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.hold-button--chip:hover:not(:disabled) {
+  /* The stock hover lightens the background with
+     `color-mix(in srgb, var(--hb-bg) 92%, #fff)`, which assumes --hb-bg is
+     opaque. Transparent mixed with white is white at 8%, so hovering laid a
+     pale veil over the button — invisible on light paper, a grey slab on the
+     dark theme. The hairline and the label carry the hover instead, exactly
+     as they do on the chip beside it. */
+  background: transparent;
+  --hb-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--fg);
+}
+
+/* Mid-sweep the label is already reading against the fill, so a hover colour
+   change there would fight it. */
+.hold-button--chip[data-phase='holding']:hover:not(:disabled),
+.hold-button--chip[data-phase='done']:hover:not(:disabled) {
+  color: var(--hb-text);
+}
+
+/* The label is painted three times — once plain, twice inside the fill — so
+   every copy has to take the chip's metrics or they drift apart mid-sweep. */
+.hold-button--chip .hold-button__label {
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
