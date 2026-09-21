@@ -8,12 +8,15 @@
 "use client";
 
 import { AvatarPicker } from "@/app/components/AvatarPicker";
-import { useProfileMode } from "@/app/components/ProfileMode";
+import { useProfileMode, MODE_KICKER } from "@/app/components/ProfileMode";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 
-// Not a job title. "Data analyst with an accounting background" is a claim
-// about what I am; these are observations about how the work actually goes,
-// drawn from a read-back of how I talk about it rather than from a CV line.
+// These are observations about how the work actually goes, drawn from a
+// read-back of how I talk about it rather than from a CV line. They used to
+// stand alone, deliberately, with no job title anywhere near them — which
+// left the site describing a temperament and never naming a trade. The title
+// now sits above them as a kicker, so the tagline is free to keep being a
+// tagline rather than having to do a label's work.
 const COPY = {
   analyst: {
     tagline:
@@ -55,7 +58,17 @@ export function HeroSection() {
       <div data-reveal className="container mx-auto px-6 pt-14 pb-12 sm:pt-20 sm:pb-16 max-w-[720px]">
         <AvatarPicker />
 
-        <h1 className="text-[13px] leading-[2] font-medium tracking-normal text-fg mt-5">
+        {/* What this is, before who it is. A stranger deciding whether to keep
+            reading wants the second question answered first, and the toggle
+            above already knows the answer — it was just saying it to screen
+            readers only. Set as a label rather than a heading: it is the same
+            11px the section labels use, so it reads as a caption on the
+            photographs rather than as a title competing with the name. */}
+        <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mt-5">
+          {MODE_KICKER[mode]}
+        </p>
+
+        <h1 className="text-[13px] leading-[2] font-medium tracking-normal text-fg mt-2">
           Hello, I&apos;m Fauzy.
         </h1>
 
