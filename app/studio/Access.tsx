@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { AccessRequest } from "@/app/lib/accessRequests";
+import HoldButton from "@/app/components/HoldButton/HoldButton";
 
 const chip =
   "text-[11px] leading-[1.6] px-2 py-1 rounded-md border border-border text-fg-body hover:text-fg hover:border-border-strong disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200";
@@ -118,15 +119,42 @@ export function Access() {
                     <p className="text-[13px] leading-[1.9] text-fg-body">{r.message}</p>
                   )}
 
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <button
-                      type="button"
-                      className={chip}
-                      disabled={busy === r.id}
-                      onClick={() => decide(r, !r.approved)}
-                    >
-                      {r.approved ? "Withdraw access" : "Approve"}
-                    </button>
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {r.approved ? (
+                      /* Withdrawing is reversible — approve again and the
+                         same link works. A plain button is right for it. */
+                      <button
+                        type="button"
+                        className={chip}
+                        disabled={busy === r.id}
+                        onClick={() => decide(r, false)}
+                      >
+                        Withdraw access
+                      </button>
+                    ) : (
+                      /* Approving is not reversible: it sends this person an
+                         email with their link in it, and withdrawing later
+                         does not unsend that. So it has to be held.
+                         Filling with --fg and flipping the label to --bg
+                         keeps it to colours the theme already has, and works
+                         the same in both of them. */
+                      <HoldButton
+                        size="sm"
+                        radius={6}
+                        holdTime={1400}
+                        waveAmplitude={3}
+                        glow={false}
+                        disabled={busy === r.id}
+                        backgroundColor="var(--bg-muted)"
+                        fillColor="var(--fg)"
+                        textColor="var(--fg-body)"
+                        fillTextColor="var(--bg)"
+                        doneLabel="Approved"
+                        onHold={() => decide(r, true)}
+                      >
+                        Hold to approve
+                      </HoldButton>
+                    )}
                     {links[r.id] && (
                       <button
                         type="button"
