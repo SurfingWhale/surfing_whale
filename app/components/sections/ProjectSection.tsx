@@ -60,11 +60,18 @@ const sheetsFrom = (srcs: string[], alt: string) =>
 
 // Work with a page of its own on this site. Order is strongest first, not
 // chronological — this is the list a stranger reads top-down.
+//
+// Every subtitle opens with the method, because the titles are written to be
+// read and a method is written to be scanned, and those are two different
+// visitors. Each one is only claiming what its own page can show: the padel
+// study really does put scraped listings against BPS population figures, the
+// finance one really does prorate against working days. Nothing here is a
+// keyword added to be found.
 const WRITTEN_UP = [
     {
         href: "/work/coffee-access",
         title: "15 minutes to coffee",
-        subtitle: "Isochrone · Tomoro against the housing around Bintaro",
+        subtitle: "Isochrone · drive-time bands against where people live",
         sheets: sheetsFrom(
             ["/work/sheets/coffee-1.jpg", "/work/sheets/coffee-3.jpg", "/work/sheets/coffee-2.jpg"],
             "The Tomoro isochrone map: drive-time bands over Jabodetabek."
@@ -73,7 +80,7 @@ const WRITTEN_UP = [
     {
         href: "/work/crime-la",
         title: "Reading Los Angeles by its crime reports",
-        subtitle: "Early work · pandas, folium, a public dataset, 2023",
+        subtitle: "Early work · pandas, folium, EDA and prediction, 2023",
         sheets: sheetsFrom(
             ["/work/sheets/crime-1.jpg", "/work/sheets/crime-3.jpg", "/work/sheets/crime-2.jpg"],
             "Charts from the Los Angeles crime analysis."
@@ -82,7 +89,7 @@ const WRITTEN_UP = [
     {
         href: "/work/tracker-doc",
         title: "TrackerDoc",
-        subtitle: "Internal tool · Sheets as the store, an approval queue",
+        subtitle: "Internal tool · Sheets and Apps Script, an approval queue",
         sheets: sheetsFrom(
             ["/work/tracker/approval-flow.svg"],
             "The document approval flow, as a diagram."
@@ -115,13 +122,13 @@ export function ProjectSection({ projects }: Props) {
             <CaseFolder
                 href="/work/finance-dashboard"
                 title="A ledger that behaves like a product"
-                subtitle="Finance dashboard · double-entry GL, prorate, self-audit"
+                subtitle="Double-entry GL · reconciliation, prorate on working days, forecasting"
                 sheets={FINANCE_SHEETS}
             />
             <CaseFolder
                 href="/work/padel"
                 title="Padel, and the moat nobody has dug"
-                subtitle="140 courts, 22 kelurahan, and two with none at all"
+                subtitle="Gap analysis · 140 courts against BPS population, 22 kelurahan"
                 sheets={PADEL_SHEETS}
             />
             </div>

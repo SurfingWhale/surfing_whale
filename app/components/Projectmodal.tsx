@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { NotionBlock, NotionProject } from "@/app/lib/notion";
 import { useAccess } from "@/app/components/AccessGate";
 import { ReadMoreGate } from "@/app/components/ReadMoreGate";
-import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
+import { BlockRenderer } from "@/app/components/ProjectBlocks";
 
 interface Props {
     project: NotionProject | null;
@@ -137,12 +137,17 @@ interface Props {
                 </p>
             ) : (
                 <div>
-                {(unlocked ? blocks : blocks.slice(0, FREE_BLOCKS)).map((block, i) => (
+                {/* Whatever the server sent, in full. It cuts the page itself
+                    when the gate is on, so cutting again here only ever hid
+                    blocks that had already been delivered — the whole page sat
+                    in the network tab behind a form asking for an email. That
+                    is decoration, not a gate. And PRD v2 wanted the portfolio
+                    open anyway: "leaving the portfolio and gallery open so a
+                    hurried recruiter is never turned away." */}
+                {blocks.map((block, i) => (
                     <BlockRenderer key={i} block={block} />
                 ))}
-                {!unlocked && (truncated || blocks.length > FREE_BLOCKS) && (
-                    <ReadMoreGate reason="Project" />
-                )}
+                {truncated && !unlocked && <ReadMoreGate reason="Project" />}
                 </div>
             )}
             </div>
