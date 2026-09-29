@@ -10,6 +10,7 @@
 import { AvatarPicker } from "@/app/components/AvatarPicker";
 import { useProfileMode, MODE_KICKER } from "@/app/components/ProfileMode";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
+import { HeroWordmark } from "@/app/components/HeroWordmark";
 
 // These are observations about how the work actually goes, drawn from a
 // read-back of how I talk about it rather than from a CV line. They used to
@@ -34,6 +35,15 @@ const COPY = {
       href: "/work/coffee-access",
       cta: "Read how it was made",
     },
+    // The picture set into the name. Deliberately not the map that runs full
+    // width below it: at 130px the two read as the same picture printed twice
+    // rather than as two things. The dashboard is a different piece of work
+    // and a different colour, so the first screen carries two projects instead
+    // of one and an echo.
+    inlay: {
+      image: "/work/finance/01-beranda.jpg",
+      alt: "A crop of the finance dashboard, set into the name.",
+    },
   },
   capture: {
     tagline: "I love capturing moments — joie de vivre.",
@@ -45,6 +55,10 @@ const COPY = {
       caption: "One frame, and the reason the other half of this site exists.",
       href: "#photography",
       cta: "See the rest",
+    },
+    inlay: {
+      image: "/photos/lantern-market.jpg",
+      alt: "A crop of a night market photograph, set into the name.",
     },
   },
 } as const;
@@ -68,9 +82,15 @@ export function HeroSection() {
           {MODE_KICKER[mode]}
         </p>
 
-        <h1 className="text-[13px] leading-[2] font-medium tracking-normal text-fg mt-2">
-          Hello, I&apos;m Fauzy.
-        </h1>
+        {/* The greeting used to live here at 13px. The name now says itself at
+            the top of the page, so saying it twice was the only thing the
+            greeting was still doing. */}
+        <HeroWordmark
+          first="Muhammad"
+          second="Fauzy"
+          image={copy.inlay.image}
+          alt={copy.inlay.alt}
+        />
 
         <p className="text-[13px] leading-[2] text-fg-body">{copy.tagline}</p>
 
