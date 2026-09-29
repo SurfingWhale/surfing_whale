@@ -13,9 +13,13 @@ const PORTRAIT: Record<Mode, { src: string; alt: string }> = {
     src: "/avatar-analyst.jpg",
     alt: "Fauzy seated against a white backdrop",
   },
+  // A photograph, not another portrait of him. The card is what the side it
+  // switches to contains: the analyst side is the person doing the work, the
+  // capture side is the work itself. Two pictures of the same face told a
+  // reader nothing about the difference between them.
   capture: {
-    src: "/avatar-capture.jpg",
-    alt: "Fauzy holding a film camera up to his eye",
+    src: "/photos/tower-above-clouds.jpg",
+    alt: "A tower rising above cloud — from the photography archive",
   },
 };
 

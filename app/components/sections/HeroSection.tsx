@@ -57,8 +57,8 @@ const COPY = {
       cta: "See the rest",
     },
     inlay: {
-      image: "/avatar-capture-inlay.jpg",
-      alt: "Fauzy, set into his own name.",
+      image: "/photos/lantern-market.jpg",
+      alt: "A night market, set into the name.",
     },
   },
 } as const;
