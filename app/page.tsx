@@ -1,6 +1,7 @@
 // app/page.tsx — Server Component, NO "use client"
 import { HeroSection } from "./components/sections/HeroSection";
 import ProjectSectionWrapper from "./components/sections/ProjectSectionWrapper";
+import { DirectorySection } from "./components/sections/DirectorySection";
 import { CVSection } from "./components/sections/CVSection";
 import { ActivitySection } from "./components/sections/ActivitySection";
 import { ContactSection } from "./components/sections/ContactSection";
@@ -65,6 +66,10 @@ export default async function Home() {
           <ProfileContent
             analystContent={
               <>
+                {/* The index first, then the cards. One is for deciding what to
+                    read, the other is for looking at — and the cards were doing
+                    both badly. */}
+                <DirectorySection />
                 <ProjectSectionWrapper />
                 <ActivitySection />
                 <CVSection />

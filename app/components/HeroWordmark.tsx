@@ -35,12 +35,22 @@ export function HeroWordmark({
       <span className="flex flex-wrap items-center gap-x-[0.18em] gap-y-[0.06em]">
         <span>{first}</span>
         {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* Flush, the way the reference sets it: no border and no rounding,
+            so the block reads as a letterform in the word rather than as a
+            picture that has been placed next to one. Greyscale for the same
+            reason — a colour photograph beside black type reads as an inset,
+            a grey one reads as part of the setting.
+
+            Near-square, not the wide block the reference uses: theirs holds a
+            landscape scene, this holds a face shot square on a white wall. A
+            wide crop of it is hair and wall with a head somewhere in the
+            middle. The source is cut to head-and-shoulders so the block is
+            filled rather than letterboxed. */}
         <img
           src={image}
           alt={alt}
           loading="eager"
-          className="h-[0.78em] w-[1.72em] object-cover rounded-[0.06em]
-                     border border-border align-middle"
+          className="h-[0.86em] w-[0.78em] object-cover object-center grayscale align-middle"
         />
       </span>
       <span className="block">{second}</span>

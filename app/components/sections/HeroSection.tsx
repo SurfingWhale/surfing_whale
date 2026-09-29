@@ -41,8 +41,8 @@ const COPY = {
     // and a different colour, so the first screen carries two projects instead
     // of one and an echo.
     inlay: {
-      image: "/work/finance/01-beranda.jpg",
-      alt: "A crop of the finance dashboard, set into the name.",
+      image: "/avatar-analyst-inlay.jpg",
+      alt: "Fauzy, set into his own name.",
     },
   },
   capture: {
@@ -57,8 +57,8 @@ const COPY = {
       cta: "See the rest",
     },
     inlay: {
-      image: "/photos/lantern-market.jpg",
-      alt: "A crop of a night market photograph, set into the name.",
+      image: "/avatar-capture-inlay.jpg",
+      alt: "Fauzy, set into his own name.",
     },
   },
 } as const;
@@ -70,8 +70,6 @@ export function HeroSection() {
   return (
     <section data-spot className="w-full">
       <div data-reveal className="container mx-auto px-6 pt-14 pb-12 sm:pt-20 sm:pb-16 max-w-[720px]">
-        <AvatarPicker />
-
         {/* What this is, before who it is. A stranger deciding whether to keep
             reading wants the second question answered first, and the toggle
             above already knows the answer — it was just saying it to screen
@@ -92,7 +90,12 @@ export function HeroSection() {
           alt={copy.inlay.alt}
         />
 
-        <p className="text-[13px] leading-[2] text-fg-body">{copy.tagline}</p>
+        {/* The switch sits under the name because it changes the face that is
+            in it. Above the name it was a control with nothing visibly
+            attached to it; here the thing it changes is one line away. */}
+        <AvatarPicker />
+
+        <p className="text-[13px] leading-[2] text-fg-body mt-6">{copy.tagline}</p>
 
         <p className="text-[13px] leading-[2] text-fg-body mt-5 max-w-[560px]">
           {copy.bio}
