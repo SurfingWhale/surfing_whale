@@ -31,6 +31,16 @@ export interface WorkRow {
   year: string;
   /** Leads with the method; this is the line that has to survive scanning. */
   method: string;
+  /**
+   * A one- or two-word name, for the stage.
+   *
+   * The reference's rows are company names — Attio, Paddle, SoPost — and its
+   * rhythm depends on every row being one line. These titles are sentences,
+   * and at display size three of five wrapped to two and three lines, which
+   * turns the list into a wall. The full title still runs on the cards and on
+   * the page; the stage gets the short name.
+   */
+  short?: string;
   /** Which cluster this belongs to. Rows keep their order inside it. */
   group: string;
   image?: string;

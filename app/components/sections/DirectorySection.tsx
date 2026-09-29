@@ -8,7 +8,8 @@
 // committing to any of it has nowhere to look. This is that place. One line
 // per study, the year, the method, and the picture of whichever row you are
 // on; then the cards below, unchanged.
-import { WorkIndex, type WorkRow } from "@/app/components/WorkIndex";
+import { type WorkRow } from "@/app/components/WorkIndex";
+import { WorkStage } from "@/app/components/WorkStage";
 import { SectionLabel } from "@/app/components/SectionLabel";
 
 // Grouped by the kind of claim the work makes, not by date. "Spatial" and
@@ -19,6 +20,7 @@ const ROWS: WorkRow[] = [
   {
     href: "/work/finance-dashboard",
     title: "A ledger that behaves like a product",
+    short: "Finance dashboard",
     year: "26",
     method: "Double-entry GL · reconciliation, prorate on working days, forecasting",
     group: "Built",
@@ -28,6 +30,7 @@ const ROWS: WorkRow[] = [
   {
     href: "/work/padel",
     title: "Padel, and the moat nobody has dug",
+    short: "Padel",
     year: "26",
     method: "Gap analysis · 140 courts against BPS population, 22 kelurahan",
     group: "Spatial",
@@ -35,6 +38,7 @@ const ROWS: WorkRow[] = [
   {
     href: "/work/coffee-access",
     title: "15 minutes to coffee",
+    short: "Tomoro",
     year: "25",
     method: "Isochrone · drive-time bands against where people live",
     group: "Spatial",
@@ -44,6 +48,7 @@ const ROWS: WorkRow[] = [
   {
     href: "/work/crime-la",
     title: "Reading Los Angeles by its crime reports",
+    short: "Crime LA",
     year: "23",
     method: "Early work · pandas, folium, EDA and prediction",
     group: "Early",
@@ -53,6 +58,7 @@ const ROWS: WorkRow[] = [
   {
     href: "/work/tracker-doc",
     title: "TrackerDoc",
+    short: "TrackerDoc",
     year: "26",
     method: "Internal tool · Sheets and Apps Script, an approval queue",
     group: "Built",
@@ -67,7 +73,7 @@ export function DirectorySection() {
       <div data-reveal className="container mx-auto px-6 max-w-[720px]">
         <SectionLabel note="Everything with a page of its own.">Index</SectionLabel>
         <div className="mt-8">
-          <WorkIndex label="Work" rows={ROWS} />
+          <WorkStage label="Work" rows={ROWS} />
         </div>
       </div>
     </section>
