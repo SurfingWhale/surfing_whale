@@ -1,0 +1,126 @@
+// app/components/WorkIndex.tsx
+//
+// The work as a directory rather than a wall of cards.
+//
+// A grid of cards costs one tile of screen per item, so it stops scanning
+// well somewhere around six and the page just gets taller. A list costs one
+// line, carries the year without a second element, and puts the whole set in
+// front of someone at once — which is the point of an index. The count sits
+// in the header so the size of the body of work is a fact you are given, not
+// one you have to arrive at by scrolling.
+//
+// Taken from the reference Fauzy sent, with one deliberate departure. There,
+// the list is white type over a full-bleed photograph that swaps per row.
+// That works on a dark site with photographs behind it; here the pictures are
+// pale maps on pale paper, and white type over an isochrone would be
+// unreadable. So the picture keeps its own frame beside the list, and the
+// list stays type on paper. The borrowed part is the structure: one row per
+// study, the year set small beside the name, the rest of the stack stepping
+// back from whichever row you are on.
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+
+export interface WorkRow {
+  href: string;
+  title: string;
+  /** Two digits, as the reference sets them — '25 reads as a note, 2025 as data. */
+  year: string;
+  /** Leads with the method; this is the line that has to survive scanning. */
+  method: string;
+  image?: string;
+  alt?: string;
+}
+
+export function WorkIndex({ rows, label }: { rows: WorkRow[]; label: string }) {
+  // Nothing is "selected" until a pointer or a focus ring says so, but the
+  // frame should never be empty, so the first row stands in until then.
+  const [active, setActive] = useState(0);
+  const shown = rows[active] ?? rows[0];
+
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-6 mb-6">
+        <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label">
+          {label}
+        </p>
+        <p className="text-[11px] font-mono tabular-nums text-fg-muted">
+          {String(active + 1).padStart(2, "0")} / {String(rows.length).padStart(2, "0")}
+        </p>
+      </div>
+
+      <div className="grid gap-8 sm:grid-cols-[1fr_16rem] sm:gap-10 sm:items-start">
+        <ul className="border-t border-border">
+          {rows.map((row, i) => (
+            <li key={row.href}>
+              <Link
+                href={row.href}
+                onMouseEnter={() => setActive(i)}
+                onFocus={() => setActive(i)}
+                className="work-row group block border-b border-border py-4
+                           transition-opacity duration-300 ease-[var(--ease-out)]"
+                // The stack steps back from wherever the reader is, rather than
+                // fading uniformly down the list: distance from `active`, not
+                // position in the array. A plain downward ramp would bury the
+                // last row permanently, and the last row is still a project.
+                // Floored, because a row nobody is on is still a row someone
+                // has to be able to read.
+                //
+                // Handed over as a variable rather than applied here, because
+                // on a touch screen nothing ever sets `active` — it would sit
+                // on the first row forever and leave the bottom of the list
+                // dimmed with no way to undim it. The rule in globals.css only
+                // reads this where there is a pointer to move.
+                style={{ "--row-dim": Math.max(0.42, 1 - Math.abs(i - active) * 0.16) } as React.CSSProperties}
+              >
+                <div className="flex items-baseline gap-3">
+                  <span className="text-[15px] font-medium tracking-[-0.02em] leading-[1.5] text-fg">
+                    {row.title}
+                  </span>
+                  <span className="text-[11px] font-mono tabular-nums text-fg-muted shrink-0">
+                    &apos;{row.year}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="ml-auto shrink-0 text-[13px] text-fg-muted
+                               opacity-0 -translate-x-1 transition-all duration-300
+                               group-hover:opacity-100 group-hover:translate-x-0
+                               group-focus-visible:opacity-100 group-focus-visible:translate-x-0"
+                  >
+                    →
+                  </span>
+                </div>
+                <p className="text-[11px] leading-[1.7] text-fg-body mt-1.5">
+                  {row.method}
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* Sticky so the picture stays with the row being read on a long list,
+            and hidden below the breakpoint, where the list is the whole thing
+            and a swapping thumbnail would only jump around under the thumb. */}
+        <div className="hidden sm:block sm:sticky sm:top-20">
+          <div className="relative w-full aspect-[4/3] overflow-hidden rounded-lg border border-border bg-bg-muted">
+            {shown?.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={shown.image}
+                src={shown.image}
+                alt={shown.alt ?? shown.title}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <span className="absolute inset-0 grid place-items-center px-6 text-center text-[11px] leading-[1.7] text-fg-muted">
+                No visual saved for this one yet.
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] leading-[1.7] text-fg-muted mt-2">{shown?.title}</p>
+        </div>
+      </div>
+    </div>
+  );
+}

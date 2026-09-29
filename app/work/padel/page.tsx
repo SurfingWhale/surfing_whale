@@ -12,6 +12,7 @@
 // coordinates (§03), and the arithmetic the summary leaves implicit — the
 // niche percentages come off a 41-review base, so "2.4%" is one review (§05).
 import type { Metadata } from "next";
+import { CaseHeader } from "@/app/components/CaseHeader";
 import Link from "next/link";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { DocPreview } from "@/app/components/DocPreview";
@@ -166,19 +167,20 @@ export default function PadelPage() {
       </nav>
 
       <article className="py-16">
-        <header className={`${column} mb-6`}>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-            Strategic snapshot · May 2026
-          </p>
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            Padel, and the moat nobody has dug
-          </h1>
-          <p className={`${prose} mt-4 max-w-[560px]`}>
-            Two studies of the same sport a few kilometres apart. One asks
-            where the courts <em>should</em> go. The other asks what happens to
-            a court once forty others are already inside ten minutes of it.
-          </p>
-        </header>
+        <div className={column}>
+          <CaseHeader
+            scale="display"
+            kicker="Strategic snapshot · May 2026"
+            title="Padel, and the moat nobody has dug"
+            facts={["Gap analysis", "22 kelurahan", "2026"]}
+            claim="Two courts a few kilometres apart — one sitting in a gap, one inside forty competitors' ten-minute reach. And the demand signal worth quoting, 2.4%, turns out to be one review."
+            made={[
+              { label: "Method", value: "Ten-minute drive-time reach per court against kelurahan population; Haversine distances; review classification by NLP tagging" },
+              { label: "Data", value: "142 venues from a Google Maps scrape, 41 reviews across 9 courts; population from BPS Tangerang Selatan and BPS Jakarta Selatan" },
+              { label: "Reach", value: "OpenRouteService isochrones" },
+            ]}
+          />
+        </div>
 
         <Section number="01" title="The question underneath the boom">
           <p>

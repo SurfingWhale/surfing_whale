@@ -16,6 +16,7 @@
 // was never saved, and the caption says so, because a picture of a map is not
 // a map.
 import type { Metadata } from "next";
+import { CaseHeader } from "@/app/components/CaseHeader";
 import Link from "next/link";
 import { DocPreview } from "@/app/components/DocPreview";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
@@ -116,19 +117,20 @@ export default function CoffeeAccessPage() {
       </nav>
 
       <article className="py-16">
-        <header className={`${column} mb-6`}>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-            Field note · October 2025
-          </p>
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            15 minutes to coffee
-          </h1>
-          <p className={`${prose} mt-4 max-w-[560px]`}>
-            Reading the spatial pattern of Tomoro Coffee against the housing
-            around Bintaro — where the fifteen-minute reach lands, and which
-            neighbourhoods sit just outside it.
-          </p>
-        </header>
+        <div className={column}>
+          <CaseHeader
+            scale="display"
+            kicker="Field note · October 2025"
+            title="15 minutes to coffee"
+            facts={["Isochrone", "Bintaro", "2025"]}
+            claim="Almost every Tomoro branch in Jabodetabek sits on a road you drive rather than a corridor you commute along — so the fifteen minutes belongs to whoever has a car."
+            made={[
+              { label: "Method", value: "Drive-time isochrones at 5, 10 and 15 minutes, laid over residential density" },
+              { label: "Data", value: "Branch locations scraped from Google Maps; road network from OpenStreetMap" },
+              { label: "Built with", value: "Python, Leaflet" },
+            ]}
+          />
+        </div>
 
         <Section number="01" title="The question">
           <p>

@@ -399,6 +399,16 @@ body:has(.photo-row) {
    button off the top of the screen. In the components layer, utilities win,
    which is what a caller expects. */
 @layer components {
+  /* The work index dims the rows around the one being read. Pointer-only:
+     on touch nothing moves `active`, so the ramp would freeze on the first
+     row and leave everything below it permanently faded. Without a pointer
+     every row simply reads at full strength, which is the honest default. */
+  @media (hover: hover) and (pointer: fine) {
+    .work-row {
+      opacity: var(--row-dim, 1);
+    }
+  }
+
   /* Inline code in running prose is frequently a long identifier — the case
      study quotes `sessionStorage.getItem('sw_bio_unlocked')`, 361px wide in a
      390px viewport, which pushed the whole page sideways. Inline mono may
