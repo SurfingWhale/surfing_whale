@@ -11,14 +11,17 @@
 import { WorkIndex, type WorkRow } from "@/app/components/WorkIndex";
 import { SectionLabel } from "@/app/components/SectionLabel";
 
-// Strongest first, the same order the cards use. Every method line is one the
-// study's own page can back.
+// Grouped by the kind of claim the work makes, not by date. "Spatial" and
+// "Built" are two different things to be able to do, and a reader deciding
+// whether to keep reading is usually asking which of them they came for.
+// Ordered so the strongest cluster leads; rows keep their order inside it.
 const ROWS: WorkRow[] = [
   {
     href: "/work/finance-dashboard",
     title: "A ledger that behaves like a product",
     year: "26",
     method: "Double-entry GL · reconciliation, prorate on working days, forecasting",
+    group: "Built",
     image: "/work/finance/01-beranda.jpg",
     alt: "The finance dashboard's home screen.",
   },
@@ -27,12 +30,14 @@ const ROWS: WorkRow[] = [
     title: "Padel, and the moat nobody has dug",
     year: "26",
     method: "Gap analysis · 140 courts against BPS population, 22 kelurahan",
+    group: "Spatial",
   },
   {
     href: "/work/coffee-access",
     title: "15 minutes to coffee",
     year: "25",
     method: "Isochrone · drive-time bands against where people live",
+    group: "Spatial",
     image: "/work/sheets/coffee-1.jpg",
     alt: "Drive-time bands over Jabodetabek.",
   },
@@ -41,6 +46,7 @@ const ROWS: WorkRow[] = [
     title: "Reading Los Angeles by its crime reports",
     year: "23",
     method: "Early work · pandas, folium, EDA and prediction",
+    group: "Early",
     image: "/work/sheets/crime-1.jpg",
     alt: "Charts from the Los Angeles crime analysis.",
   },
@@ -49,6 +55,7 @@ const ROWS: WorkRow[] = [
     title: "TrackerDoc",
     year: "26",
     method: "Internal tool · Sheets and Apps Script, an approval queue",
+    group: "Built",
     image: "/work/tracker/approval-flow.svg",
     alt: "The document approval flow.",
   },
