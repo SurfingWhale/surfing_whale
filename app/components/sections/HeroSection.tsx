@@ -63,6 +63,22 @@ const COPY = {
   },
 } as const;
 
+// Dealt through the slot in the name before it settles on the mode's own
+// picture. Small cuts of the photographs, 55KB for all five, because at 85ms a
+// frame nobody is reading detail — they are reading that it moved.
+//
+// Every one of these is a different picture from the one it lands on. A sixth
+// was cut from the same portrait the analyst mode settles to, and the
+// component's guard only compares paths, so it dealt a frame identical to the
+// landing and the shuffle stuttered where it should have cut.
+const FLASH = [
+  "/work/flash/a2.jpg",
+  "/work/flash/a3.jpg",
+  "/work/flash/a4.jpg",
+  "/work/flash/a5.jpg",
+  "/work/flash/a6.jpg",
+];
+
 export function HeroSection() {
   const { mode } = useProfileMode();
   const copy = COPY[mode];
@@ -88,6 +104,7 @@ export function HeroSection() {
           second="Fauzy"
           image={copy.inlay.image}
           alt={copy.inlay.alt}
+          flash={FLASH}
         />
 
         {/* The switch sits under the name because it changes the face that is
