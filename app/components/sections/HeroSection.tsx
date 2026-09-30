@@ -77,6 +77,22 @@ const COPY = {
 // was cut from the same portrait the analyst mode settles to, and the
 // component's guard only compares paths, so it dealt a frame identical to the
 // landing and the shuffle stuttered where it should have cut.
+// The three things a stranger checks before reading anything: where, what,
+// and whether you are reachable. They sat nowhere on the page before, so the
+// answer to "is this person available" was several scrolls away or absent.
+const FACTS: Record<string, [string, string][]> = {
+  analyst: [
+    ["Based in", "Jakarta, ID"],
+    ["Field", "Analytics · Geospatial"],
+    ["Status", "Open to data roles"],
+  ],
+  capture: [
+    ["Based in", "Jakarta, ID"],
+    ["Field", "Documentary · 35mm"],
+    ["Status", "Archive below"],
+  ],
+};
+
 const FLASH = [
   "/work/flash/a2.jpg",
   "/work/flash/a3.jpg",
@@ -106,34 +122,62 @@ export function HeroSection() {
         {/* The greeting used to live here at 13px. The name now says itself at
             the top of the page, so saying it twice was the only thing the
             greeting was still doing. */}
-        <HeroWordmark
-          first="Muhammad"
-          second="Fauzy"
-          image={copy.inlay.image}
-          alt={copy.inlay.alt}
-          flash={FLASH}
-        />
+        {/* The name runs to about 520px at its largest, and the column is 720,
+            so the second line — the short word plus the picture — used to end
+            in a 300px rectangle of nothing. The switch and the standing facts
+            move into it and sit on the name's own baseline, which turns the
+            gap from something left over into the right-hand half of a block.
+            Below the breakpoint there is no gap to fill, so they stack. */}
+        <div className="flex flex-col md:flex-row md:items-end md:gap-7">
+          <HeroWordmark
+            first="Muhammad"
+            second="Fauzy"
+            image={copy.inlay.image}
+            alt={copy.inlay.alt}
+            flash={FLASH}
+          />
 
-        {/* The switch sits under the name because it changes the face that is
-            in it. Above the name it was a control with nothing visibly
-            attached to it; here the thing it changes is one line away. */}
-        <AvatarPicker />
+          <div className="shrink-0 md:max-w-[176px] md:pb-[0.9em] flex flex-col gap-3">
+            {/* The switch changes the face inside the name, so it belongs
+                within reach of it rather than a paragraph below. */}
+            <AvatarPicker />
+            {/* The facts a stranger checks first, and the only place on the
+                page that answers them without scrolling. Set at the kicker's
+                size so the two read as one voice bracketing the name. */}
+            <dl className="text-[11px] leading-[1.7] tracking-[0.06em] uppercase text-fg-label">
+              {FACTS[mode].map(([k, v]) => (
+                <div key={k} className="flex gap-2">
+                  <dt className="sr-only">{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
 
         {/* The two passages resolve in sequence, the second picking up where
             the first lands, so the front reads as one movement down the page
             rather than two that happen to fire together. Keyed on the mode so
-            switching modes runs the new copy in rather than swapping it. */}
+            switching modes runs the new copy in rather than swapping it.
+
+            The tagline used to be 13px, the same size as the paragraph under
+            it, stretched as a single thin line across the full 720px column.
+            Under a 112px name that reads as a caption someone forgot to
+            delete. It is the one sentence that says what the work is for, so
+            it now runs at display-adjacent size on a measure short enough to
+            break over two lines — the line break is what gives it presence,
+            not the point size alone. */}
         <DecodeText
           key={`tagline-${mode}`}
           text={copy.tagline}
-          className="text-[13px] leading-[2] text-fg-body mt-6"
+          className="text-[clamp(19px,2.1vw,26px)] leading-[1.45] tracking-[-0.011em] text-fg mt-9 max-w-[19ch] sm:max-w-[23ch]"
         />
 
         <DecodeText
           key={`bio-${mode}`}
           text={copy.bio}
           delay={420}
-          className="text-[13px] leading-[2] text-fg-body mt-5 max-w-[560px]"
+          className="text-[13px] leading-[2] text-fg-body mt-6 max-w-[560px]"
         />
 
         <EmbedFrame

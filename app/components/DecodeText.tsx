@@ -122,7 +122,11 @@ export function DecodeText({
       const s = document.createElement("span");
       if (ch === " ") {
         s.textContent = " ";
-        s.style.whiteSpace = "pre";
+        // pre-wrap, not pre. `pre` keeps the space but forbids a line break at
+        // it, and once the characters are grouped into words the spaces are
+        // the only break opportunities left — with `pre` the whole paragraph
+        // becomes one unbreakable run about 1800px wide.
+        s.style.whiteSpace = "pre-wrap";
         return s;
       }
       s.textContent = ch;
@@ -131,7 +135,27 @@ export function DecodeText({
       s.style.transition = `color ${FADE}ms var(--ease-out)`;
       return s;
     });
-    vis.append(...spans);
+
+    // Characters are grouped back into words before they go into the DOM.
+    // Every character is an inline-block with a width of its own, and a
+    // browser will happily break a line between any two of those — so without
+    // this the paragraph breaks mid-word ("what is actually going / on"). The
+    // wrapper holds each word together and leaves the spaces as the only
+    // places a line is allowed to end.
+    let word: HTMLSpanElement | null = null;
+    spans.forEach((s, i) => {
+      if (chars[i] === " ") {
+        word = null;
+        vis.append(s);
+        return;
+      }
+      if (!word) {
+        word = document.createElement("span");
+        word.style.whiteSpace = "nowrap";
+        vis.append(word);
+      }
+      word.append(s);
+    });
 
     // Lock each character to the width of the character it will become,
     // measured once here. Without this the substitutes — "@" standing in for

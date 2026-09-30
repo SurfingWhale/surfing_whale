@@ -77,6 +77,25 @@ export function HeroWordmark({
   const box = useRef<HTMLHeadingElement>(null);
   const widths = useRef<number[]>([]);
 
+  // The screensaver. Separate from the name's resolve on purpose: the picture
+  // keeps changing for as long as the page is open, while the name resolves
+  // once and settles. An earlier pass folded the two rewrites together and
+  // took this loop out with it, which left the slot frozen on frame one — the
+  // picture was still there, it had simply stopped being a screensaver.
+  useEffect(() => {
+    setAt(0);
+    const reduce = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduce || frames.length < 2) return;
+    const id = window.setInterval(
+      () => setAt((i) => (i + 1) % frames.length),
+      HOLD_MS
+    );
+    return () => window.clearInterval(id);
+    // frames is derived from these, and changing either should restart it
+  }, [image, flash.join("|"), frames.length]);
+
   useEffect(() => {
     const reduce = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)"
@@ -149,7 +168,7 @@ export function HeroWordmark({
     ));
 
   return (
-    <h1 ref={box} className="mt-6 mb-7">
+    <h1 ref={box} className="mt-6 mb-7 shrink-0">
       <button
         type="button"
         onClick={repaint}
@@ -168,7 +187,7 @@ export function HeroWordmark({
         // to its letters than mine was, and looks generous because the whole
         // wordmark is large. Growing the box was the wrong lever.
         className="block text-left font-display font-bold text-fg cursor-pointer
-                   text-[clamp(46px,18vw,112px)] leading-[0.92] tracking-[0.004em]
+                   text-[clamp(46px,18vw,104px)] leading-[0.92] tracking-[0.004em]
                    rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         <span className="block">{letters(0, first.length)}</span>

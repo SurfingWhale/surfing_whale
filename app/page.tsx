@@ -18,6 +18,7 @@ import { VisitorCard } from "./components/VisitorCard";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
+import { isUnlocked } from "./lib/darkroomSession";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -35,10 +36,23 @@ const NAV_LINKS: NavLink[] = [
 // [] when their database is unconfigured, so this needs no extra guard and the
 // links reappear on their own once posts exist.
 export default async function Home() {
-  const [posts, essays] = await Promise.all([listPosts(), listEssays()]);
+  const [posts, essays, unlocked] = await Promise.all([
+    listPosts(),
+    listEssays(),
+    isUnlocked(),
+  ]);
   const navLinks = NAV_LINKS.filter(
     (l) => l.href !== "/writing" || posts.length > 0
   );
+
+  // The studio is where photographs get uploaded and essays get written, and
+  // it has always been reachable only by typing the URL. It is in the nav now
+  // — but the check runs here, on the server, against the same signed cookie
+  // the studio's own routes check. A visitor is not served a link they cannot
+  // use, and more to the point the markup they receive contains no mention
+  // that a studio exists. Hiding it with CSS would have shipped the word to
+  // everyone and only stopped them seeing it.
+  if (unlocked) navLinks.push({ label: "Studio", href: "/studio" });
 
   return (
     <main className="relative min-h-screen bg-bg text-fg">
