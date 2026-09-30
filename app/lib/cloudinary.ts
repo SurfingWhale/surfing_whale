@@ -99,3 +99,85 @@ export async function uploadPhoto(
         uploadStream.end(imageBuffer);
     });
 }
+
+/**
+ * The archive, as opposed to an essay's photographs: loose frames that belong
+ * to no piece of writing. Same treatment as a darkroom photograph — the long
+ * edge is bounded rather than cropped — but a folder and a tag of its own, so
+ * the archive can be listed without dragging every essay's images in with it.
+ */
+export const ARCHIVE_FOLDER = "surfing-whale/archive";
+export const ARCHIVE_TAG = "sw-archive";
+
+export async function uploadArchivePhoto(
+    imageBuffer: Buffer,
+    publicId: string
+): Promise<CloudinaryPhotoResult> {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+        {
+            folder: ARCHIVE_FOLDER,
+            public_id: publicId,
+            overwrite: false,
+            unique_filename: true,
+            tags: [ARCHIVE_TAG],
+            transformation: [
+            { width: 2400, height: 2400, crop: "limit" },
+            { quality: "auto:good", fetch_format: "auto" },
+            ],
+        },
+        (error, result) => {
+            if (error || !result) reject(error ?? new Error("Upload failed"));
+            else
+            resolve({
+                secure_url: result.secure_url,
+                public_id: result.public_id,
+                width: result.width,
+                height: result.height,
+            });
+        }
+        );
+        uploadStream.end(imageBuffer);
+    });
+}
+
+export interface ArchiveFrame {
+    publicId: string;
+    url: string;
+    width: number;
+    height: number;
+    takenAt: string;
+}
+
+/**
+ * Listed by tag rather than by folder. Cloudinary's folder semantics differ
+ * between the fixed and dynamic folder modes an account can be in, and the tag
+ * is written by the upload above either way, so this returns the same set
+ * regardless of how the account is configured.
+ */
+export async function listArchivePhotos(limit = 200): Promise<ArchiveFrame[]> {
+    if (!process.env.CLOUDINARY_API_SECRET) return [];
+    try {
+        const res = await cloudinary.search
+            .expression(`tags=${ARCHIVE_TAG}`)
+            .sort_by("created_at", "desc")
+            .max_results(Math.min(limit, 500))
+            .execute();
+        type Row = {
+            public_id: string; secure_url: string;
+            width: number; height: number; created_at: string;
+        };
+        return (res.resources as Row[]).map((r) => ({
+            publicId: r.public_id,
+            url: r.secure_url,
+            width: r.width,
+            height: r.height,
+            takenAt: r.created_at,
+        }));
+    } catch (err) {
+        // An archive that cannot be listed is an empty archive, not a 500. The
+        // rest of the page has nothing to do with Cloudinary.
+        console.error("Archive list failed:", err instanceof Error ? err.message : err);
+        return [];
+    }
+}

@@ -4,6 +4,9 @@
 import { useState } from "react";
 import { photographs, type PhotoCategory } from "@/app/data/photography";
 import { SectionLabel } from "@/app/components/SectionLabel";
+
+const inline =
+  "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200";
 import { PhotoViewer } from "@/app/components/PhotoViewer";
 
 const LABEL: Record<PhotoCategory, string> = {
@@ -20,7 +23,13 @@ const AVAILABLE = ORDER.filter((c) => photographs.some((p) => p.category === c))
 
 type Filter = "all" | PhotoCategory;
 
-export function PhotographySection({ hasDarkroom = false }: { hasDarkroom?: boolean }) {
+export function PhotographySection({
+  hasDarkroom = false,
+  hasArchive = false,
+}: {
+  hasDarkroom?: boolean;
+  hasArchive?: boolean;
+}) {
   const [filter, setFilter] = useState<Filter>("all");
   // Index runs against the filtered set, so arrows walk what is on screen.
   const [viewing, setViewing] = useState<number | null>(null);
@@ -64,17 +73,30 @@ export function PhotographySection({ hasDarkroom = false }: { hasDarkroom?: bool
           Selected photography
         </SectionLabel>
 
-        {hasDarkroom && (
+        {(hasDarkroom || hasArchive) && (
           <p className="text-[13px] leading-[2] text-fg-body mb-8 -mt-4">
-            Longer pieces, where the writing and the frames go together, live in
-            the{" "}
-            <a
-              href="/photo"
-              className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-            >
-              darkroom
-            </a>
-            .
+            {hasDarkroom && (
+              <>
+                Longer pieces, where the writing and the frames go together,
+                live in the{" "}
+                <a href="/photo" className={inline}>
+                  darkroom
+                </a>
+                .{" "}
+              </>
+            )}
+            {/* The selection above is five. Everything else is one link away
+                rather than nowhere, which is the difference between a
+                portfolio and an archive. */}
+            {hasArchive && (
+              <>
+                Everything else is in the{" "}
+                <a href="/archive" className={inline}>
+                  archive
+                </a>
+                .
+              </>
+            )}
           </p>
         )}
 

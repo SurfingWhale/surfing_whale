@@ -8,12 +8,14 @@ import { Editor as DarkroomEditor, Lock } from "@/app/darkroom/Composer";
 import { Writer } from "./Writer";
 import { Notes } from "./Notes";
 import { Access } from "./Access";
+import { Archive } from "./Archive";
 
-type Room = "write" | "darkroom" | "notes" | "access";
+type Room = "write" | "darkroom" | "archive" | "notes" | "access";
 
 const LABEL: Record<Room, string> = {
   write: "Write",
   darkroom: "Darkroom",
+  archive: "Archive",
   notes: "Notes",
   access: "Access",
 };
@@ -53,7 +55,7 @@ export function Studio({ start = "write" }: { start?: Room }) {
   return (
     <Shell wide>
       <div className="flex gap-5 text-[13px] mb-8">
-        {(["write", "darkroom", "notes", "access"] as Room[]).map((r) => (
+        {(["write", "darkroom", "archive", "notes", "access"] as Room[]).map((r) => (
           <button
             key={r}
             onClick={() => setRoom(r)}
@@ -70,6 +72,7 @@ export function Studio({ start = "write" }: { start?: Room }) {
       </div>
       {room === "write" && <Writer />}
       {room === "darkroom" && <DarkroomEditor />}
+      {room === "archive" && <Archive />}
       {room === "notes" && <Notes />}
       {room === "access" && <Access />}
     </Shell>
