@@ -1,24 +1,33 @@
 // app/components/HeroWordmark.tsx
 //
-// The name set large, with a picture sitting inside it rather than beside it —
-// and the picture flashes through a handful of frames before it settles.
+// The name set large, with a picture inside it that keeps changing, and
+// letters that take colour when the name is pressed.
 //
-// The flash is the point. In the reference the block inside the wordmark is
-// not one photograph, it is several cutting past each other; the name arrives
-// and the picture is still deciding what it is. A still image in that slot is
-// a different thing entirely, which is what was there before.
+// Two behaviours, both from the reference:
 //
-// The move only works if the image is measured in the type's own units — its
-// height is set in `em`, so it scales with the font and stays locked to the
-// cap height at every width. Give it a pixel height and it drifts the moment
-// the heading wraps.
+//   The picture is a screensaver, not an entrance. It changes about once a
+//   second and never stops while the page is open — the slot inside the
+//   wordmark is a frame that work keeps passing through. An earlier pass here
+//   dealt a short shuffle on mount and then held one image forever, which is a
+//   different thing: a flourish rather than a fixture.
+//
+//   The letters take colour on press and drop it again. Pressing re-deals, so
+//   the same word is a different object every time someone prods it.
+//
+// The picture is measured in the type's own units — height in `em` — so it
+// scales with the font and stays on the cap height at every width. A pixel
+// height drifts the moment the heading wraps.
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-/** How long each frame is held, and how many are dealt before it settles. */
-const HOLD_MS = 85;
-const DEALS = 9;
+/** How long each frame is held. The reference sits at about a second. */
+const HOLD_MS = 1000;
+
+// Enough hues to tell the letters apart, none of them fighting the page. The
+// lime is the accent the index stage already uses, so a coloured name and a
+// live row in the directory are recognisably the same site.
+const INK = ["#2E9E8F", "#2f6fe0", "#c8f169", "#e0533f", "#8b5cf6", "#e8a33d"];
 
 export function HeroWordmark({
   first,
@@ -29,98 +38,100 @@ export function HeroWordmark({
 }: {
   first: string;
   second: string;
-  /** Where it lands. */
+  /** The mode's own picture. It is part of the rotation, not the end of it. */
   image: string;
   alt: string;
-  /** Frames dealt on the way there. */
+  /** The other frames the slot passes through. */
   flash?: string[];
 }) {
-  const [shown, setShown] = useState(image);
-  const timers = useRef<number[]>([]);
+  // Every frame in one list, the mode's picture first, so a mode switch starts
+  // the rotation on the face that belongs to it.
+  const frames = [image, ...flash.filter((f) => f !== image)];
+  const [at, setAt] = useState(0);
+  // 0 is the plain name. Each press deals a new set of colours; the sixth
+  // press puts it back, so the interaction is a loop rather than a one-way
+  // door into a permanently rainbow heading.
+  const [paint, setPaint] = useState(0);
 
   useEffect(() => {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-
+    setAt(0);
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || frames.length < 2) return;
 
-    // Nothing to deal from, or the visitor has asked for no motion: land
-    // straight on the image and skip the performance.
-    if (reduce || flash.length === 0) {
-      setShown(image);
-      return;
-    }
-
-    for (let i = 0; i < DEALS; i++) {
-      timers.current.push(
-        window.setTimeout(() => {
-          // Never deal the landing image mid-flight — seeing it twice reads as
-          // a stutter rather than as a shuffle that stopped.
-          const pool = flash.filter((f) => f !== image);
-          setShown(pool[i % pool.length] ?? image);
-        }, i * HOLD_MS)
-      );
-    }
-    timers.current.push(
-      window.setTimeout(() => setShown(image), DEALS * HOLD_MS)
+    const id = window.setInterval(
+      () => setAt((i) => (i + 1) % frames.length),
+      HOLD_MS
     );
+    return () => window.clearInterval(id);
+    // frames is derived from these two and changing either should restart it
+  }, [image, flash.join("|"), frames.length]);
 
-    return () => {
-      timers.current.forEach(clearTimeout);
-      timers.current = [];
-    };
-  }, [image, flash]);
+  const repaint = useCallback(() => setPaint((p) => (p + 1) % 6), []);
+
+  const letters = (word: string, offset: number) =>
+    [...word].map((ch, i) => (
+      <span
+        key={`${word}-${i}`}
+        style={{
+          color:
+            paint === 0
+              ? undefined
+              : INK[(i + offset + paint * 2) % INK.length],
+          transition: "color 220ms var(--ease-out)",
+        }}
+      >
+        {ch}
+      </span>
+    ));
 
   return (
-    <h1
-      // The same face the index stage runs, so the two loudest pieces of type
-      // on the site are speaking in one voice rather than two. Oswald is
-      // condensed, which buys width back: the name takes less room than it did
-      // in Jakarta at the same size, so the size goes up and the picture set
-      // into it gets more room rather than less.
-      //
-      // Tracking goes from -0.04em to near zero. Negative tracking tightens a
-      // wide grotesque; on a condensed face the letters are already close and
-      // pulling them further collapses the counters.
-      className="mt-6 mb-7 font-display font-bold text-fg
-                 text-[clamp(44px,12.5vw,88px)] leading-[0.92] tracking-[0.004em]"
-    >
-      {/* One flex line so the picture sits on the baseline run of the first
-          word, and wraps under it rather than overflowing when there is no
-          room — 390px has none. */}
-      <span className="flex flex-wrap items-center gap-x-[0.18em] gap-y-[0.06em]">
-        <span>{first}</span>
-        {/* Flush, the way the reference sets it: no border and no rounding, so
-            the block reads as a letterform in the word rather than as a
-            picture placed next to one. Greyscale for the same reason — a
-            colour photograph beside black type reads as an inset, a grey one
-            reads as part of the setting.
-
-            Near-square, not the wide block the reference uses: theirs holds a
-            landscape scene, this holds a face shot square on a white wall.
-            Sized just over the cap height, because at 0.86em it read as a
-            stamp beside a condensed bold. */}
-        <span className="relative inline-block h-[1.02em] w-[0.9em] shrink-0 overflow-hidden align-middle bg-bg-muted">
-          {/* Every frame is mounted and only opacity changes. Swapping one
-              img's src would make the browser fetch mid-flash and paint
-              nothing in between — at 85ms a hold that is the whole frame. */}
-          {[image, ...flash].map((src) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={src}
-              src={src}
-              alt={src === image ? alt : ""}
-              aria-hidden={src === image ? undefined : true}
-              loading="eager"
-              className="absolute inset-0 w-full h-full object-cover object-center grayscale"
-              style={{ opacity: shown === src ? 1 : 0 }}
-            />
-          ))}
+    <h1 className="mt-6 mb-7">
+      <button
+        type="button"
+        onClick={repaint}
+        aria-label={`${first} ${second} — press to recolour the name`}
+        // The same face the index stage runs, so the two loudest pieces of
+        // type on the site speak in one voice. Oswald is condensed, which buys
+        // width back: the name takes less room than it did in Jakarta at the
+        // same size, so the size goes up and the picture inside it gets more
+        // room rather than less. Tracking sits near zero — negative tracking
+        // tightens a wide grotesque, but on a condensed face the letters are
+        // already close and pulling them further collapses the counters.
+        className="block text-left font-display font-bold text-fg cursor-pointer
+                   text-[clamp(44px,12.5vw,88px)] leading-[0.92] tracking-[0.004em]
+                   rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
+      >
+        {/* One flex line so the picture sits on the baseline run of the first
+            word, and wraps under it rather than overflowing where there is no
+            room — 390px has none. */}
+        <span className="flex flex-wrap items-center gap-x-[0.18em] gap-y-[0.06em]">
+          <span>{letters(first, 0)}</span>
+          {/* Flush: no border, no rounding, so the block reads as a letterform
+              in the word rather than a picture placed beside one. Greyscale
+              for the same reason — a colour photograph next to type reads as
+              an inset, a grey one reads as part of the setting. Every frame is
+              mounted and only opacity moves, so nothing is fetched mid-change
+              and there is no white gap between frames. */}
+          <span className="relative inline-block h-[1.02em] w-[0.9em] shrink-0 overflow-hidden align-middle bg-bg-muted">
+            {frames.map((src, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={src}
+                src={src}
+                alt={i === 0 ? alt : ""}
+                aria-hidden={i === 0 ? undefined : true}
+                loading="eager"
+                className="absolute inset-0 w-full h-full object-cover object-center
+                           grayscale transition-opacity duration-500 ease-[var(--ease-out)]"
+                style={{ opacity: i === at ? 1 : 0 }}
+              />
+            ))}
+          </span>
         </span>
-      </span>
-      <span className="block">{second}</span>
+        <span className="block">{letters(second, first.length)}</span>
+      </button>
     </h1>
   );
 }
