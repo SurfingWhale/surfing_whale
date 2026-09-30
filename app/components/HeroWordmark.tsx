@@ -121,8 +121,18 @@ export function HeroWordmark({
               for the same reason — a colour photograph next to type reads as
               an inset, a grey one reads as part of the setting. Every frame is
               mounted and only opacity moves, so nothing is fetched mid-change
-              and there is no white gap between frames. */}
-          <span className="relative inline-block h-[1.02em] w-[0.9em] shrink-0 overflow-hidden align-middle bg-bg-muted">
+              and there is no white gap between frames.
+
+              Landscape, and wider than it is tall. The reference sets its slot
+              at roughly three parts to two and lets it run past the width of a
+              letter — that is what stops it reading as a dropped-in avatar and
+              starts it reading as a panel cut into the word. Height is capped
+              near the line box on purpose: past that the picture prises the two
+              lines of the name apart and the block stops being one shape. So
+              the size is bought in width, which costs nothing but room.
+              Every frame is cut to this ratio at source, so object-cover has
+              nothing left to crop and no face gets its forehead taken off. */}
+          <span className="relative inline-block h-[1.1em] w-[1.5em] shrink-0 overflow-hidden align-middle bg-bg-muted">
             {frames.map((src, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img

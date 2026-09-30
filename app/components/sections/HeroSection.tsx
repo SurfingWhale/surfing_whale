@@ -57,15 +57,20 @@ const COPY = {
       cta: "See the rest",
     },
     inlay: {
-      image: "/photos/lantern-market.jpg",
+      // A dedicated cut, not the archive file. The archive keeps its 1400px
+      // original for the lightbox; the slot needs 400px at the slot's own
+      // ratio, and shipping the full frame to fill a 130px hole was 174KB
+      // spent on pixels nobody sees.
+      image: "/capture-inlay.jpg",
       alt: "A night market, set into the name.",
     },
   },
 } as const;
 
-// Dealt through the slot in the name before it settles on the mode's own
-// picture. Small cuts of the photographs, 55KB for all five, because at 85ms a
-// frame nobody is reading detail — they are reading that it moved.
+// The frames the slot runs through, one a second, for as long as the page is
+// open. Small cuts of the photographs — all six are cut to the slot's own
+// landscape ratio at 400px, so the browser crops nothing and the whole set
+// costs about 110KB.
 //
 // Every one of these is a different picture from the one it lands on. A sixth
 // was cut from the same portrait the analyst mode settles to, and the
