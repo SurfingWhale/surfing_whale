@@ -41,17 +41,37 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
 
   return (
     <div className="relative overflow-hidden rounded-xl bg-[#101418]">
-      {shown?.image && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={shown.image}
-          src={shown.image}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover scale-105 blur-[2px]
-                     opacity-60 transition-opacity duration-500"
-        />
-      )}
+      {/* Every backdrop is mounted at once and cross-faded by opacity. Swapping
+          one img's src remounts it: the browser drops the old pixels, fetches
+          the new ones and paints white in between, which reads as a flash
+          rather than a transition. Stacked, the outgoing frame is still there
+          to fade out of, and nothing is ever fetched mid-gesture. They are
+          cheap enough to do this with — 56KB for all three — because the
+          stage blurs and scrims them anyway.
+
+          The scale is what makes it read as movement rather than a dissolve:
+          the incoming frame settles from slightly larger, the way the
+          reference's media does. */}
+      {rows.map((row, i) => {
+        const src = row.backdrop ?? row.image;
+        if (!src) return null;
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={src}
+            src={src}
+            alt=""
+            aria-hidden="true"
+            className="stage-bg absolute inset-0 w-full h-full object-cover blur-[2px]"
+            style={
+              {
+                opacity: i === active ? 0.6 : 0,
+                transform: `scale(${i === active ? 1.05 : 1.11})`,
+              } as React.CSSProperties
+            }
+          />
+        );
+      })}
       {/* Two layers, not one. A single 105° wash reads correctly on a wide
           screen and fails on a tall narrow one: the clear end lands at the
           bottom of the list rather than to the right of it, and the last rows

@@ -45,6 +45,13 @@ export interface WorkRow {
   group: string;
   image?: string;
   alt?: string;
+  /**
+   * A small, hard-compressed cut of `image` for the stage, which blurs it and
+   * puts a scrim over it. Full resolution there is bytes nobody sees — and the
+   * stage cross-fades between rows, so every one of these is loaded up front.
+   * Three of them come to 56KB; the originals came to 313KB.
+   */
+  backdrop?: string;
 }
 
 export function WorkIndex({ rows, label }: { rows: WorkRow[]; label: string }) {

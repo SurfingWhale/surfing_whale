@@ -400,6 +400,23 @@ body:has(.photo-row) {
    button off the top of the screen. In the components layer, utilities win,
    which is what a caller expects. */
 @layer components {
+  /* The stage's backdrops cross-fade rather than swapping one element's src.
+     Opacity and transform only, so this runs on the compositor and does not
+     lay the page out again on every hover. */
+  .stage-bg {
+    transition:
+      opacity 520ms var(--ease-out),
+      transform 900ms var(--ease-out);
+    will-change: opacity, transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage-bg {
+      transition: opacity 1ms linear;
+      transform: scale(1.05) !important;
+    }
+  }
+
   /* The stage variant of the index: white type over the work. Its accent is
      declared here so the one colour on the page stays in the token file
      rather than being typed into a component. */

@@ -25,6 +25,7 @@ const ROWS: WorkRow[] = [
     method: "Double-entry GL · reconciliation, prorate on working days, forecasting",
     group: "Built",
     image: "/work/finance/01-beranda.jpg",
+    backdrop: "/work/stage/finance.jpg",
     alt: "The finance dashboard's home screen.",
   },
   {
@@ -43,6 +44,7 @@ const ROWS: WorkRow[] = [
     method: "Isochrone · drive-time bands against where people live",
     group: "Spatial",
     image: "/work/sheets/coffee-1.jpg",
+    backdrop: "/work/stage/coffee.jpg",
     alt: "Drive-time bands over Jabodetabek.",
   },
   {
@@ -53,6 +55,7 @@ const ROWS: WorkRow[] = [
     method: "Early work · pandas, folium, EDA and prediction",
     group: "Early",
     image: "/work/sheets/crime-1.jpg",
+    backdrop: "/work/stage/crime.jpg",
     alt: "Charts from the Los Angeles crime analysis.",
   },
   {
