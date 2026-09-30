@@ -24,10 +24,18 @@ import { useCallback, useEffect, useState } from "react";
 /** How long each frame is held. The reference sits at about a second. */
 const HOLD_MS = 1000;
 
-// Enough hues to tell the letters apart, none of them fighting the page. The
-// lime is the accent the index stage already uses, so a coloured name and a
-// live row in the directory are recognisably the same site.
-const INK = ["#2E9E8F", "#2f6fe0", "#c8f169", "#e0533f", "#8b5cf6", "#e8a33d"];
+// Sampled out of the portrait in the slot: the sofa, the shirt, the wood
+// behind him. Three, not six, and earthy rather than primary — the reference
+// can run a full spectrum because its photograph is black and white, and this
+// one is not. When the picture carries the colour the letters cannot also
+// carry it, or the two fight and the word stops being readable.
+const INK = ["#a13512", "#1e4e68", "#6b3a24"];
+
+// How many letters take colour, and which. The reference does not paint every
+// letter — it leaves runs of black and picks a few out, which is what keeps it
+// a name rather than a swatch. Two in five here, stepped by the press so the
+// same word is a different object each time.
+const PAINTED = (i: number, press: number) => (i * 3 + press * 2) % 5 < 2;
 
 export function HeroWordmark({
   first,
@@ -48,9 +56,9 @@ export function HeroWordmark({
   // the rotation on the face that belongs to it.
   const frames = [image, ...flash.filter((f) => f !== image)];
   const [at, setAt] = useState(0);
-  // 0 is the plain name. Each press deals a new set of colours; the sixth
-  // press puts it back, so the interaction is a loop rather than a one-way
-  // door into a permanently rainbow heading.
+  // 0 is the plain name. Each press re-deals which letters take colour and
+  // which stay ink; the fifth press puts it back, so this is a loop rather
+  // than a one-way door into a permanently coloured heading.
   const [paint, setPaint] = useState(0);
 
   useEffect(() => {
@@ -68,7 +76,7 @@ export function HeroWordmark({
     // frames is derived from these two and changing either should restart it
   }, [image, flash.join("|"), frames.length]);
 
-  const repaint = useCallback(() => setPaint((p) => (p + 1) % 6), []);
+  const repaint = useCallback(() => setPaint((p) => (p + 1) % 5), []);
 
   const letters = (word: string, offset: number) =>
     [...word].map((ch, i) => (
@@ -76,9 +84,9 @@ export function HeroWordmark({
         key={`${word}-${i}`}
         style={{
           color:
-            paint === 0
-              ? undefined
-              : INK[(i + offset + paint * 2) % INK.length],
+            paint !== 0 && PAINTED(i + offset, paint)
+              ? INK[(i + offset + paint) % INK.length]
+              : undefined,
           transition: "color 220ms var(--ease-out)",
         }}
       >
@@ -124,7 +132,7 @@ export function HeroWordmark({
                 aria-hidden={i === 0 ? undefined : true}
                 loading="eager"
                 className="absolute inset-0 w-full h-full object-cover object-center
-                           grayscale transition-opacity duration-500 ease-[var(--ease-out)]"
+                           transition-opacity duration-500 ease-[var(--ease-out)]"
                 style={{ opacity: i === at ? 1 : 0 }}
               />
             ))}

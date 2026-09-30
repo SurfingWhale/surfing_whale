@@ -77,6 +77,7 @@ const FLASH = [
   "/work/flash/a4.jpg",
   "/work/flash/a5.jpg",
   "/work/flash/a6.jpg",
+  "/work/flash/a7.jpg",
 ];
 
 export function HeroSection() {
