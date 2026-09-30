@@ -146,7 +146,7 @@
   --color-doc-stack: var(--doc-stack);
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-bebas);
+  --font-display: var(--font-display-face);
 }
 
 body {

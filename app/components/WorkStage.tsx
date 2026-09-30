@@ -96,12 +96,18 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
                 >
                   <span className="inline-flex items-baseline gap-2 sm:gap-3 max-w-full">
                     <span
-                      // Bebas Neue: condensed, single weight, caps only. It
-                      // carries at a size Jakarta could not, and it wants
-                      // positive tracking rather than negative — condensed
-                      // caps set tight close up on each other.
-                      className={`font-display text-[40px] sm:text-[64px] font-normal
-                                  tracking-[0.015em] leading-[1.02]
+                      // Oswald 700: condensed like Bebas but with a real bold
+                      // and a real lowercase, so the names read as names
+                      // rather than as shouting. Wider than Bebas by about a
+                      // third at the same size, so the size comes down to keep
+                      // every row on one line — which is the whole point of
+                      // the short labels.
+                      // 26px on a phone, not 32: Oswald is about a third wider
+                      // than Bebas at the same size, and the longest label went
+                      // to two lines at 390px — which is the one thing the short
+                      // labels exist to prevent.
+                      className={`font-display text-[26px] sm:text-[52px] font-bold
+                                  tracking-[0.004em] leading-[1.08]
                                   ${live ? "text-white" : "text-white/90"}`}
                     >
                       {row.short ?? row.title}

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Geist_Mono, Bebas_Neue } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono, Oswald } from "next/font/google";
 import "./globals.css";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
 import { REVEAL_INIT_SCRIPT } from "./components/Reveal";
@@ -17,16 +17,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Display only, for the index stage. Bebas Neue ships one weight and one case
-// — there is no bold and there are no lowercase letters, the caps just get
-// smaller. So weight is not a dial here: presence comes from size, tracking
-// and the condensed width, and asking for 700 would only get a synthesised
-// smear. Self-hosted at build time like the other two, so no request leaves
-// for a font CDN at runtime.
-const bebas = Bebas_Neue({
-  variable: "--font-bebas",
+// Display only, for the index stage. Bebas Neue was here first and could not
+// go bolder: it ships one weight and no lowercase at all. Oswald is the same
+// condensed shape with a real 700 behind it, and it has a lowercase — so the
+// names can be set the way they are written instead of shouted. Self-hosted at
+// build time like the other two, so no request leaves for a font CDN.
+const oswald = Oswald({
+  variable: "--font-display-face",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["500", "700"],
 });
 
 // The status bar colour follows the theme, so a dark-mode home screen does
@@ -103,7 +102,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${jakarta.variable} ${geistMono.variable} ${bebas.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${geistMono.variable} ${oswald.variable} h-full antialiased`}
     >
       <head>
         {/* Both run before first paint: one applies a stored theme choice,
