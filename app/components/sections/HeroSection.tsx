@@ -77,19 +77,29 @@ const COPY = {
 // was cut from the same portrait the analyst mode settles to, and the
 // component's guard only compares paths, so it dealt a frame identical to the
 // landing and the shuffle stuttered where it should have cut.
-// The three things a stranger checks before reading anything: where, what,
-// and whether you are reachable. They sat nowhere on the page before, so the
-// answer to "is this person available" was several scrolls away or absent.
+// Where, what, and why this site exists.
+//
+// The third line said "Open to data roles", which is a different sentence
+// from the one this site is making. That is an availability notice — it tells
+// a reader the author wants out of where he is, and it dates: the day it
+// stops being true it has to be taken down or it is a lie on the front page.
+// It also puts the whole site in the service of one transaction, so every
+// project underneath it reads as an application rather than as work.
+//
+// What is actually true is steadier and sells harder: someone with an
+// accounting background doing the analysis anyway, in the open, where it can
+// be read. That is not a status, it is the reason the rest of the page is
+// here — and it holds whether he moves next year or never.
 const FACTS: Record<string, [string, string][]> = {
   analyst: [
     ["Based in", "Jakarta, ID"],
-    ["Field", "Analytics · Geospatial"],
-    ["Status", "Open to data roles"],
+    ["Works in", "Analytics · Geospatial"],
+    ["Why this exists", "Learning it in the open"],
   ],
   capture: [
     ["Based in", "Jakarta, ID"],
-    ["Field", "Documentary · 35mm"],
-    ["Status", "Archive below"],
+    ["Shoots", "Documentary · 35mm"],
+    ["Why this exists", "Frames kept, not filed away"],
   ],
 };
 
