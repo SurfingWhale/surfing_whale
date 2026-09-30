@@ -24,6 +24,18 @@ import { useCallback, useEffect, useState } from "react";
 /** How long each frame is held. The reference sits at about a second. */
 const HOLD_MS = 1000;
 
+// The slot's geometry, measured off the reference rather than guessed. On its
+// wordmark the picture occupies the CAP BOX exactly: top edge flush with the
+// cap line, bottom edge on the baseline, 1.52 wide for every 1 tall, and all
+// but touching the last letter. That is the whole trick — it is not a picture
+// beside the word, it is a rectangle standing in the word's own box, the way a
+// letterform does. Anything that overhangs the cap line reads as an inset.
+//
+// Oswald's cap height is 0.81em (measured: actualBoundingBoxAscent of "H"),
+// so the box is 0.81em tall and 1.52 x that wide.
+const CAP = 0.81;
+const SLOT_ASPECT = 1.52;
+
 // Sampled out of the portrait in the slot: the sofa, the shirt, the wood
 // behind him. Three, not six, and earthy rather than primary — the reference
 // can run a full spectrum because its photograph is black and white, and this
@@ -101,21 +113,35 @@ export function HeroWordmark({
         onClick={repaint}
         aria-label={`${first} ${second} — press to recolour the name`}
         // The same face the index stage runs, so the two loudest pieces of
-        // type on the site speak in one voice. Oswald is condensed, which buys
-        // width back: the name takes less room than it did in Jakarta at the
-        // same size, so the size goes up and the picture inside it gets more
-        // room rather than less. Tracking sits near zero — negative tracking
-        // tightens a wide grotesque, but on a condensed face the letters are
-        // already close and pulling them further collapses the counters.
+        // type on the site speak in one voice. Tracking sits near zero —
+        // negative tracking tightens a wide grotesque, but on a condensed face
+        // the letters are already close and pulling them further collapses the
+        // counters.
+        //
+        // The size is set by the longer word. "Muhammad" is 4.67em in Oswald
+        // 700, so the type can grow until that one line fills the column and
+        // not a pixel further — 18vw puts it at 70px on a 390px screen, which
+        // is where the reference sits. This is where the picture's apparent
+        // size actually comes from: the reference's slot is SMALLER relative
+        // to its letters than mine was, and looks generous because the whole
+        // wordmark is large. Growing the box was the wrong lever.
         className="block text-left font-display font-bold text-fg cursor-pointer
-                   text-[clamp(44px,12.5vw,88px)] leading-[0.92] tracking-[0.004em]
+                   text-[clamp(46px,18vw,112px)] leading-[0.92] tracking-[0.004em]
                    rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
       >
-        {/* One flex line so the picture sits on the baseline run of the first
-            word, and wraps under it rather than overflowing where there is no
-            room — 390px has none. */}
-        <span className="flex flex-wrap items-center gap-x-[0.18em] gap-y-[0.06em]">
-          <span>{letters(first, 0)}</span>
+        <span className="block">{letters(first, 0)}</span>
+        {/* The picture rides the SHORT word, which is the structure the
+            reference uses: its slot sits beside "Dan" and the long "Billson"
+            gets the line to itself. Mine is the other way round — the long
+            word is first — so the slot belongs on the second line with
+            "Fauzy". That is not only truer to the reference, it is what lets
+            the type grow: the picture no longer competes with "Muhammad" for
+            room, so nothing wraps and no width is wasted defending against it.
+
+            items-baseline, not items-center. This is the whole difference
+            between a letterform and an inset — see the note on CAP above. */}
+        <span className="flex items-baseline gap-x-[0.04em]">
+          <span>{letters(second, first.length)}</span>
           {/* Flush: no border, no rounding, so the block reads as a letterform
               in the word rather than a picture placed beside one. Greyscale
               for the same reason — a colour photograph next to type reads as
@@ -123,16 +149,13 @@ export function HeroWordmark({
               mounted and only opacity moves, so nothing is fetched mid-change
               and there is no white gap between frames.
 
-              Landscape, and wider than it is tall. The reference sets its slot
-              at roughly three parts to two and lets it run past the width of a
-              letter — that is what stops it reading as a dropped-in avatar and
-              starts it reading as a panel cut into the word. Height is capped
-              near the line box on purpose: past that the picture prises the two
-              lines of the name apart and the block stops being one shape. So
-              the size is bought in width, which costs nothing but room.
-              Every frame is cut to this ratio at source, so object-cover has
-              nothing left to crop and no face gets its forehead taken off. */}
-          <span className="relative inline-block h-[1.1em] w-[1.5em] shrink-0 overflow-hidden align-middle bg-bg-muted">
+              Every frame is cut to 1.52:1 at source, anchored where the
+              subject is rather than at the centre, so object-cover has nothing
+              left to crop and no face gets its forehead taken off. */}
+          <span
+            className="relative inline-block shrink-0 overflow-hidden bg-bg-muted"
+            style={{ height: `${CAP}em`, width: `${CAP * SLOT_ASPECT}em` }}
+          >
             {frames.map((src, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -148,7 +171,6 @@ export function HeroWordmark({
             ))}
           </span>
         </span>
-        <span className="block">{letters(second, first.length)}</span>
       </button>
     </h1>
   );
