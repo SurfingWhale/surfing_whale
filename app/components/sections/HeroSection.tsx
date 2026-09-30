@@ -11,6 +11,7 @@ import { AvatarPicker } from "@/app/components/AvatarPicker";
 import { useProfileMode, MODE_KICKER } from "@/app/components/ProfileMode";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { HeroWordmark } from "@/app/components/HeroWordmark";
+import { DecodeText } from "@/app/components/DecodeText";
 
 // These are observations about how the work actually goes, drawn from a
 // read-back of how I talk about it rather than from a CV line. They used to
@@ -118,11 +119,22 @@ export function HeroSection() {
             attached to it; here the thing it changes is one line away. */}
         <AvatarPicker />
 
-        <p className="text-[13px] leading-[2] text-fg-body mt-6">{copy.tagline}</p>
+        {/* The two passages resolve in sequence, the second picking up where
+            the first lands, so the front reads as one movement down the page
+            rather than two that happen to fire together. Keyed on the mode so
+            switching modes runs the new copy in rather than swapping it. */}
+        <DecodeText
+          key={`tagline-${mode}`}
+          text={copy.tagline}
+          className="text-[13px] leading-[2] text-fg-body mt-6"
+        />
 
-        <p className="text-[13px] leading-[2] text-fg-body mt-5 max-w-[560px]">
-          {copy.bio}
-        </p>
+        <DecodeText
+          key={`bio-${mode}`}
+          text={copy.bio}
+          delay={420}
+          className="text-[13px] leading-[2] text-fg-body mt-5 max-w-[560px]"
+        />
 
         <EmbedFrame
           image={copy.frame.image}

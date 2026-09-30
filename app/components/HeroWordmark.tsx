@@ -19,7 +19,8 @@
 // height drifts the moment the heading wraps.
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { HOLD, INK, UNSET, spreadFor, subDigit } from "@/app/components/DecodeText";
 
 /** How long each frame is held. The reference sits at about a second. */
 const HOLD_MS = 1000;
@@ -36,18 +37,11 @@ const HOLD_MS = 1000;
 const CAP = 0.81;
 const SLOT_ASPECT = 1.52;
 
-// Sampled out of the portrait in the slot: the sofa, the shirt, the wood
-// behind him. Three, not six, and earthy rather than primary — the reference
-// can run a full spectrum because its photograph is black and white, and this
-// one is not. When the picture carries the colour the letters cannot also
-// carry it, or the two fight and the word stops being readable.
-const INK = ["#a13512", "#1e4e68", "#6b3a24"];
-
-// How many letters take colour, and which. The reference does not paint every
-// letter — it leaves runs of black and picks a few out, which is what keeps it
-// a name rather than a swatch. Two in five here, stepped by the press so the
-// same word is a different object each time.
-const PAINTED = (i: number, press: number) => (i * 3 + press * 2) % 5 < 2;
+// The name resolves the same way the prose does — the reference scrambles it
+// too, which is why its wordmark reads "Bill5on" for a moment before it reads
+// "Billson". Pressing it runs the resolve again, so the colour on the letters
+// is never decoration: it only ever means "this character has not landed yet".
+// The palette and the timing come from DecodeText so the two cannot drift.
 
 export function HeroWordmark({
   first,
@@ -68,50 +62,98 @@ export function HeroWordmark({
   // the rotation on the face that belongs to it.
   const frames = [image, ...flash.filter((f) => f !== image)];
   const [at, setAt] = useState(0);
-  // 0 is the plain name. Each press re-deals which letters take colour and
-  // which stay ink; the fifth press puts it back, so this is a loop rather
-  // than a one-way door into a permanently coloured heading.
-  const [paint, setPaint] = useState(0);
+  // One cell per letter of the whole name. `run` is bumped on press to send
+  // the front across it again.
+  const word = first + second;
+  const [cells, setCells] = useState<{ ch: string; color?: string }[]>(() =>
+    [...word].map((ch) => ({ ch }))
+  );
+  const [run, setRun] = useState(0);
+  const raf = useRef(0);
+  // Resting width of each letter, measured from the plain name that was
+  // painted before this ever runs. The substitutes are wider than the letters
+  // they stand in for, and without this the picture beside "Fauzy" slides
+  // about 50px back and forth while the name resolves.
+  const box = useRef<HTMLHeadingElement>(null);
+  const widths = useRef<number[]>([]);
 
   useEffect(() => {
-    setAt(0);
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || frames.length < 2) return;
+    const reduce = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const plain = [...word].map((ch) => ({ ch }));
+    if (reduce) {
+      setCells(plain);
+      return;
+    }
 
-    const id = window.setInterval(
-      () => setAt((i) => (i + 1) % frames.length),
-      HOLD_MS
-    );
-    return () => window.clearInterval(id);
-    // frames is derived from these two and changing either should restart it
-  }, [image, flash.join("|"), frames.length]);
+    if (!widths.current.length && box.current) {
+      widths.current = [...box.current.querySelectorAll("[data-ch]")].map(
+        (el) => el.getBoundingClientRect().width
+      );
+    }
 
-  const repaint = useCallback(() => setPaint((p) => (p + 1) % 5), []);
+    const chars = [...word];
+    const n = chars.length;
+    const spread = spreadFor(n);
+    const at = chars.map((_, i) => (i / Math.max(1, n - 1)) * spread);
+    const hue = chars.map(() => INK[Math.floor(Math.random() * INK.length)]);
+    const t0 = performance.now();
 
-  const letters = (word: string, offset: number) =>
-    [...word].map((ch, i) => (
+    const tick = (now: number) => {
+      const t = now - t0;
+      let live = false;
+      const next = chars.map((ch, i) => {
+        if (t < at[i]) {
+          live = true;
+          return { ch, color: undefined };
+        }
+        if (t < at[i] + UNSET) {
+          live = true;
+          return { ch: subDigit(ch), color: hue[i] };
+        }
+        if (t < at[i] + UNSET + HOLD) {
+          live = true;
+          return { ch, color: hue[i] };
+        }
+        return { ch, color: undefined };
+      });
+      setCells(next);
+      if (live) raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
+  }, [word, run]);
+
+  const repaint = useCallback(() => setRun((r) => r + 1), []);
+
+  const letters = (from: number, to: number) =>
+    cells.slice(from, to).map((c, i) => (
       <span
-        key={`${word}-${i}`}
+        key={`${from}-${i}`}
+        data-ch=""
         style={{
-          color:
-            paint !== 0 && PAINTED(i + offset, paint)
-              ? INK[(i + offset + paint) % INK.length]
-              : undefined,
-          transition: "color 220ms var(--ease-out)",
+          color: c.color,
+          transition: "color 420ms var(--ease-out)",
+          ...(widths.current[from + i]
+            ? {
+                display: "inline-block",
+                width: `${widths.current[from + i]}px`,
+                textAlign: "center" as const,
+              }
+            : null),
         }}
       >
-        {ch}
+        {c.ch}
       </span>
     ));
 
   return (
-    <h1 className="mt-6 mb-7">
+    <h1 ref={box} className="mt-6 mb-7">
       <button
         type="button"
         onClick={repaint}
-        aria-label={`${first} ${second} — press to recolour the name`}
+        aria-label={`${first} ${second} — press to run the name in again`}
         // The same face the index stage runs, so the two loudest pieces of
         // type on the site speak in one voice. Tracking sits near zero —
         // negative tracking tightens a wide grotesque, but on a condensed face
@@ -129,7 +171,7 @@ export function HeroWordmark({
                    text-[clamp(46px,18vw,112px)] leading-[0.92] tracking-[0.004em]
                    rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
       >
-        <span className="block">{letters(first, 0)}</span>
+        <span className="block">{letters(0, first.length)}</span>
         {/* The picture rides the SHORT word, which is the structure the
             reference uses: its slot sits beside "Dan" and the long "Billson"
             gets the line to itself. Mine is the other way round — the long
@@ -141,7 +183,7 @@ export function HeroWordmark({
             items-baseline, not items-center. This is the whole difference
             between a letterform and an inset — see the note on CAP above. */}
         <span className="flex items-baseline gap-x-[0.04em]">
-          <span>{letters(second, first.length)}</span>
+          <span>{letters(first.length, word.length)}</span>
           {/* Flush: no border, no rounding, so the block reads as a letterform
               in the word rather than a picture placed beside one. Greyscale
               for the same reason — a colour photograph next to type reads as
