@@ -96,8 +96,13 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
                 >
                   <span className="inline-flex items-baseline gap-2 sm:gap-3 max-w-full">
                     <span
-                      className={`text-[26px] sm:text-[40px] font-medium tracking-[-0.035em]
-                                  leading-[1.12] ${live ? "text-white" : "text-white/90"}`}
+                      // Bebas Neue: condensed, single weight, caps only. It
+                      // carries at a size Jakarta could not, and it wants
+                      // positive tracking rather than negative — condensed
+                      // caps set tight close up on each other.
+                      className={`font-display text-[40px] sm:text-[64px] font-normal
+                                  tracking-[0.015em] leading-[1.02]
+                                  ${live ? "text-white" : "text-white/90"}`}
                     >
                       {row.short ?? row.title}
                     </span>

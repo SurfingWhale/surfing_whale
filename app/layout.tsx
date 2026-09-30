@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
 import { REVEAL_INIT_SCRIPT } from "./components/Reveal";
@@ -15,6 +15,18 @@ const jakarta = Plus_Jakarta_Sans({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Display only, for the index stage. Bebas Neue ships one weight and one case
+// — there is no bold and there are no lowercase letters, the caps just get
+// smaller. So weight is not a dial here: presence comes from size, tracking
+// and the condensed width, and asking for 700 would only get a synthesised
+// smear. Self-hosted at build time like the other two, so no request leaves
+// for a font CDN at runtime.
+const bebas = Bebas_Neue({
+  variable: "--font-bebas",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 // The status bar colour follows the theme, so a dark-mode home screen does
@@ -91,7 +103,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${geistMono.variable} ${bebas.variable} h-full antialiased`}
     >
       <head>
         {/* Both run before first paint: one applies a stored theme choice,
