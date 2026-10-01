@@ -10,9 +10,9 @@
 // an isochrone is invisible. So the media sits under a scrim heavy enough to
 // carry text and light enough to still read as the picture it is, and the
 // picture is blurred past reading, because a legend and street labels behind a
-// headline is noise either way. Two pixels was enough at 672px; on a wide
-// screen object-cover scales the screenshot up and its figures came back
-// legible behind the titles, so the blur is set for the widest stage.
+// headline is noise either way. The stage runs edge to edge, so object-cover
+// scales the screenshot with the viewport and its figures grow with it; the
+// blur grows too (2vw on a wide screen) so they never come back legible.
 //
 // Everything else is the reference: the path heading, the counter, the year
 // as a superior, the accent rule under the live row, the arrow chip.
@@ -42,7 +42,9 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
   const posInGroup = (here?.items.findIndex((it) => it.i === active) ?? 0) + 1;
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-[#101418]">
+    // Full-bleed at every size, and a full screen tall on a wide one — the
+    // reference gives its index the whole viewport, and so does this.
+    <div className="relative overflow-hidden bg-[#101418] min-[66rem]:min-h-[calc(100svh-3.5rem)] min-[66rem]:flex min-[66rem]:flex-col">
       {/* Every backdrop is mounted at once and cross-faded by opacity. Swapping
           one img's src remounts it: the browser drops the old pixels, fetches
           the new ones and paints white in between, which reads as a flash
@@ -64,7 +66,7 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
             src={src}
             alt=""
             aria-hidden="true"
-            className="stage-bg absolute inset-0 w-full h-full object-cover blur-[12px]"
+            className="stage-bg absolute inset-0 w-full h-full object-cover blur-[12px] min-[66rem]:blur-[2vw]"
             style={
               {
                 opacity: i === active ? 0.6 : 0,
@@ -90,7 +92,7 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
         }}
       />
 
-      <div className="relative px-6 py-8 sm:px-10 sm:py-12">
+      <div className="relative px-6 py-8 sm:py-12 min-[66rem]:flex-1 min-[66rem]:flex min-[66rem]:flex-col min-[66rem]:py-8">
         <div className="flex items-baseline justify-between gap-6 mb-7">
           <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/70">
             {label} <span className="text-white/40">›</span>{" "}
@@ -102,7 +104,7 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
           </p>
         </div>
 
-        <ul>
+        <ul className="min-[66rem]:max-w-[56rem]">
           {rows.map((row, i) => {
             const live = i === active;
             return (
@@ -128,7 +130,7 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
                       // than Bebas at the same size, and the longest label went
                       // to two lines at 390px — which is the one thing the short
                       // labels exist to prevent.
-                      className={`font-display text-[26px] sm:text-[52px] font-bold
+                      className={`font-display text-[26px] sm:text-[52px] min-[66rem]:text-[clamp(52px,5vw,84px)] font-bold
                                   tracking-[0.004em] leading-[1.08]
                                   ${live ? "text-white" : "text-white/90"}`}
                     >
@@ -161,7 +163,7 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
           })}
         </ul>
 
-        <p className="mt-7 text-[11px] leading-[1.7] text-white/60 max-w-[46ch]">
+        <p className="mt-7 min-[66rem]:mt-auto min-[66rem]:pt-7 text-[11px] leading-[1.7] text-white/60 max-w-[46ch]">
           {shown?.method}
         </p>
       </div>

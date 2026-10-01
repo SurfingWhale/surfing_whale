@@ -248,6 +248,62 @@ h1, h2, h3, h4 {
   .frame-split > .frame-rail + * {
     margin-top: 0;
   }
+
+  /* Edge to edge, the way the reference runs its header and its first
+     screen: the frame's gutter, none of its width. */
+  .frame.frame-wide {
+    max-width: none;
+  }
+
+  /* ---- The first screen -------------------------------------------------
+     The reference gives the name the whole first screen and nothing else
+     competes with it. Here the name sits in the middle of the viewport, the
+     kicker in the top corner, the one sentence in the bottom corner, and the
+     switch with its facts opposite — the corners hold what explains the name,
+     the middle holds the name. The bio and the map wait below the fold.
+
+     The row of name-plus-facts is flattened (display: contents) so the two
+     can sit in different parts of the screen without changing the reading
+     order a phone uses. */
+  .hero-stage {
+    min-height: calc(100svh - 3.5rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "kicker kicker"
+      "name   name"
+      "line   side";
+    column-gap: 4rem;
+    padding-block: 1.5rem 2rem;
+  }
+
+  .hero-stage > .hero-row {
+    display: contents;
+  }
+
+  .hero-stage > p:first-child {
+    grid-area: kicker;
+    margin: 0;
+  }
+
+  .hero-stage > .hero-row > h1 {
+    grid-area: name;
+    place-self: center;
+    margin: 0;
+  }
+
+  .hero-stage > .hero-row > .hero-side {
+    grid-area: side;
+    align-self: end;
+    padding-bottom: 0;
+  }
+
+  .hero-stage > .hero-line {
+    grid-area: line;
+    align-self: end;
+    margin: 0;
+  }
 }
 
 /* ---- Focus ------------------------------------------------------------

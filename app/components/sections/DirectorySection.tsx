@@ -72,12 +72,23 @@ const ROWS: WorkRow[] = [
 
 export function DirectorySection() {
   return (
-    <section data-spot id="directory" className="w-full py-16 sm:py-24 border-t border-border">
-      <div data-reveal className="frame frame-split">
-        <SectionLabel note="Everything with a page of its own.">Index</SectionLabel>
-        <div className="mt-8">
-          <WorkStage label="Work" rows={ROWS} />
+    <section
+      data-spot
+      id="directory"
+      className="w-full pt-16 sm:pt-24 border-t border-border min-[66rem]:pt-0 min-[66rem]:border-t-0"
+    >
+      {/* On a phone the label introduces the stage. On a wide screen the
+          stage's own path heading does that job, the way the reference's
+          does, and the label stays for screen readers only. */}
+      <div className="min-[66rem]:sr-only">
+        <div data-reveal className="frame">
+          <SectionLabel note="Everything with a page of its own.">Index</SectionLabel>
         </div>
+      </div>
+      {/* Edge to edge, not boxed in the column: the work is the backdrop, and
+          a backdrop with a margin round it is a card. */}
+      <div data-reveal>
+        <WorkStage label="Work" rows={ROWS} />
       </div>
     </section>
   );

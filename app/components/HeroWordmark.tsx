@@ -186,8 +186,14 @@ export function HeroWordmark({
         // size actually comes from: the reference's slot is SMALLER relative
         // to its letters than mine was, and looks generous because the whole
         // wordmark is large. Growing the box was the wrong lever.
+        //
+        // On a wide screen the name has the whole first screen to itself, so
+        // it is sized by the viewport instead: 13vw puts "Muhammad" at about
+        // 60% of the width, and 25svh stops a short, wide window from pushing
+        // the two lines into the corners.
         className="block text-left font-display font-bold text-fg cursor-pointer
-                   text-[clamp(46px,18vw,104px)] leading-[0.92] tracking-[0.004em]
+                   text-[clamp(46px,18vw,104px)] min-[66rem]:text-[min(13vw,25svh)]
+                   leading-[0.92] tracking-[0.004em]
                    rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         <span className="block">{letters(0, first.length)}</span>

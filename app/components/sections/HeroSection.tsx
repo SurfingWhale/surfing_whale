@@ -118,16 +118,17 @@ export function HeroSection() {
 
   return (
     <section data-spot className="w-full">
-      <div data-reveal className="frame frame-split pt-14 pb-12 sm:pt-20 sm:pb-16">
+      {/* The first screen: kicker, name, the one sentence, the switch. On a
+          wide screen it fills the viewport (globals.css, .hero-stage); on a
+          phone it is the same column it always was. */}
+      <div data-reveal className="frame frame-wide hero-stage pt-14 sm:pt-20">
         {/* What this is, before who it is. A stranger deciding whether to keep
             reading wants the second question answered first, and the toggle
             above already knows the answer — it was just saying it to screen
             readers only. Set as a label rather than a heading: it is the same
             11px the section labels use, so it reads as a caption on the
             photographs rather than as a title competing with the name. */}
-        {/* On a wide screen this is the hero's rail, level with the top of the
-            name rather than above it, and balanced so it breaks at the dot. */}
-        <p className="frame-rail text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mt-5 [text-wrap:balance] min-[66rem]:pt-[34px]">
+        <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mt-5">
           {MODE_KICKER[mode]}
         </p>
 
@@ -140,7 +141,7 @@ export function HeroSection() {
             move into it and sit on the name's own baseline, which turns the
             gap from something left over into the right-hand half of a block.
             Below the breakpoint there is no gap to fill, so they stack. */}
-        <div className="flex flex-col md:flex-row md:items-end md:gap-7">
+        <div className="hero-row flex flex-col md:flex-row md:items-end md:gap-7">
           <HeroWordmark
             first="Muhammad"
             second="Fauzy"
@@ -149,7 +150,7 @@ export function HeroSection() {
             flash={FLASH}
           />
 
-          <div className="shrink-0 md:max-w-[176px] md:pb-[0.9em] flex flex-col gap-3">
+          <div className="hero-side shrink-0 md:max-w-[176px] md:pb-[0.9em] flex flex-col gap-3">
             {/* The switch changes the face inside the name, so it belongs
                 within reach of it rather than a paragraph below. */}
             <AvatarPicker />
@@ -184,9 +185,13 @@ export function HeroSection() {
         <DecodeText
           key={`tagline-${mode}`}
           text={copy.tagline}
-          className="text-[clamp(19px,2.1vw,26px)] leading-[1.45] tracking-[-0.011em] text-fg mt-9 max-w-[19ch] sm:max-w-[23ch]"
+          className="hero-line text-[clamp(19px,2.1vw,26px)] leading-[1.45] tracking-[-0.011em] text-fg mt-9 max-w-[19ch] sm:max-w-[23ch]"
         />
+      </div>
 
+      {/* Below the fold on a wide screen, in the content column every other
+          section keeps to. */}
+      <div data-reveal className="frame frame-split pb-12 sm:pb-16 min-[66rem]:pt-16">
         <DecodeText
           key={`bio-${mode}`}
           text={copy.bio}
