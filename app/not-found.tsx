@@ -16,7 +16,7 @@ export default function NotFound() {
       <div className="max-w-[420px] text-center">
         {/* The number IS the artwork here, so it is not also set as a label
             underneath — saying 404 twice on a page with four lines on it. */}
-        <ChromeWord text="404" height={150} tone="hot" rounded="rounded-[16px]" />
+        <ChromeWord lines={["404"]} height={150} tone="hot" rounded="rounded-[16px]" />
 
         <h1 className="mt-8 font-display font-bold text-[clamp(32px,9vw,56px)] leading-[0.95]">
           Nothing here

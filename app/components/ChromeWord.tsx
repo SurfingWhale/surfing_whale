@@ -61,23 +61,26 @@ const VB_W = 300;
 const VB_H = 190;
 
 /**
- * Short strings only — roughly three to nine characters.
+ * Takes LINES, not a sentence, and each line should be short — roughly three
+ * to nine characters.
  *
- * textLength fixes the word's width whatever it says, so the glyphs stretch
- * to fill it. At five letters that widens a condensed face pleasantly; at
- * thirteen ("SURFING WHALE") each glyph gets about a seventh of its height in
- * width, and once the band crops the top as well there is nothing left to
- * read. Measured, not guessed: it came out as mush.
+ * textLength fixes each line's width whatever it says, so the glyphs stretch
+ * to fill it. At five or seven letters that widens a condensed face
+ * pleasantly; at thirteen on one line ("SURFING WHALE") each glyph gets about
+ * a seventh of its height in width and the band renders mush. Measured, not
+ * guessed. A name that long is set as two lines instead, which is also what
+ * the reference does with the space: one line cropped by the card's edge, the
+ * one under it whole.
  */
 export function ChromeWord({
-  text,
+  lines,
   height = 112,
   tone = "hot",
   className = "",
   rounded = "",
 }: {
-  text: string;
-  /** Height of the band. The word is always cropped to it. */
+  lines: string[];
+  /** Height of the band. The type is always cropped to it. */
   height?: number;
   tone?: keyof typeof PALETTE;
   className?: string;
@@ -133,7 +136,7 @@ export function ChromeWord({
         height="100%"
         preserveAspectRatio="xMidYMax slice"
         role="img"
-        aria-label={text}
+        aria-label={lines.join(" ")}
       >
         <defs>
           <linearGradient
@@ -182,22 +185,33 @@ export function ChromeWord({
         </defs>
 
         <g filter={`url(#${id}-surface)`}>
-          <text
-            x={VB_W / 2}
-            y={VB_H - 14}
-            textAnchor="middle"
-            textLength={VB_W - 14}
-            lengthAdjust="spacingAndGlyphs"
-            style={{
-              fontFamily: "var(--font-display), sans-serif",
-              fontWeight: 700,
-              fontSize: Math.round(VB_H * 0.82),
-            }}
-            filter={`url(#${id}-material)`}
-            fill={`url(#${id}-stripe)`}
-          >
-            {text}
-          </text>
+          {/* Set from the bottom up. The band keeps the last line whole and
+              lets the crop eat into the ones above it, so a two-line name
+              arrives the way the reference's does: the top line cut by the
+              card's own edge, the bottom line complete. */}
+          {lines.map((line, i) => {
+            const fromBottom = lines.length - 1 - i;
+            const size = Math.round((VB_H * 0.82) / lines.length);
+            return (
+              <text
+                key={line + i}
+                x={VB_W / 2}
+                y={VB_H - 10 - fromBottom * (size + 6)}
+                textAnchor="middle"
+                textLength={VB_W - 14}
+                lengthAdjust="spacingAndGlyphs"
+                style={{
+                  fontFamily: "var(--font-display), sans-serif",
+                  fontWeight: 700,
+                  fontSize: size,
+                }}
+                filter={`url(#${id}-material)`}
+                fill={`url(#${id}-stripe)`}
+              >
+                {line}
+              </text>
+            );
+          })}
         </g>
       </svg>
     </div>

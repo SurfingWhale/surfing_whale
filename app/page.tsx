@@ -15,7 +15,6 @@ import { AccessProvider } from "./components/AccessGate";
 import { UnlockedBanner } from "./components/UnlockedBanner";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { VisitorCard } from "./components/VisitorCard";
-import { ChromeWord } from "./components/ChromeWord";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
@@ -116,40 +115,12 @@ export default async function Home() {
         <ContactSection />
       </div>
 
-      {/* The page used to stop rather than end. The first pass at fixing that
-          hung the mark in the middle of the footer as a small floating object,
-          which is the one thing this technique must not be: at a size that
-          stays tasteful the bevel has nowhere to live, and surrounded by white
-          space it reads as a sticker.
-
-          As a band it is cropped by the page's own edge, so the bars run past
-          it and the eye reads a surface rather than an ornament. */}
-      <footer data-spot className="border-t border-border mt-16">
-        {/* Held to the content column. Run full width, one mark centred in a
-            1280px strip is an object adrift in grey; at the column's width the
-            band is a panel the page ends on. */}
-        {/* Held to roughly the visitor card's width, and for the same reason.
-            The band crops by covering, so how much of the word survives is a
-            function of the band's own proportions: at 672 x 112 the scale is
-            set by the width and only the bottom quarter of the letters is
-            left, which reads as coloured blobs. At card width the same band
-            shows a little over half of them and the word is a word. */}
-        <div className="container mx-auto max-w-[720px] px-6 pt-10">
-          <ChromeWord
-            text="FAUZY"
-            height={112}
-            tone="calm"
-            rounded="rounded-[14px]"
-            className="max-w-[330px] mx-auto"
-          />
-        </div>
-        <div className="container mx-auto max-w-[720px] px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
-            <span className="text-[13px] text-fg-secondary">Muhammad Fauzy</span>
-            <span className="text-[13px] text-fg-muted">
-              © {new Date().getFullYear()} Surfing Whale
-            </span>
-          </div>
+      <footer data-spot className="border-t border-border py-8 px-6 mt-16">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-3 max-w-[720px]">
+          <span className="text-[13px] text-fg-secondary">Muhammad Fauzy</span>
+          <span className="text-[13px] text-fg-muted">
+            © {new Date().getFullYear()} Surfing Whale
+          </span>
         </div>
       </footer>
 
