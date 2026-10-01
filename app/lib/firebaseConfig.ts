@@ -23,3 +23,16 @@ export const FIREBASE = {
  * Google; a preview's is not, so previews keep firebaseapp.com.
  */
 export const SIGN_IN_HOST = pick(process.env.NEXT_PUBLIC_SIGN_IN_HOST, "surfing-whale.vercel.app");
+
+/**
+ * Whether the home-screen app offers Google at all. The app signs in through
+ * this site's own /__/auth/handler, which Google accepts only once that exact
+ * redirect URI is on the project's OAuth web client — and until it is,
+ * Google's error page is a dead end inside an app that has no back button.
+ * Email and password work there regardless.
+ *
+ * Flip to true once https://surfing-whale.vercel.app/__/auth/handler stops
+ * coming back as redirect_uri_mismatch. A browser tab is unaffected: it signs
+ * in through firebaseapp.com, whose URI Google registered by itself.
+ */
+export const GOOGLE_IN_APP = false;

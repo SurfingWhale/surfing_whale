@@ -8,9 +8,10 @@
 // files, they go up, they are in the archive.
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { size } from "@/app/darkroom/downscale";
 import { sendPhoto } from "@/app/darkroom/sendPhoto";
+import { Button, DropZone, PendingList, RoomHeader, labelClass, type Pending } from "./ui";
 
 interface Frame {
   publicId: string;
@@ -20,22 +21,12 @@ interface Frame {
   takenAt: string;
 }
 
-interface Pending {
-  name: string;
-  state: "compressing" | "uploading" | "failed";
-  error?: string;
-  saved?: string;
-}
-
-const chip =
-  "text-[11px] leading-[1.6] px-2 py-1 rounded-md border border-border text-fg-body hover:text-fg hover:border-border-strong disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200";
-
 export function Archive() {
   const [frames, setFrames] = useState<Frame[] | null>(null);
   const [pending, setPending] = useState<Pending[]>([]);
-  const [drag, setDrag] = useState(false);
   const [note, setNote] = useState<string | null>(null);
-  const input = useRef<HTMLInputElement>(null);
+  const [armed, setArmed] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
 
   const load = useCallback(() => {
     fetch("/api/archive/list")
@@ -44,6 +35,15 @@ export function Archive() {
       .catch(() => setFrames([]));
   }, []);
   useEffect(load, [load]);
+
+  // A first tap on Remove only arms it. Removing deletes the file from
+  // storage — there is nothing to restore it from — and on a phone, where
+  // the button is always showing, a stray thumb should not be enough.
+  useEffect(() => {
+    if (!armed) return;
+    const t = setTimeout(() => setArmed(null), 4000);
+    return () => clearTimeout(t);
+  }, [armed]);
 
   const ingest = async (files: FileList | File[]) => {
     const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
@@ -88,109 +88,91 @@ export function Archive() {
   };
 
   const remove = async (publicId: string) => {
+    if (armed !== publicId) return setArmed(publicId);
+    setArmed(null);
+    setRemoving(publicId);
     const res = await fetch("/api/archive/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ publicId }),
-    });
-    if (res.ok) setFrames((f) => (f ?? []).filter((x) => x.publicId !== publicId));
-    else setNote("Could not remove that frame.");
+    }).catch(() => null);
+    if (res?.ok) {
+      setFrames((f) => (f ?? []).filter((x) => x.publicId !== publicId));
+      setNote("Removed from the archive.");
+    } else {
+      setNote("Could not remove that frame. Try again in a moment.");
+    }
+    setRemoving(null);
   };
 
   return (
     <div>
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDrag(true);
-        }}
-        onDragLeave={() => setDrag(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDrag(false);
-          void ingest(e.dataTransfer.files);
-        }}
-        className={`border border-dashed rounded-lg px-6 py-10 text-center transition-colors duration-200 ${
-          drag ? "border-fg bg-bg-muted" : "border-border"
-        }`}
-      >
-        <p className="text-[13px] leading-[2] text-fg-body">
-          Drop photographs here, or{" "}
-          <button
-            type="button"
-            onClick={() => input.current?.click()}
-            className="font-medium text-fg underline decoration-border-strong underline-offset-[3px]"
-          >
-            choose files
-          </button>
-          .
-        </p>
-        <p className="text-[11px] leading-[1.7] text-fg-muted mt-2">
-          Compressed in the browser before sending, location data removed. JPEG, PNG, WebP, AVIF — or HEIC from an iPhone.
-        </p>
-        <input
-          ref={input}
-          type="file"
-          accept="image/*"
-          multiple
-          hidden
-          onChange={(e) => {
-            if (e.target.files) void ingest(e.target.files);
-            e.target.value = "";
-          }}
+      <RoomHeader room="archive" />
+
+      <div className="space-y-3">
+        <DropZone
+          onFiles={(files) => void ingest(files)}
+          hint="Compressed in the browser before sending, location data removed. JPEG, PNG, WebP, AVIF — or HEIC from an iPhone."
         />
+        <PendingList pending={pending} />
+        <p role="status" className="text-[13px] leading-[1.7] text-fg-body empty:hidden">{note}</p>
       </div>
 
-      {pending.length > 0 && (
-        <ul className="mt-5 space-y-1">
-          {pending.map((p, i) => (
-            <li key={`${p.name}-${i}`} className="text-[11px] leading-[1.8] text-fg-muted">
-              {p.name} — {p.state === "failed" ? `failed: ${p.error}` : `${p.state}…`}
-              {p.saved && <span className="font-mono"> {p.saved}</span>}
-            </li>
-          ))}
-        </ul>
-      )}
+      <section aria-labelledby="archive-frames" className="mt-8">
+        <h3 id="archive-frames" className={`${labelClass} mb-3`}>
+          In the archive{frames ? ` · ${frames.length}` : ""}
+        </h3>
 
-      {note && <p className="mt-5 text-[11px] leading-[1.8] text-fg-body">{note}</p>}
+        {frames === null && <p className="text-[13px] leading-[1.7] text-fg-muted">Loading…</p>}
+        {frames?.length === 0 && (
+          <div className="rounded-xl border border-border px-4 py-5">
+            <p className="text-[13px] leading-[1.7] text-fg-body">Nothing in the archive yet.</p>
+            <p className="text-[13px] leading-[1.7] text-fg-muted">
+              The public archive page stays hidden until there is something in here.
+            </p>
+          </div>
+        )}
 
-      <p className="mt-9 text-[11px] font-medium uppercase tracking-[0.14em] text-fg-label">
-        In the archive{frames ? ` · ${frames.length}` : ""}
-      </p>
-
-      {frames === null && (
-        <p className="mt-3 text-[13px] leading-[2] text-fg-muted">Loading…</p>
-      )}
-      {frames?.length === 0 && (
-        <p className="mt-3 text-[13px] leading-[2] text-fg-muted">
-          Nothing yet. The public archive page stays hidden until there is
-          something in here.
-        </p>
-      )}
-
-      {frames && frames.length > 0 && (
-        <ul className="mt-4 grid grid-cols-3 sm:grid-cols-5 gap-2">
-          {frames.map((f) => (
-            <li key={f.publicId} className="relative group">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={f.url}
-                alt=""
-                loading="lazy"
-                className="w-full aspect-square object-cover rounded-md bg-bg-muted"
-              />
-              <button
-                type="button"
-                onClick={() => void remove(f.publicId)}
-                aria-label="Remove this frame from the archive"
-                className={`${chip} absolute top-1 right-1 bg-bg opacity-0 group-hover:opacity-100 focus-visible:opacity-100`}
-              >
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+        {frames && frames.length > 0 && (
+          <ul className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+            {frames.map((f) => (
+              <li key={f.publicId} className="relative group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={f.url}
+                  alt=""
+                  loading="lazy"
+                  className={`w-full aspect-square object-cover rounded-md bg-bg-muted transition-opacity duration-200 ${
+                    removing === f.publicId ? "opacity-40" : ""
+                  }`}
+                />
+                {/* Always there on a touch screen, which has no hover to
+                    reveal it; on a pointer it waits for the frame to be
+                    hovered or reached by keyboard. */}
+                <span className="absolute top-1 right-1">
+                  <Button
+                    variant={armed === f.publicId ? "confirm" : "chip"}
+                    onClick={() => void remove(f.publicId)}
+                    disabled={removing === f.publicId}
+                    aria-label={
+                      armed === f.publicId
+                        ? "Tap again to remove this frame for good"
+                        : "Remove this frame from the archive"
+                    }
+                    className={
+                      armed === f.publicId
+                        ? ""
+                        : "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-visible:opacity-100"
+                    }
+                  >
+                    {removing === f.publicId ? "Removing…" : armed === f.publicId ? "Confirm" : "Remove"}
+                  </Button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }

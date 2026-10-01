@@ -12,32 +12,29 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AccessRequest } from "@/app/lib/accessRequests";
 import HoldButton from "@/app/components/HoldButton/HoldButton";
-
-const chip =
-  "text-[11px] leading-[1.6] px-2 py-1 rounded-md border border-border text-fg-body hover:text-fg hover:border-border-strong disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200";
-
-function when(iso: string) {
-  if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric", month: "short", year: "numeric",
-  });
-}
+import { Badge, Button, RoomHeader, labelClass, when } from "./ui";
 
 export function Access() {
   const [rows, setRows] = useState<AccessRequest[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [mailOn, setMailOn] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [links, setLinks] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<string | null>(null);
 
   const load = useCallback(() => {
+    setStatus(null);
     fetch("/api/studio/access")
-      .then((r) => r.json())
-      .then((d) => {
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
         setRows(d.requests ?? []);
         setMailOn(Boolean(d.mailConfigured));
+        setLoadError(r.ok ? null : d.error ?? `HTTP ${r.status}`);
       })
-      .catch(() => setRows([]));
+      .catch(() => {
+        setRows([]);
+        setLoadError("Could not reach the server.");
+      });
   }, []);
   useEffect(load, [load]);
 
@@ -73,114 +70,131 @@ export function Access() {
     setBusy(null);
   };
 
-  if (rows === null) return <p className="text-[13px] text-fg-muted">Loading requests…</p>;
-
-  const pending = rows.filter((r) => !r.approved);
-  const done = rows.filter((r) => r.approved);
+  const pending = rows?.filter((r) => !r.approved) ?? [];
+  const done = rows?.filter((r) => r.approved) ?? [];
 
   return (
-    <div className="space-y-8">
-      {!mailOn && (
-        <p className="text-[11px] leading-[1.8] text-fg-muted border-l-2 border-border-strong pl-4">
-          No mail provider configured — set <code className="font-mono">RESEND_API_KEY</code>{" "}
-          and <code className="font-mono">MAIL_FROM</code>. Approving still works; the
-          link appears here to send by hand.
-        </p>
-      )}
+    <>
+      <RoomHeader room="access" action={<Button onClick={load}>Refresh</Button>} />
 
-      {status && <p className="text-[11px] leading-[1.8] text-fg-body">{status}</p>}
+      <div className="space-y-6">
+        {rows !== null && !loadError && !mailOn && (
+          <p className="text-[11px] leading-[1.8] text-fg-body rounded-lg bg-bg-subtle border border-border px-3 py-2.5">
+            No mail provider configured — set <code className="font-mono">RESEND_API_KEY</code>{" "}
+            and <code className="font-mono">MAIL_FROM</code>. Approving still works; the
+            link appears here to send by hand.
+          </p>
+        )}
 
-      {rows.length === 0 && (
-        <p className="text-[13px] text-fg-muted">No one has asked yet.</p>
-      )}
+        <p role="status" className="text-[13px] leading-[1.7] text-fg-body empty:hidden">{status}</p>
 
-      {[["Waiting", pending], ["Approved", done]].map(([label, list]) => {
-        const items = list as AccessRequest[];
-        if (!items.length) return null;
-        return (
-          <section key={label as string}>
-            <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-fg-label mb-3">
-              {label as string} · {items.length}
-            </h2>
-            <ul className="border-t border-border">
-              {items.map((r) => (
-                <li key={r.id} className="border-b border-border py-4 space-y-2">
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className="text-[13px] font-medium text-fg">
-                      {r.name || "(no name)"}
-                    </span>
-                    <span className="text-[11px] text-fg-body">{r.email}</span>
-                    <span className="text-[11px] text-fg-muted">
-                      {r.reason} · {when(r.date)}
-                    </span>
-                  </div>
+        {rows === null ? (
+          <p className="text-[13px] leading-[1.7] text-fg-muted">Loading requests…</p>
+        ) : loadError ? (
+          <div className="rounded-xl border border-border px-4 py-5">
+            <p className="text-[13px] leading-[1.7] text-fg font-medium">Unable to load the requests.</p>
+            <p className="text-[13px] leading-[1.7] text-fg-body">{loadError}</p>
+          </div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-xl border border-border px-4 py-5">
+            <p className="text-[13px] leading-[1.7] text-fg-body">No one has asked yet.</p>
+            <p className="text-[13px] leading-[1.7] text-fg-muted">
+              When someone asks to read a case study or the CV, the request shows up here.
+            </p>
+          </div>
+        ) : null}
 
-                  {r.message && (
-                    <p className="text-[13px] leading-[1.9] text-fg-body">{r.message}</p>
-                  )}
+        {(
+          [
+            ["Waiting", pending],
+            ["Approved", done],
+          ] as const
+        ).map(([label, items]) => {
+          if (!items.length) return null;
+          return (
+            <section key={label}>
+              <h3 className={`${labelClass} mb-3`}>
+                {label} · {items.length}
+              </h3>
+              <ul className="rounded-xl border border-border divide-y divide-border">
+                {items.map((r) => (
+                  <li key={r.id} className="p-4 space-y-2">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span className="text-[13px] leading-[1.5] font-medium text-fg">
+                        {r.name || "(no name)"}
+                      </span>
+                      <Badge live={r.approved}>{r.approved ? "Approved" : "Waiting"}</Badge>
+                      <span className="text-[11px] leading-[1.6] text-fg-body break-all">{r.email}</span>
+                      <span className="text-[11px] leading-[1.6] text-fg-muted">
+                        {r.reason} · {when(r.date)}
+                      </span>
+                    </div>
 
-                  <div className="flex flex-wrap items-center gap-2 pt-1">
-                    {r.approved ? (
-                      /* Withdrawing is reversible — approve again and the
-                         same link works. A plain button is right for it. */
-                      <button
-                        type="button"
-                        className={chip}
-                        disabled={busy === r.id}
-                        onClick={() => decide(r, false)}
-                      >
-                        Withdraw access
-                      </button>
-                    ) : (
-                      /* Approving is not reversible: it sends this person an
-                         email with their link in it, and withdrawing later
-                         does not unsend that. So it has to be held.
-                         Filling with --fg and flipping the label to --bg
-                         keeps it to colours the theme already has, and works
-                         the same in both of them. */
-                      <HoldButton
-                        size="sm"
-                        className="hold-button--chip"
-                        radius={6}
-                        holdTime={1400}
-                        waveAmplitude={3}
-                        glow={false}
-                        disabled={busy === r.id}
-                        backgroundColor="transparent"
-                        fillColor="var(--fg)"
-                        textColor="var(--fg-body)"
-                        fillTextColor="var(--bg)"
-                        doneLabel="Approved"
-                        onHold={() => decide(r, true)}
-                      >
-                        Hold to approve
-                      </HoldButton>
+                    {r.message && (
+                      <p className="text-[13px] leading-[1.8] text-fg-body max-w-[60ch]">{r.message}</p>
                     )}
+
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      {r.approved ? (
+                        /* Withdrawing is reversible — approve again and the
+                           same link works. A plain button is right for it. */
+                        <Button
+                          variant="chip"
+                          disabled={busy === r.id}
+                          onClick={() => decide(r, false)}
+                        >
+                          Withdraw access
+                        </Button>
+                      ) : (
+                        /* Approving is not reversible: it sends this person an
+                           email with their link in it, and withdrawing later
+                           does not unsend that. So it has to be held.
+                           Filling with --fg and flipping the label to --bg
+                           keeps it to colours the theme already has, and works
+                           the same in both of them. */
+                        <HoldButton
+                          size="sm"
+                          className="hold-button--chip"
+                          radius={6}
+                          holdTime={1400}
+                          waveAmplitude={3}
+                          glow={false}
+                          disabled={busy === r.id}
+                          backgroundColor="transparent"
+                          fillColor="var(--fg)"
+                          textColor="var(--fg-body)"
+                          fillTextColor="var(--bg)"
+                          doneLabel="Approved"
+                          onHold={() => decide(r, true)}
+                        >
+                          Hold to approve
+                        </HoldButton>
+                      )}
+                      {links[r.id] && (
+                        <Button
+                          variant="chip"
+                          onClick={() => {
+                            navigator.clipboard?.writeText(links[r.id]);
+                            setStatus("Link copied.");
+                          }}
+                        >
+                          Copy link
+                        </Button>
+                      )}
+                    </div>
+
                     {links[r.id] && (
-                      <button
-                        type="button"
-                        className={chip}
-                        onClick={() => {
-                          navigator.clipboard?.writeText(links[r.id]);
-                          setStatus("Link copied.");
-                        }}
-                      >
-                        Copy link
-                      </button>
+                      <p className="text-[11px] font-mono break-all text-fg-muted">
+                        {links[r.id]}
+                      </p>
                     )}
-                  </div>
-
-                  {links[r.id] && (
-                    <p className="text-[11px] font-mono break-all text-fg-muted">
-                      {links[r.id]}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
-    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+    </>
   );
 }

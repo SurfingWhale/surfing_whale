@@ -8,65 +8,131 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Block, EssayMeta, Shot } from "@/app/lib/darkroom";
 import { size } from "./downscale";
 import { sendPhoto } from "./sendPhoto";
+import {
+  ActionBar,
+  Button,
+  DropZone,
+  Field,
+  ItemList,
+  PendingList,
+  Plus,
+  RoomHeader,
+  TwoPane,
+  inputClass,
+  labelClass,
+  textareaClass,
+  type Busy,
+  type Item,
+  type Message,
+  type Pending,
+} from "@/app/studio/ui";
 
 const MAX_PER_ROW = 3;
 
-const link =
-  "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200 disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed";
-const field =
-  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
-const chip =
-  "text-[11px] leading-[1.6] px-2 py-1 rounded-md border border-border text-fg-body hover:text-fg hover:border-border-strong disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-200";
+const today = () => new Date().toISOString().slice(0, 10);
 
-interface Pending {
-  name: string;
-  state: "compressing" | "uploading" | "failed";
-  error?: string;
-  /** "6.2 MB → 410 KB", once compressing is done. */
-  saved?: string;
+/** What the form holds, as one comparable string — "unsaved" is a difference. */
+const snap = (title: string, subtitle: string, date: string, blocks: Block[]) =>
+  JSON.stringify([title, subtitle, date, blocks]);
+
+interface Loaded {
+  id?: string;
+  slug?: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  published: boolean;
+  blocks: Block[];
 }
 
 export function Editor() {
-  const [essays, setEssays] = useState<EssayMeta[]>([]);
+  const [essays, setEssays] = useState<EssayMeta[] | null>(null);
+  const [listError, setListError] = useState<string | null>(null);
   const [id, setId] = useState<string | undefined>();
+  const [slug, setSlug] = useState("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(today);
   const [published, setPublished] = useState(false);
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [savedAs, setSavedAs] = useState(() => snap("", "", today(), []));
+  const [savedHere, setSavedHere] = useState(false);
   const [pending, setPending] = useState<Pending[]>([]);
-  const [status, setStatus] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const fileInput = useRef<HTMLInputElement>(null);
+  const [uploadNote, setUploadNote] = useState<string | null>(null);
+  const [busy, setBusy] = useState<Busy>(null);
+  const [message, setMessage] = useState<Message | null>(null);
+  const titleInput = useRef<HTMLInputElement>(null);
+
+  const dirty = snap(title, subtitle, date, blocks) !== savedAs;
+  const uploading = pending.some((p) => p.state !== "failed");
 
   const refresh = useCallback(() => {
     fetch("/api/darkroom/essay")
-      .then((r) => r.json())
-      .then((d) => setEssays(d.essays ?? []))
-      .catch(() => {});
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error ?? `HTTP ${r.status}`);
+        setEssays(d.essays ?? []);
+        setListError(null);
+      })
+      .catch((err) => {
+        setEssays([]);
+        setListError(`Unable to load your essays. ${err instanceof Error ? err.message : ""}`.trim());
+      });
   }, []);
   useEffect(refresh, [refresh]);
 
-  const blank = () => {
-    setId(undefined); setTitle(""); setSubtitle("");
-    setDate(new Date().toISOString().slice(0, 10));
-    setPublished(false); setBlocks([]); setStatus(null);
+  // Closing the tab on an unsaved arrangement asks first.
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  const load = (e: Loaded) => {
+    setId(e.id);
+    setSlug(e.slug ?? "");
+    setTitle(e.title);
+    setSubtitle(e.subtitle);
+    setDate(e.date);
+    setPublished(e.published);
+    setBlocks(e.blocks);
+    setSavedAs(snap(e.title, e.subtitle, e.date, e.blocks));
+    setSavedHere(false);
+    setMessage(null);
+    setUploadNote(null);
   };
 
-  const open = async (slug: string) => {
-    const res = await fetch(`/api/darkroom/essay?slug=${encodeURIComponent(slug)}`);
-    if (!res.ok) return setStatus("Could not open that one.");
+  const leave = () =>
+    !dirty || window.confirm("Leave this essay without saving? The changes since your last save will be lost.");
+
+  const blank = () => {
+    if (!leave()) return;
+    load({ title: "", subtitle: "", date: today(), published: false, blocks: [] });
+    titleInput.current?.focus();
+  };
+
+  const open = async (item: Item) => {
+    if (item.id === id || !leave()) return;
+    const res = await fetch(`/api/darkroom/essay?slug=${encodeURIComponent(item.slug)}`).catch(() => null);
+    if (!res?.ok) return setMessage({ tone: "error", text: "Could not open that one. Try again in a moment." });
     const { essay } = await res.json();
-    setId(essay.id); setTitle(essay.title); setSubtitle(essay.subtitle);
-    setDate(essay.date || new Date().toISOString().slice(0, 10));
-    setPublished(essay.published); setBlocks(essay.blocks ?? []);
-    setStatus(null);
+    load({
+      id: essay.id,
+      slug: essay.slug,
+      title: essay.title,
+      subtitle: essay.subtitle,
+      date: essay.date || today(),
+      published: essay.published,
+      blocks: essay.blocks ?? [],
+    });
   };
 
   // ── taking photographs in ────────────────────────────────────────────────
   const ingest = async (files: FileList | File[]) => {
     const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
     if (!list.length) return;
+    setUploadNote(null);
     setPending(list.map((f) => ({ name: f.name, state: "compressing" })));
 
     let before = 0, after = 0, sent = 0;
@@ -88,7 +154,7 @@ export function Editor() {
     }
     // Leave failures on screen; clear the rest.
     setPending((p) => p.filter((q) => q.state === "failed"));
-    if (sent) setStatus(`${sent} up, compressed from ${size(before)} to ${size(after)}.`);
+    if (sent) setUploadNote(`${sent} up, compressed from ${size(before)} to ${size(after)}.`);
   };
 
   // ── arranging ────────────────────────────────────────────────────────────
@@ -185,23 +251,60 @@ export function Editor() {
     });
 
   // ── saving ───────────────────────────────────────────────────────────────
-  const save = async () => {
-    setSaving(true);
-    setStatus(null);
+  // The buttons stay pressable with something missing and say what it is,
+  // rather than greying out and leaving the reason to be guessed.
+  const save = async (publish: boolean) => {
+    if (busy) return;
+    if (!title.trim()) {
+      setMessage({ tone: "error", text: "Add a title first." });
+      titleInput.current?.focus();
+      return;
+    }
+    if (publish && blocks.length === 0) {
+      setMessage({ tone: "error", text: "Add a photograph or some writing before publishing." });
+      return;
+    }
+    // Saved mid-batch, the essay would go up without the frames still on
+    // their way, and the bar would say "saved" over an arrangement that is not.
+    if (uploading) {
+      setMessage({ tone: "error", text: "Wait for the photographs to finish uploading." });
+      return;
+    }
+
+    const was = published;
+    setBusy(publish ? (was ? "update" : "publish") : was ? "unpublish" : "draft");
+    setMessage(null);
+    const sending = snap(title, subtitle, date, blocks);
     const res = await fetch("/api/darkroom/essay", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, title, subtitle, date, published, blocks }),
+      body: JSON.stringify({ id, title, subtitle, date, published: publish, blocks }),
     }).catch(() => null);
     const data = await res?.json().catch(() => ({}));
     if (res?.ok) {
       setId(data.id);
-      setStatus(published ? `Published at /photo/${data.slug}` : "Saved as a draft.");
+      setSlug(data.slug);
+      setPublished(publish);
+      setSavedAs(sending);
+      setSavedHere(true);
+      setMessage({
+        tone: "done",
+        text: publish
+          ? was
+            ? "Updated. The site shows this version now."
+            : "Published. It is on the site now."
+          : was
+            ? "Unpublished. It is a draft again."
+            : "Saved as a draft. Only you can see it.",
+      });
       refresh();
     } else {
-      setStatus(data?.error ?? "Could not save.");
+      setMessage({
+        tone: "error",
+        text: data?.error ?? "Could not save. Check the connection and try again.",
+      });
     }
-    setSaving(false);
+    setBusy(null);
   };
 
   const shots = blocks.reduce(
@@ -210,165 +313,178 @@ export function Editor() {
 
   return (
     <>
-      {/* ── the essays that already exist ─────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] pb-6 border-b border-border">
-        <button onClick={blank} className={link}>New essay</button>
-        {essays.map((e) => (
-          <button
-            key={e.id}
-            onClick={() => open(e.slug)}
-            className={`text-fg-body hover:text-fg transition-colors duration-300 ${
-              e.id === id ? "text-fg underline decoration-border-strong underline-offset-[3px]" : ""
-            }`}
-          >
-            {e.title}
-            {!e.published && <span className="text-fg-muted"> · draft</span>}
-          </button>
-        ))}
-      </div>
-
-      {/* ── what it is called ─────────────────────────────────────────── */}
-      <div className="grid gap-5 sm:grid-cols-2 py-8 border-b border-border">
-        <input value={title} onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title" aria-label="Title" className={`${field} sm:col-span-2`} />
-        <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)}
-          placeholder="One line underneath" aria-label="Subtitle" className={`${field} sm:col-span-2`} />
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-          aria-label="Date" className={field} />
-        <label className="flex items-center gap-2.5 text-[13px] text-fg-body">
-          <input type="checkbox" checked={published}
-            onChange={(e) => setPublished(e.target.checked)} className="accent-fg" />
-          Published
-        </label>
-      </div>
-
-      {/* ── bringing photographs in ───────────────────────────────────── */}
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => { e.preventDefault(); ingest(e.dataTransfer.files); }}
-        className="my-8 border border-dashed border-border-strong rounded-xl px-6 py-10 text-center"
+      <RoomHeader room="darkroom" />
+      <TwoPane
+        label="Your essays"
+        list={
+          <ItemList
+            noun="essay"
+            items={essays}
+            error={listError}
+            openId={id}
+            draftTitle={title}
+            onOpen={open}
+            onNew={blank}
+          />
+        }
       >
-        <p className="text-[13px] leading-[2] text-fg-body">
-          Drop photographs here, as many at once as you like.
-        </p>
-        <button onClick={() => fileInput.current?.click()} className={`${link} text-[13px] mt-1`}>
-          Or choose files →
-        </button>
-        <input ref={fileInput} type="file" accept="image/*" multiple hidden
-          onChange={(e) => { if (e.target.files) ingest(e.target.files); e.target.value = ""; }} />
-        <p className="text-[11px] leading-[1.7] text-fg-muted mt-4">
-          Compressed in the browser before they go up — 2000px on the long
-          edge, and the location a phone writes into every photograph is left
-          behind.
-        </p>
-      </div>
+        {/* ── what it is called ─────────────────────────────────────────── */}
+        <div className="space-y-4">
+          <Field label="Title">
+            <input
+              ref={titleInput}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={`${inputClass} font-medium`}
+            />
+          </Field>
+          <Field label="Subtitle" hint="One line under the title">
+            <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className={inputClass} />
+          </Field>
+          <Field label="Date" className="w-full max-w-[200px]">
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
+          </Field>
+        </div>
 
-      {pending.length > 0 && (
-        <ul className="mb-8 space-y-1.5">
-          {pending.map((p, i) => (
-            <li key={i} className="text-[11px] leading-[1.7] text-fg-body flex gap-3">
-              <span className="truncate max-w-[240px]">{p.name}</span>
-              <span className={p.state === "failed" ? "text-fg" : "text-fg-muted"}>
-                {p.state === "failed" ? `failed — ${p.error}` : `${p.state}…`}
-              </span>
-              {p.saved && <span className="font-mono text-fg-muted">{p.saved}</span>}
-            </li>
-          ))}
-        </ul>
-      )}
+        {/* ── the essay itself: rows, then the way more comes in ────────── */}
+        <section aria-labelledby="essay-sequence" className="mt-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 mb-1.5">
+            <h3 id="essay-sequence" className={labelClass}>Frames and writing</h3>
+            <span className="text-[11px] leading-[1.6] text-fg-muted tabular-nums">
+              {shots} photograph{shots === 1 ? "" : "s"} · {blocks.length} row
+              {blocks.length === 1 ? "" : "s"}
+            </span>
+          </div>
 
-      {/* ── the arrangement ───────────────────────────────────────────── */}
-      {blocks.length === 0 ? (
-        <p className="text-[13px] leading-[2] text-fg-muted">
-          Nothing in here yet.{" "}
-          <button onClick={() => addText()} className={link}>Start with some writing →</button>
-        </p>
-      ) : (
-        <ul className="space-y-6">
-          {blocks.map((block, i) => (
-            <li key={i} className="border-t border-border pt-4">
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="font-mono text-[11px] text-fg-muted mr-1">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <button onClick={() => moveRow(i, -1)} disabled={i === 0} className={chip}>↑</button>
-                <button onClick={() => moveRow(i, 1)} disabled={i === blocks.length - 1} className={chip}>↓</button>
-                {block.type === "images" && (
-                  <>
-                    <button
-                      onClick={() => mergeDown(i)}
-                      disabled={
-                        blocks[i + 1]?.type !== "images" ||
-                        block.items.length +
-                          ((blocks[i + 1] as { items: Shot[] })?.items.length ?? 0) > MAX_PER_ROW
-                      }
-                      className={chip}
-                    >
-                      Merge with next
-                    </button>
-                    <button onClick={() => splitRow(i)} disabled={block.items.length < 2} className={chip}>
-                      One per row
-                    </button>
-                  </>
-                )}
-                <button onClick={() => addText(i + 1)} className={chip}>+ Text below</button>
-                <button onClick={() => dropRow(i)} className={`${chip} ml-auto`}>Remove</button>
-              </div>
+          <div className="rounded-xl border border-border">
+            {blocks.length === 0 ? (
+              <p className="px-4 py-5 text-[13px] leading-[1.7] text-fg-body">
+                Nothing in this essay yet. Photographs and writing appear here in
+                the order they will publish, top to bottom.
+              </p>
+            ) : (
+              <ol className="divide-y divide-border">
+                {blocks.map((block, i) => (
+                  <li key={i} className="p-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                      <span className="font-mono text-[11px] text-fg-muted tabular-nums">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-[11px] leading-[1.6] text-fg-label mr-1">
+                        {block.type === "text"
+                          ? "Writing"
+                          : block.items.length === 1
+                            ? "Photograph"
+                            : `${block.items.length} photographs, one row`}
+                      </span>
+                      <Button variant="chip" onClick={() => moveRow(i, -1)} disabled={i === 0} aria-label={`Move row ${i + 1} up`}>↑</Button>
+                      <Button variant="chip" onClick={() => moveRow(i, 1)} disabled={i === blocks.length - 1} aria-label={`Move row ${i + 1} down`}>↓</Button>
+                      {block.type === "images" && (
+                        <>
+                          <Button
+                            variant="chip"
+                            onClick={() => mergeDown(i)}
+                            disabled={
+                              blocks[i + 1]?.type !== "images" ||
+                              block.items.length +
+                                ((blocks[i + 1] as { items: Shot[] })?.items.length ?? 0) > MAX_PER_ROW
+                            }
+                          >
+                            Merge with next
+                          </Button>
+                          <Button variant="chip" onClick={() => splitRow(i)} disabled={block.items.length < 2}>
+                            One per row
+                          </Button>
+                        </>
+                      )}
+                      <Button variant="chip" onClick={() => addText(i + 1)}>+ Text below</Button>
+                      <Button variant="chip" onClick={() => dropRow(i)} className="ml-auto">Remove row</Button>
+                    </div>
 
-              {block.type === "text" ? (
-                <textarea
-                  value={block.value}
-                  onChange={(e) => setText(i, e.target.value)}
-                  rows={4}
-                  placeholder="Write…"
-                  aria-label={`Text block ${i + 1}`}
-                  className={`${field} resize-y`}
-                />
-              ) : (
-                <div className="flex gap-3 items-start">
-                  {block.items.map((shot, j) => (
-                    // Weighted by aspect ratio exactly as the published row is,
-                    // so the arrangement here is the arrangement there.
-                    <figure
-                      key={shot.url}
-                      style={{ flex: `${shot.width / shot.height} 1 0`, minWidth: 0 }}
-                      className="m-0"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={shot.url} alt="" width={shot.width} height={shot.height}
-                        className="w-full h-auto block max-h-[320px] object-contain object-top rounded-md border border-border bg-bg-muted" />
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <button onClick={() => nudgeShot(i, j, -1)} className={chip}>◀</button>
-                        <button onClick={() => nudgeShot(i, j, 1)} className={chip}>▶</button>
-                        <button onClick={() => dropShot(i, j)} className={`${chip} ml-auto`}>✕</button>
-                      </div>
-                      <input
-                        value={shot.alt}
-                        onChange={(e) => setAlt(i, j, e.target.value)}
-                        placeholder="Describe it, for anyone who cannot see it"
-                        aria-label="Alt text"
-                        className={`${field} text-[11px] leading-[1.7] mt-1`}
+                    {block.type === "text" ? (
+                      <textarea
+                        value={block.value}
+                        onChange={(e) => setText(i, e.target.value)}
+                        rows={4}
+                        placeholder="Write…"
+                        aria-label={`Writing, row ${i + 1}`}
+                        className={`${textareaClass} resize-y`}
                       />
-                    </figure>
-                  ))}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+                    ) : (
+                      // Side by side from 640px and stacked below it — the same
+                      // break the published row makes, so the arrangement here
+                      // is the arrangement there on either screen.
+                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 items-stretch sm:items-start">
+                        {block.items.map((shot, j) => (
+                          // Weighted by aspect ratio exactly as the published row is.
+                          <figure
+                            key={shot.url}
+                            style={{ flex: `${shot.width / shot.height} 1 0`, minWidth: 0 }}
+                            className="m-0"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={shot.url} alt="" width={shot.width} height={shot.height}
+                              className="w-full h-auto block max-h-[320px] object-contain object-top rounded-md border border-border bg-bg-muted" />
+                            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                              <Button variant="chip" onClick={() => nudgeShot(i, j, -1)} aria-label={`Move photograph ${j + 1} of row ${i + 1} earlier`}>◀</Button>
+                              <Button variant="chip" onClick={() => nudgeShot(i, j, 1)} aria-label={`Move photograph ${j + 1} of row ${i + 1} later`}>▶</Button>
+                              <Button variant="chip" onClick={() => dropShot(i, j)} className="ml-auto" aria-label={`Remove photograph ${j + 1} of row ${i + 1}`}>✕</Button>
+                            </div>
+                            <Field label="Alt text" hint="Read aloud in its place" className="mt-2">
+                              <input
+                                value={shot.alt}
+                                onChange={(e) => setAlt(i, j, e.target.value)}
+                                placeholder="Describe the photograph"
+                                className={inputClass}
+                              />
+                            </Field>
+                          </figure>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            )}
 
-      {/* ── out ───────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-5 mt-10 pt-6 border-t border-border text-[13px]">
-        <button onClick={save} disabled={saving || !title} className={link}>
-          {saving ? "Saving…" : "Save →"}
-        </button>
-        <span className="text-[11px] text-fg-muted">
-          {shots} photograph{shots === 1 ? "" : "s"} · {blocks.length} row
-          {blocks.length === 1 ? "" : "s"}
-        </span>
-        {status && <span className="text-fg-body">{status}</span>}
-      </div>
+            {/* New frames land at the end, so this is where they come in. */}
+            <div className="border-t border-border p-2 sm:p-3 space-y-3">
+              <PendingList pending={pending} />
+              <DropZone
+                onFiles={ingest}
+                extra={
+                  <Button onClick={() => addText()} className="w-full sm:w-auto">
+                    <Plus />
+                    Add writing
+                  </Button>
+                }
+                hint={
+                  <>
+                    Compressed in the browser before they go up — 2000px on the
+                    long edge, and the location a phone writes into every
+                    photograph is left behind.
+                  </>
+                }
+              />
+              <p role="status" className="text-[11px] leading-[1.7] text-fg-body empty:hidden px-2">
+                {uploadNote}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <ActionBar
+          published={published}
+          dirty={dirty}
+          saved={savedHere}
+          busy={busy}
+          live={slug ? `/photo/${slug}` : undefined}
+          message={message}
+          onDraft={() => save(false)}
+          onPublish={() => save(true)}
+          onUnpublish={() => save(false)}
+        />
+      </TwoPane>
     </>
   );
 }

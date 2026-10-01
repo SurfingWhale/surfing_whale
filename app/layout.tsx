@@ -47,6 +47,10 @@ const serif = Instrument_Serif({
 // The status bar colour follows the theme, so a dark-mode home screen does
 // not get a pale bar sitting on a dark page.
 export const viewport: Viewport = {
+  // Lets the studio's pinned action bar sit under the iPhone home indicator
+  // and pad itself with env(safe-area-inset-bottom) instead of floating above
+  // a strip of nothing.
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#fafafa" },
     { media: "(prefers-color-scheme: dark)", color: "#111111" },

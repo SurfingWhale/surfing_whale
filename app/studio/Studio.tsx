@@ -4,23 +4,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Editor as DarkroomEditor } from "@/app/darkroom/Composer";
 import { SignIn } from "./SignIn";
-import { signOutOfGoogle } from "./firebase";
+import { signOutOfFirebase } from "./firebase";
 import { Writer } from "./Writer";
 import { Notes } from "./Notes";
 import { Access } from "./Access";
 import { Archive } from "./Archive";
+import { ROOMS, ROOM_ORDER, type Room } from "./ui";
 
-type Room = "write" | "darkroom" | "archive" | "notes" | "access";
-
-const LABEL: Record<Room, string> = {
-  write: "Write",
-  darkroom: "Darkroom",
-  archive: "Archive",
-  notes: "Notes",
-  access: "Access",
-};
+// Rooms that hold work in progress — a half-written post, an essay being
+// arranged, a batch still uploading — stay mounted once opened, so stepping
+// out to approve a note does not throw the work away. Notes and Access hold
+// nothing of the owner's, so they load fresh each time they are opened.
+const KEPT: Room[] = ["write", "darkroom", "archive"];
 
 export function Studio({ start = "write" }: { start?: Room }) {
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
@@ -28,6 +26,7 @@ export function Studio({ start = "write" }: { start?: Room }) {
   const [notion, setNotion] = useState(true);
   const [storage, setStorage] = useState(true);
   const [room, setRoom] = useState<Room>(start);
+  const [opened, setOpened] = useState<Room[]>([start]);
 
   useEffect(() => {
     fetch("/api/darkroom/session")
@@ -45,62 +44,122 @@ export function Studio({ start = "write" }: { start?: Room }) {
   // otherwise the door would open itself again on the next visit.
   const signOut = async () => {
     await fetch("/api/darkroom/session", { method: "DELETE" }).catch(() => {});
-    await signOutOfGoogle().catch(() => {});
+    await signOutOfFirebase().catch(() => {});
     setUnlocked(false);
+  };
+
+  const go = (r: Room) => {
+    setRoom(r);
+    setOpened((o) => (o.includes(r) ? o : [...o, r]));
   };
 
   if (unlocked === null) {
     return (
-      <Shell>
+      <Door>
         <p className="text-[13px] leading-[2] text-fg-muted">Checking…</p>
-      </Shell>
+      </Door>
     );
   }
   if (!unlocked) {
     return (
-      <Shell>
+      <Door>
         <SignIn configured={ready} notion={notion} storage={storage} onIn={() => setUnlocked(true)} />
-      </Shell>
+      </Door>
     );
   }
 
+  const kept = (r: Room) => KEPT.includes(r) && opened.includes(r);
+
   return (
-    <Shell wide>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] mb-8">
-        {(["write", "darkroom", "archive", "notes", "access"] as Room[]).map((r) => (
-          <button
-            key={r}
-            onClick={() => setRoom(r)}
-            aria-current={room === r ? "page" : undefined}
-            className={
-              room === r
-                ? "py-1 font-medium text-fg underline decoration-border-strong underline-offset-[3px]"
-                : "py-1 text-fg-body hover:text-fg transition-colors duration-300"
-            }
-          >
-            {LABEL[r]}
-          </button>
-        ))}
-        <button
-          onClick={signOut}
-          className="ml-auto py-1 text-fg-muted hover:text-fg transition-colors duration-300"
-        >
-          Sign out
-        </button>
+    <main className="min-h-screen bg-bg text-fg">
+      <header className="sticky top-0 z-20 bg-bg border-b border-border">
+        <div className="mx-auto max-w-[1080px] px-6 h-12 flex items-center justify-between gap-4">
+          <h1 className="text-[13px] leading-[1.5] font-medium text-fg">Studio</h1>
+          <div className="flex items-center -mr-3">
+            <Link
+              href="/"
+              target="_blank"
+              rel="noopener"
+              className="h-11 px-3 inline-flex items-center rounded-lg text-[13px] text-fg-body hover:text-fg transition-colors duration-200"
+            >
+              View site <span aria-hidden="true" className="ml-1">↗</span>
+              <span className="sr-only"> (opens in a new tab)</span>
+            </Link>
+            <button
+              type="button"
+              onClick={signOut}
+              className="h-11 px-3 inline-flex items-center rounded-lg text-[13px] text-fg-body hover:text-fg transition-colors duration-200"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* No bottom padding here: the editors end on their action bar, which
+          has to sit on the bottom edge once the page is scrolled to its end.
+          The rooms without one pad themselves. */}
+      <div className="mx-auto max-w-[1080px] px-6 pt-4">
+        {/* One row that scrolls sideways on a narrow phone rather than
+            wrapping, so the rooms stay in one place on every screen. */}
+        <nav aria-label="Rooms" className="-mx-6 px-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <ul className="flex sm:inline-flex min-w-max sm:min-w-0 gap-0.5 sm:gap-1 p-1 rounded-xl bg-bg-muted">
+            {ROOM_ORDER.map((r) => (
+              <li key={r} className="flex-1 sm:flex-none">
+                <button
+                  type="button"
+                  onClick={() => go(r)}
+                  aria-current={room === r ? "page" : undefined}
+                  className={`w-full h-11 lg:h-9 px-2 sm:px-4 rounded-lg text-[13px] whitespace-nowrap transition-colors duration-200 ${
+                    room === r
+                      ? "bg-bg text-fg font-medium shadow-[0_0_0_1px_var(--border),0_1px_2px_rgba(0,0,0,0.04)]"
+                      : "text-fg-body hover:text-fg"
+                  }`}
+                >
+                  {ROOMS[r].label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="mt-8">
+          {kept("write") && (
+            <div hidden={room !== "write"}>
+              <Writer />
+            </div>
+          )}
+          {kept("darkroom") && (
+            <div hidden={room !== "darkroom"}>
+              <DarkroomEditor />
+            </div>
+          )}
+          {kept("archive") && (
+            <div hidden={room !== "archive"} className="pb-16">
+              <Archive />
+            </div>
+          )}
+          {room === "notes" && (
+            <div className="pb-16">
+              <Notes />
+            </div>
+          )}
+          {room === "access" && (
+            <div className="pb-16">
+              <Access />
+            </div>
+          )}
+        </div>
       </div>
-      {room === "write" && <Writer />}
-      {room === "darkroom" && <DarkroomEditor />}
-      {room === "archive" && <Archive />}
-      {room === "notes" && <Notes />}
-      {room === "access" && <Access />}
-    </Shell>
+    </main>
   );
 }
 
-function Shell({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
+/** The narrow column the sign-in sits in, before there is a studio to show. */
+function Door({ children }: { children: React.ReactNode }) {
   return (
     <main className="min-h-screen bg-bg text-fg">
-      <div className={`container mx-auto px-6 py-16 ${wide ? "max-w-[900px]" : "max-w-[420px]"}`}>
+      <div className="container mx-auto px-6 py-16 max-w-[420px]">
         <h1 className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-8">
           Studio
         </h1>
