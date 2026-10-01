@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { ChromeWord } from "@/app/components/ChromeWord";
+import { NotesFan } from "@/app/components/NotesFan";
 
 interface GuestNote {
   id: string;
@@ -152,21 +153,17 @@ export function GuestNotesSection() {
           ) : notes.length === 0 ? (
             <p className="text-[13px] text-fg-muted">No notes yet — be the first.</p>
           ) : (
-            <ul className="border-t border-border">
-              {notes.map((note) => (
-                <li key={note.id} className="py-6 border-b border-border">
-                  <div className="flex items-baseline justify-between gap-4">
-                    <span className="text-[13px] font-medium text-fg">{note.name}</span>
-                    <span className="text-[11px] text-fg-muted flex-shrink-0 tabular-nums">
-                      {formatDate(note.date)}
-                    </span>
-                  </div>
-                  <p className="text-[13px] leading-[1.8] text-fg-body mt-1.5 whitespace-pre-line">
-                    {note.message}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <>
+              {/* The count is the claim. A fan of cards with no number beside
+                  it is a nice animation; the number is what makes it evidence
+                  that people have actually been here. */}
+              <p className="text-[13px] leading-[2] text-fg-body mb-6">
+                {notes.length === 1
+                  ? "One person has written in so far."
+                  : `${notes.length} people have written in so far.`}
+              </p>
+              <NotesFan notes={notes} />
+            </>
           )}
         </div>
       </div>
