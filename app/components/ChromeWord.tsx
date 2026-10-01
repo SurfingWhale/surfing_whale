@@ -57,32 +57,45 @@ const PALETTE = {
 
 // Chosen against the band: shallower and the word is barely clipped, deeper
 // and only the feet of the letters survive.
-const STRIPE_W = 190;
+const STRIPE_W = 120;
 const PERIOD_MS = 4400;
 
 const VB_W = 300;
-const VB_H = 190;
+const VB_H = 110;
+
+// The word rides a swell rather than sitting on a line.
+//
+// The first version stretched the word to the band's full width and let the
+// band crop it. On a 342px card that left "RFII" on screen — the letters were
+// so large that most of them were outside the box, which is a wordmark nobody
+// can read. Setting the type smaller and bending it along a path fixes both
+// halves at once: the whole word fits, and the curve is the site's own name.
+//
+// An S, not an arch. A single arc reads as a badge; two opposed curves read
+// as water, which is the point.
+// The path is the BASELINE, so the glyphs rise a cap height above it —
+// 0.81 of the font size, about 40 units here. The first curve crested at
+// y≈33 and the letter tops went 8px past the top of the band. It never rises
+// above y=44 now, which leaves the caps inside with a little air.
+const SWELL = "M6 72 C 80 118, 140 44, 206 78 S 268 102, 294 68";
 
 /**
- * Takes LINES, not a sentence, and each line should be short — roughly three
- * to nine characters.
+ * One short word — roughly three to ten characters.
  *
- * textLength fixes each line's width whatever it says, so the glyphs stretch
- * to fill it. At five or seven letters that widens a condensed face
- * pleasantly; at thirteen on one line ("SURFING WHALE") each glyph gets about
- * a seventh of its height in width and the band renders mush. Measured, not
- * guessed. A name that long is set as two lines instead, which is also what
- * the reference does with the space: one line cropped by the card's edge, the
- * one under it whole.
+ * The word is set at a fixed size and bent along a fixed path, so a longer
+ * string runs off the end of the swell rather than shrinking to fit. That is
+ * deliberate: this is a wordmark, not a label, and "SURFING WHALE" on a curve
+ * at this size would be unreadable either way.
  */
 export function ChromeWord({
-  lines,
+  text,
   height = 112,
   tone = "hot",
   className = "",
   rounded = "",
 }: {
-  lines: string[];
+  /** One short word. It is bent along the swell, so it stays one line. */
+  text: string;
   /** Height of the band. The type is always cropped to it. */
   height?: number;
   tone?: keyof typeof PALETTE;
@@ -167,11 +180,15 @@ export function ChromeWord({
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         width="100%"
         height="100%"
-        preserveAspectRatio="xMidYMax slice"
+        // meet, not slice. Cropping was the problem; the word is sized to
+        // fit now, so the box has nothing left to cut.
+        preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label={lines.join(" ")}
+        aria-label={text}
       >
         <defs>
+          <path id={`${id}-swell`} d={SWELL} fill="none" />
+
           <linearGradient
             id={`${id}-stripe`}
             ref={stripe}
@@ -211,33 +228,27 @@ export function ChromeWord({
         </defs>
 
         <g filter={`url(#${id}-surface)`}>
-          {/* Set from the bottom up. The band keeps the last line whole and
-              lets the crop eat into the ones above it, so a two-line name
-              arrives the way the reference's does: the top line cut by the
-              card's own edge, the bottom line complete. */}
-          {lines.map((line, i) => {
-            const fromBottom = lines.length - 1 - i;
-            const size = Math.round((VB_H * 0.82) / lines.length);
-            return (
-              <text
-                key={line + i}
-                x={VB_W / 2}
-                y={VB_H - 10 - fromBottom * (size + 6)}
-                textAnchor="middle"
-                textLength={VB_W - 14}
-                lengthAdjust="spacingAndGlyphs"
-                style={{
-                  fontFamily: "var(--font-display), sans-serif",
-                  fontWeight: 700,
-                  fontSize: size,
-                }}
-                filter={`url(#${id}-material)`}
-                fill={`url(#${id}-stripe)`}
-              >
-                {line}
-              </text>
-            );
-          })}
+          <text
+            filter={`url(#${id}-material)`}
+            fill={`url(#${id}-stripe)`}
+            style={{
+              fontFamily: "var(--font-display), sans-serif",
+              fontWeight: 700,
+              fontSize: 50,
+              letterSpacing: "1px",
+            }}
+          >
+            {/* startOffset 50% with text-anchor middle centres the word on the
+                curve whatever it says, so the copy can change without the
+                path needing to. */}
+            <textPath
+              href={`#${id}-swell`}
+              startOffset="50%"
+              textAnchor="middle"
+            >
+              {text}
+            </textPath>
+          </text>
         </g>
       </svg>
     </div>

@@ -271,7 +271,7 @@ function GateDialog({
         // something the card is cut out of rather than a picture inside it.
         className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-[440px] bg-bg rounded-[20px] overflow-hidden shadow-[0_24px_60px_rgba(10,13,16,.28)]"
       >
-        <ChromeWord lines={["SURFING"]} height={128} tone="hot" className="bg-bg" />
+        <ChromeWord text="SURFING" height={128} tone="hot" className="bg-bg" />
         <div className="px-5 pt-4 pb-4 text-center">
         {sent ? (
           <>

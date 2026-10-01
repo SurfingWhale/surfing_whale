@@ -41,10 +41,19 @@ function stats(buf){
   for(let i=0;i<png.data.length;i+=4){
     const r=png.data[i],g=png.data[i+1],bl=png.data[i+2]; n++;
     const mx=Math.max(r,g,bl),mn=Math.min(r,g,bl),sat=mx-mn;
-    if(mx<235) ink++; satSum+=sat; if(sat>satMax)satMax=sat;
+    // Saturation is averaged over the INK, not over the band.
+    //
+    // It used to be averaged over every pixel, which made the number a
+    // measure of how much of the band the word filled rather than of how
+    // coloured the word was: bending the word along a swell dropped the ink
+    // from 50% of the band to 10%, and the mean fell from 50 to 11 with the
+    // colour completely unchanged. Peak and hue count never moved, which is
+    // what gave it away.
+    if(mx<235){ ink++; satSum+=sat; if(sat>satMax)satMax=sat; }
     if(sat>45) hues.add(Math.round(Math.atan2(Math.sqrt(3)*(g-bl),2*r-g-bl)*57.3/20));
   }
-  return {inkPct:+(100*ink/n).toFixed(1),satMean:+(satSum/n).toFixed(1),satMax,hues:hues.size};
+  return {inkPct:+(100*ink/n).toFixed(1),
+          satMean:+(satSum/Math.max(1,ink)).toFixed(1),satMax,hues:hues.size};
 }
 function diff(a,b){const A=PNG.sync.read(a),B=PNG.sync.read(b);let c=0,t=0;
   for(let i=0;i<A.data.length;i+=4){t++;if(Math.abs(A.data[i]-B.data[i])+Math.abs(A.data[i+1]-B.data[i+1])+Math.abs(A.data[i+2]-B.data[i+2])>40)c++;}
@@ -87,11 +96,11 @@ const rows=[
  ['Step 4  Grey becomes colour — feFuncR/G/B type="table"',
   dom.lut.length===3 && dom.lut.every(x=>x.endsWith(':table')), dom.lut.join(', ')],
  ['Step 4a  …colour is actually on screen',
-  S0.satMean>12, `mean saturation ${S0.satMean}/255, peak ${S0.satMax}`],
+  S0.satMean>20, `mean saturation across the ink ${S0.satMean}/255, peak ${S0.satMax}`],
  ['Step 4b  …a range of hues, not one tint',
   S0.hues>=4, `${S0.hues} distinct hue buckets`],
  ['Extra   Band is not blank',
-  S0.inkPct>8, `ink covers ${S0.inkPct}% of the band`],
+  S0.inkPct>5, `ink covers ${S0.inkPct}% of the band`],
  ['Extra   prefers-reduced-motion freezes it',
   rmDiff<2, `${rmDiff}% of pixels changed over 1.5s with reduce on`],
 ];

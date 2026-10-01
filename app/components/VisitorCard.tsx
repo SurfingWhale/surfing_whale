@@ -155,7 +155,7 @@ export function VisitorCard() {
         ${leaving ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}
     >
       <div className="relative z-10">
-        <ChromeWord lines={["SURFING"]} height={124} tone="hot" className="bg-bg" />
+        <ChromeWord text="SURFING" height={124} tone="hot" className="bg-bg" />
         <button
           onClick={close}
           aria-label="Dismiss"

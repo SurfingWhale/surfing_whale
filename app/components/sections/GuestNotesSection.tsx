@@ -156,7 +156,7 @@ export function GuestNotesSection() {
             motion-reduce:transition-none motion-reduce:hover:translate-y-0
             focus-visible:outline-2 focus-visible:outline-offset-4"
         >
-          <ChromeWord lines={["SURFING"]} height={128} tone="hot" className="bg-bg" />
+          <ChromeWord text="SURFING" height={128} tone="hot" className="bg-bg" />
           <span className="block px-5 pt-3 pb-5 text-center">
             <span className="block font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
               Leave a notes here
@@ -215,7 +215,7 @@ export function GuestNotesSection() {
           />
 
           <div className="relative w-full max-w-[440px] rounded-[20px] overflow-hidden bg-bg shadow-[0_24px_60px_rgba(10,13,16,.28)]">
-            <ChromeWord lines={["SURFING"]} height={128} tone="hot" className="bg-bg" />
+            <ChromeWord text="SURFING" height={128} tone="hot" className="bg-bg" />
             <button
               type="button"
               onClick={close}
