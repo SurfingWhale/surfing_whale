@@ -15,6 +15,7 @@ import { AccessProvider } from "./components/AccessGate";
 import { UnlockedBanner } from "./components/UnlockedBanner";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { VisitorCard } from "./components/VisitorCard";
+import { ChromeMark } from "./components/ChromeMark";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
@@ -115,12 +116,23 @@ export default async function Home() {
         <ContactSection />
       </div>
 
-      <footer data-spot className="border-t border-border py-8 px-6 mt-16">
-        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-3 max-w-[720px]">
-          <span className="text-[13px] text-fg-secondary">Muhammad Fauzy</span>
-          <span className="text-[13px] text-fg-muted">
-            © {new Date().getFullYear()} Surfing Whale
-          </span>
+      {/* The page used to stop rather than end: a rule, two lines of 13px, and
+          nothing to say it was over. The mark is the sign-off — the same seven
+          bars the site is named after, which is the one place on a portfolio
+          where a bit of spectacle is the job rather than a distraction. It is
+          the only animated thing below the fold, and it only runs while it is
+          actually on screen. */}
+      <footer data-spot className="border-t border-border pt-14 pb-10 px-6 mt-16">
+        <div className="container mx-auto max-w-[720px]">
+          <div className="flex justify-center">
+            <ChromeMark size={104} />
+          </div>
+          <div className="mt-10 flex flex-col md:flex-row justify-between items-center gap-3">
+            <span className="text-[13px] text-fg-secondary">Muhammad Fauzy</span>
+            <span className="text-[13px] text-fg-muted">
+              © {new Date().getFullYear()} Surfing Whale
+            </span>
+          </div>
         </div>
       </footer>
 
