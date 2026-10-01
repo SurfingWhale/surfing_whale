@@ -57,6 +57,9 @@ const PALETTE = {
 
 // Chosen against the band: shallower and the word is barely clipped, deeper
 // and only the feet of the letters survive.
+const STRIPE_W = 190;
+const PERIOD_MS = 4400;
+
 const VB_W = 300;
 const VB_H = 190;
 
@@ -87,6 +90,7 @@ export function ChromeWord({
   rounded?: string;
 }) {
   const svg = useRef<SVGSVGElement>(null);
+  const stripe = useRef<SVGLinearGradientElement>(null);
   // Filter ids are document-global. Two of these on one page without a prefix
   // each and the second silently renders with the first's palette.
   const uid = useRef(`cw${Math.random().toString(36).slice(2, 8)}`);
@@ -95,17 +99,38 @@ export function ChromeWord({
 
   useEffect(() => {
     const el = svg.current;
-    if (!el) return;
+    const grad = stripe.current;
+    if (!el || !grad) return;
+
     const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     let onScreen = false;
+    let raf = 0;
 
-    // A filter chain re-rasterises on every frame the gradient moves, which is
-    // not free. pauseAnimations stops the SVG's own clock, so off screen or
-    // where motion is unwelcome this costs nothing — and the word stays
-    // exactly as it is rather than disappearing.
+    // The sweep is driven from here rather than by <animateTransform>.
+    //
+    // SMIL animating gradientTransform is a long-standing WebKit hole: Safari
+    // runs SMIL in general but does not move a gradient this way, so on an
+    // iPhone the stripe simply stood still. And a still stripe takes the
+    // colour with it — the lookup table maps brightness to hue, so if the
+    // brightness never changes neither does the hue, and the whole thing
+    // renders as one flat tint. The two faults the effect was reported with
+    // are one fault.
+    //
+    // Writing the attribute from rAF works in every engine, and it is one
+    // attribute on one element per frame.
+    const tick = (now: number) => {
+      const x = ((now / PERIOD_MS) % 1) * STRIPE_W;
+      grad.setAttribute("gradientTransform", `translate(${x.toFixed(2)} 0)`);
+      raf = requestAnimationFrame(tick);
+    };
+
     const apply = () => {
-      if (onScreen && !motion?.matches) el.unpauseAnimations();
-      else el.pauseAnimations();
+      const want = onScreen && !motion?.matches;
+      if (want && !raf) raf = requestAnimationFrame(tick);
+      if (!want && raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
     };
 
     const io = new IntersectionObserver(
@@ -117,10 +142,11 @@ export function ChromeWord({
     );
     io.observe(el);
     motion?.addEventListener?.("change", apply);
-    apply();
+
     return () => {
       io.disconnect();
       motion?.removeEventListener?.("change", apply);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -141,9 +167,10 @@ export function ChromeWord({
         <defs>
           <linearGradient
             id={`${id}-stripe`}
+            ref={stripe}
             x1="0"
             y1="0"
-            x2="190"
+            x2={STRIPE_W}
             y2="0"
             gradientUnits="userSpaceOnUse"
             spreadMethod="repeat"
@@ -151,14 +178,6 @@ export function ChromeWord({
             <stop stopColor="#fff" />
             <stop offset=".5" stopColor="#000" />
             <stop offset="1" stopColor="#fff" />
-            <animateTransform
-              attributeName="gradientTransform"
-              type="translate"
-              from="0 0"
-              to="190 0"
-              dur="4.4s"
-              repeatCount="indefinite"
-            />
           </linearGradient>
 
           <filter id={`${id}-material`}>

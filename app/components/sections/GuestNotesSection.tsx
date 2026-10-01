@@ -138,7 +138,10 @@ export function GuestNotesSection() {
             setError(null);
             setOpen(true);
           }}
-          className={`${SOLID} max-w-[240px]`}
+          // Full width to the reading measure, not a 240px chip. The
+          // reference ends its card on a button that spans it, and this is
+          // the only thing the section asks anyone to do.
+          className={`${SOLID} max-w-[520px] py-3.5 text-[14px]`}
         >
           Leave a note
         </button>
