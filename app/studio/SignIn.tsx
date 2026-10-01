@@ -94,8 +94,8 @@ export function SignIn({
 
       {!signInReady && (
         <p className={hint}>
-          NEXT_PUBLIC_FIREBASE_API_KEY and NEXT_PUBLIC_FIREBASE_PROJECT_ID are not
-          set on this deployment, so there is nothing to sign in with.
+          The Firebase web config is empty (app/lib/firebaseConfig.ts), so there
+          is nothing to sign in with.
         </p>
       )}
       {signInReady && !configured && (

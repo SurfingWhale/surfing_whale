@@ -6,6 +6,7 @@
 // cookie is worth forging without the secret.
 import { createHmac, timingSafeEqual, randomBytes } from "crypto";
 import { cookies } from "next/headers";
+import { FIREBASE } from "./firebaseConfig";
 
 export const COOKIE = "sw-darkroom";
 // Twelve hours meant unlocking the studio twice a day and finding the link
@@ -65,5 +66,5 @@ export async function isUnlocked(): Promise<boolean> {
 
 /** The two halves of getting in: a sign-in to verify, a key to sign with. */
 export function configured(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.DARKROOM_SECRET);
+  return Boolean(FIREBASE.projectId && process.env.DARKROOM_SECRET);
 }

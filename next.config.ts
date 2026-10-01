@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
+import { FIREBASE } from "./app/lib/firebaseConfig";
 
-const firebaseProject = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID?.trim();
+const firebaseProject = FIREBASE.projectId;
 
 const nextConfig: NextConfig = {
   images: {

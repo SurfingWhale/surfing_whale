@@ -11,6 +11,7 @@
 // Once it passes, the studio's own signed cookie takes over (darkroomSession.ts),
 // so every route that already checks isUnlocked() needs no change.
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { FIREBASE } from "./firebaseConfig";
 
 // Already printed on the Contact section, so nothing is disclosed by having it
 // here. ADMIN_EMAIL overrides it without a code change.
@@ -20,7 +21,7 @@ const GOOGLE_KEYS = createRemoteJWKSet(
   new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
 );
 
-export const firebaseProject = () => (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "").trim();
+export const firebaseProject = () => FIREBASE.projectId;
 
 /** Why a sign-in was refused, or null when it is the admin's. */
 export type Refusal = { status: 401 | 403 | 503; error: string } | null;

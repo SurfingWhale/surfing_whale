@@ -8,11 +8,9 @@
 // What a sign-in proves is decided on the server (app/lib/adminAuth.ts); this
 // file only gets a token from Google and hands it over.
 import type { Auth, User } from "firebase/auth";
+import { FIREBASE, SIGN_IN_HOST } from "@/app/lib/firebaseConfig";
 
-const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "";
-const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "";
-const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "";
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+const { apiKey, projectId, appId } = FIREBASE;
 
 export const signInReady = Boolean(projectId && apiKey);
 
@@ -21,12 +19,7 @@ export const signInReady = Boolean(projectId && apiKey);
 // same storage. Only on the production host: a preview has no redirect URI
 // registered with Google, so it keeps firebaseapp.com.
 function authDomain(): string {
-  try {
-    if (SITE && new URL(SITE).host === location.host) return location.host;
-  } catch {
-    /* a malformed NEXT_PUBLIC_SITE_URL is the same as none */
-  }
-  return `${projectId}.firebaseapp.com`;
+  return location.host === SIGN_IN_HOST ? location.host : `${projectId}.firebaseapp.com`;
 }
 
 // Opened from the home screen. A popup there leaves for Safari and never
