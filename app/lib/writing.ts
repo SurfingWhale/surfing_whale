@@ -1,14 +1,13 @@
 // app/lib/writing.ts
 // Posts. Blocks are deliberately the handful a piece of writing actually
 // needs — the same set Notion gives you before you go looking for a plugin.
-import { HEADERS, NOTION, readDocJson, toSlug, writeDocJson } from "./notionDoc";
+// One row per post in surfingwhale_posts (supabase/surfing-whale.sql), the
+// blocks as jsonb.
+import { dbConfigured, isUuid, table, today, unwrap } from "./db";
 
-export { toSlug };
+export { toSlug } from "./db";
 
-import { WRITING_DB } from "./notionIds";
-
-const DB = WRITING_DB;
-export const configured = () => Boolean(process.env.NOTION_API_KEY && DB());
+export const configured = dbConfigured;
 
 export type BlockKind =
   | "paragraph"
@@ -45,20 +44,20 @@ export interface Post extends PostMeta {
   blocks: Block[];
 }
 
-const text = (p: { rich_text?: { plain_text: string }[] }) =>
-  p?.rich_text?.[0]?.plain_text ?? "";
+const META = "id, slug, title, standfirst, date, published, cover, words";
 
-function toMeta(page: Record<string, any>): PostMeta {
-  const p = page.properties ?? {};
+type Row = PostMeta & { blocks?: unknown };
+
+function toMeta(row: Row): PostMeta {
   return {
-    id: page.id,
-    slug: text(p.Slug),
-    title: p.Name?.title?.[0]?.plain_text ?? "Untitled",
-    standfirst: text(p.Standfirst),
-    date: p.Date?.date?.start ?? "",
-    published: Boolean(p.Published?.checkbox),
-    cover: p.Cover?.url ?? "",
-    words: p.Words?.number ?? 0,
+    id: row.id,
+    slug: row.slug,
+    title: row.title || "Untitled",
+    standfirst: row.standfirst ?? "",
+    date: row.date ?? "",
+    published: Boolean(row.published),
+    cover: row.cover ?? "",
+    words: row.words ?? 0,
   };
 }
 
@@ -74,97 +73,72 @@ export function readingMinutes(words: number): number {
   return Math.max(1, Math.round(words / 200));
 }
 
+/** Published posts, newest first — or all of them, drafts too, for the studio. */
 export async function listPosts(
-  { includeDrafts = false, revalidate = 60 } = {}
+  { includeDrafts = false }: { includeDrafts?: boolean; revalidate?: number } = {}
 ): Promise<PostMeta[]> {
   if (!configured()) return [];
-  const res = await fetch(`${NOTION}/databases/${DB()}/query`, {
-    method: "POST",
-    headers: HEADERS(),
-    body: JSON.stringify({
-      ...(includeDrafts
-        ? {}
-        : { filter: { property: "Published", checkbox: { equals: true } } }),
-      sorts: [{ property: "Date", direction: "descending" }],
-      page_size: 50,
-    }),
-    ...(includeDrafts ? { cache: "no-store" as const } : { next: { revalidate } }),
-  });
-  if (!res.ok) {
-    console.error("Writing list failed:", await res.text());
+  try {
+    let query = table("surfingwhale_posts")
+      .select(META)
+      .order("date", { ascending: false })
+      .limit(100);
+    if (!includeDrafts) query = query.eq("published", true);
+    return (unwrap(await query, "List posts") as Row[]).map(toMeta);
+  } catch (err) {
+    console.error("Writing list failed:", err instanceof Error ? err.message : err);
     return [];
   }
-  const data = await res.json();
-  return (data.results ?? []).map(toMeta).filter((p: PostMeta) => p.slug);
 }
 
-export async function getPost(
-  slug: string,
-  { fresh = false } = {}
-): Promise<Post | null> {
-  if (!configured()) return null;
-  const res = await fetch(`${NOTION}/databases/${DB()}/query`, {
-    method: "POST",
-    headers: HEADERS(),
-    body: JSON.stringify({
-      filter: { property: "Slug", rich_text: { equals: slug } },
-      page_size: 1,
-    }),
-    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: 60 } }),
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  const page = data.results?.[0];
-  if (!page) return null;
-  const blocks = (await readDocJson<Block[]>(page.id, { fresh })) ?? [];
-  return { ...toMeta(page), blocks };
-}
-
-function properties(post: Omit<Post, "id">) {
-  const firstImage = post.blocks.find((b) => b.kind === "image")?.url;
-  return {
-    Name: { title: [{ text: { content: post.title.slice(0, 200) } }] },
-    Slug: { rich_text: [{ text: { content: post.slug } }] },
-    Standfirst: { rich_text: [{ text: { content: post.standfirst.slice(0, 1900) } }] },
-    Date: { date: { start: post.date || new Date().toISOString().slice(0, 10) } },
-    Published: { checkbox: post.published },
-    Cover: { url: post.cover || firstImage || null },
-    Words: { number: countWords(post.blocks) },
-  };
-}
-
-export async function savePost(
-  post: Omit<Post, "id"> & { id?: string }
-): Promise<{ id: string }> {
-  let id = post.id;
-  if (id) {
-    const res = await fetch(`${NOTION}/pages/${id}`, {
-      method: "PATCH",
-      headers: HEADERS(),
-      body: JSON.stringify({ properties: properties(post) }),
-    });
-    if (!res.ok) throw new Error(`Notion rejected the update: ${await res.text()}`);
-  } else {
-    const res = await fetch(`${NOTION}/pages`, {
-      method: "POST",
-      headers: HEADERS(),
-      body: JSON.stringify({
-        parent: { database_id: DB() },
-        properties: properties(post),
-      }),
-    });
-    if (!res.ok) throw new Error(`Notion rejected the page: ${await res.text()}`);
-    id = (await res.json()).id as string;
+// `fresh` is kept for callers written against Notion's cache; every read here
+// goes straight to the database, and the pages' own revalidate does the caching.
+export async function getPost(slug: string, _opts: { fresh?: boolean } = {}): Promise<Post | null> {
+  if (!configured() || !slug) return null;
+  try {
+    const row = unwrap(
+      await table("surfingwhale_posts").select(`${META}, blocks`).eq("slug", slug).maybeSingle(),
+      "Read post"
+    ) as Row | null;
+    if (!row) return null;
+    // A row edited by hand in the dashboard should not take the page down.
+    return { ...toMeta(row), blocks: Array.isArray(row.blocks) ? (row.blocks as Block[]) : [] };
+  } catch (err) {
+    console.error("Writing read failed:", err instanceof Error ? err.message : err);
+    return null;
   }
-  await writeDocJson(id!, post.blocks);
-  return { id: id! };
+}
+
+/** Inserts on first save, updates by id after that. */
+export async function savePost(post: Omit<Post, "id"> & { id?: string }): Promise<{ id: string }> {
+  const firstImage = post.blocks.find((b) => b.kind === "image")?.url;
+  const row = {
+    slug: post.slug,
+    title: post.title.slice(0, 200),
+    standfirst: post.standfirst.slice(0, 1900),
+    date: post.date || today(),
+    published: post.published,
+    cover: post.cover || firstImage || "",
+    words: countWords(post.blocks),
+    blocks: post.blocks,
+  };
+
+  if (post.id) {
+    if (!isUuid(post.id)) throw new Error("That post does not exist.");
+    const saved = unwrap(
+      await table("surfingwhale_posts").update(row).eq("id", post.id).select("id").maybeSingle(),
+      "Update post"
+    ) as { id: string } | null;
+    if (!saved) throw new Error("That post does not exist any more.");
+    return saved;
+  }
+  return unwrap(
+    await table("surfingwhale_posts").insert(row).select("id").single(),
+    "Create post"
+  ) as { id: string };
 }
 
 export async function deletePost(id: string): Promise<void> {
-  const res = await fetch(`${NOTION}/pages/${id}`, {
-    method: "PATCH",
-    headers: HEADERS(),
-    body: JSON.stringify({ archived: true }),
-  });
-  if (!res.ok) throw new Error(await res.text());
+  if (!isUuid(id)) throw new Error("That post does not exist.");
+  unwrap(await table("surfingwhale_posts").delete().eq("id", id), "Delete post");
 }

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
 import { isOwnImage } from "@/app/lib/storage";
+import { SetupError, publishedSlug } from "@/app/lib/db";
 import {
   type Block,
   type Shot,
@@ -15,7 +16,7 @@ import {
 } from "@/app/lib/darkroom";
 
 // Everything below arrives from a browser, so nothing from it is trusted into
-// Notion unchecked — a malformed block would be written once and then break
+// the database unchecked — a malformed block would be written once and then break
 // every render of the page afterwards.
 function cleanShot(raw: unknown): Shot | null {
   if (!raw || typeof raw !== "object") return null;
@@ -74,7 +75,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
   if (!configured()) {
     return NextResponse.json(
-      { error: "The darkroom database is not configured." },
+      { error: "Supabase is not connected on this deployment." },
       { status: 503 }
     );
   }
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
   if (!configured()) {
     return NextResponse.json(
-      { error: "The darkroom database is not configured." },
+      { error: "Supabase is not connected on this deployment." },
       { status: 503 }
     );
   }
@@ -108,16 +109,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (!title) {
     return NextResponse.json({ error: "A title is needed." }, { status: 400 });
   }
-  const slug = toSlug(String(body.slug ?? "") || title);
+  const id = typeof body.id === "string" && body.id ? body.id : undefined;
+  const kept = body.slug ? null : await publishedSlug("surfingwhale_essays", id).catch(() => null);
+  const slug = kept ?? toSlug(String(body.slug ?? "") || title);
   if (!slug) {
     return NextResponse.json({ error: "That title makes no slug." }, { status: 400 });
   }
 
-  // A new essay claiming a slug that already belongs to another page would
-  // shadow it on the public route, so it is refused rather than silently won.
+  // A slug that already belongs to another essay is refused. A new essay
+  // (no id) used to inherit the existing one's id here and overwrite it
+  // without a word — two essays with the same title, and the older one gone.
   const existing = await getEssay(slug, { fresh: true });
-  const id = typeof body.id === "string" && body.id ? body.id : existing?.id;
-  if (existing && id && existing.id !== id) {
+  if (existing && existing.id !== id) {
     return NextResponse.json(
       { error: `The slug "${slug}" is already taken.` },
       { status: 409 }
@@ -141,7 +144,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("Darkroom save failed:", message);
-    return NextResponse.json({ error: "Could not save to Notion." }, { status: 502 });
+    if (err instanceof SetupError) {
+      return NextResponse.json({ error: message }, { status: 503 });
+    }
+    return NextResponse.json({ error: "Could not save it. Try again in a moment." }, { status: 502 });
   }
 }
 
@@ -156,6 +162,6 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
     published();
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json({ error: "Could not archive it." }, { status: 502 });
+    return NextResponse.json({ error: "Could not delete it." }, { status: 502 });
   }
 }

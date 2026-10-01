@@ -23,10 +23,4 @@ export const PROJECTS_DB_DEFAULT = "32d537d3e1fb8059b32bfb3e6f200479";
 export const PROJECTS_DB = () =>
   pick(process.env.NOTION_DATABASE_ID, PROJECTS_DB_DEFAULT);
 
-/** Writing — Surfing Whale. */
-export const WRITING_DB = () =>
-  pick(process.env.NOTION_WRITING_DATABASE_ID, "a68cf43400d44d65b80d9a3725721e00");
-
-/** Darkroom — Surfing Whale. */
-export const DARKROOM_DB = () =>
-  pick(process.env.NOTION_DARKROOM_DATABASE_ID, "88736474646f4c1daca50b9bd91ac755");
+// Writing and the darkroom moved to Supabase (app/lib/db.ts) in October 2026.

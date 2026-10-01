@@ -6,7 +6,7 @@
 // both are gone: the only thing this accepts is a token Google signed for this
 // project, carrying the admin's verified address.
 import { NextRequest, NextResponse } from "next/server";
-import { configured as notionReady } from "@/app/lib/darkroom";
+import { configured as databaseReady } from "@/app/lib/darkroom";
 import { verifyAdmin } from "@/app/lib/adminAuth";
 import { storageConfigured } from "@/app/lib/storage";
 import { COOKIE, configured, issueToken, isUnlocked } from "@/app/lib/darkroomSession";
@@ -29,7 +29,8 @@ export async function GET(): Promise<NextResponse> {
     unlocked,
     // Says whether the deployment has its secrets, never what they are.
     configured: configured(),
-    notion: notionReady(),
+    // Named for where essays used to be kept; it now means the database.
+    notion: databaseReady(),
     storage: storageConfigured(),
   });
   // Never cached. This is the one answer on the site that differs per person,

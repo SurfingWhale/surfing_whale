@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
 import { isOwnImage } from "@/app/lib/storage";
+import { SetupError, publishedSlug } from "@/app/lib/db";
 import {
   type Block,
   type BlockKind,
@@ -64,7 +65,7 @@ function published() {
 function guard(): NextResponse | null {
   if (!configured()) {
     return NextResponse.json(
-      { error: "The writing database is not configured." },
+      { error: "Supabase is not connected on this deployment." },
       { status: 503 }
     );
   }
@@ -104,7 +105,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (!title) {
     return NextResponse.json({ error: "Give it a title first." }, { status: 400 });
   }
-  const slug = toSlug(String(body.slug ?? "") || title);
+  const id = typeof body.id === "string" && body.id ? body.id : undefined;
+  const kept = body.slug ? null : await publishedSlug("surfingwhale_posts", id).catch(() => null);
+  const slug = kept ?? toSlug(String(body.slug ?? "") || title);
   if (!slug) {
     return NextResponse.json(
       { error: "That title makes no usable address." },
@@ -112,11 +115,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // A new post claiming a slug that already belongs to another page would
-  // shadow it on the public route, so it is refused rather than silently won.
+  // An address that already belongs to another post is refused. A new post
+  // (no id) used to inherit the existing one's id here and overwrite it
+  // without a word — two posts with the same title, and the older one gone.
   const existing = await getPost(slug, { fresh: true });
-  const id = typeof body.id === "string" && body.id ? body.id : existing?.id;
-  if (existing && id && existing.id !== id) {
+  if (existing && existing.id !== id) {
     return NextResponse.json(
       { error: `The address "${slug}" is already taken.` },
       { status: 409 }
@@ -139,8 +142,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ id: saved.id, slug });
   } catch (err) {
     console.error("Post save failed:", err instanceof Error ? err.message : err);
+    if (err instanceof SetupError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
     return NextResponse.json(
-      { error: "Unable to save to Notion. Try again in a moment." },
+      { error: "Unable to save it. Try again in a moment." },
       { status: 502 }
     );
   }
@@ -157,6 +163,6 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
     published();
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json({ error: "Unable to archive it." }, { status: 502 });
+    return NextResponse.json({ error: "Unable to delete it." }, { status: 502 });
   }
 }

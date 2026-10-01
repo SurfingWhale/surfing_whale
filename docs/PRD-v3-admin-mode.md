@@ -80,11 +80,13 @@ the one Fauzy will actually use most often.
 
 ## 4. Decisions
 
-**Notion stays the database.** It is already the store for projects, access
-requests, guest notes and essays; the credentials, the client and the
-chunking are written. Supabase or Firebase would be a better database and a
-worse fit — a second system to keep in sync, for a site with one author.
-Revisit only if a list exceeds a few hundred rows or a query needs joins.
+**Essays and posts live in Supabase Postgres** *(2026-10-01, were Notion)*.
+`surfingwhale_essays` and `surfingwhale_posts` (supabase/surfing-whale.sql),
+one row each, the blocks as jsonb, RLS on with no policies so only the
+server's service-role key reaches them. Notion was storing each piece as a
+chunked JSON code block and rewriting the page on every save; once photographs
+were in Supabase anyway, keeping the words in a second system was the odd one
+out. Projects, guest notes and access requests are still read from Notion.
 
 **Supabase Storage is the file store** *(2026-10-01, was Cloudinary)*. Notion's
 own file URLs are signed and expire within the hour, which makes them unusable

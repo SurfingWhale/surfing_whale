@@ -15,27 +15,13 @@
 // names and dates but no dimensions, and the archive needs the aspect ratio to
 // lay a column out before the image loads — so the name carries it.
 import { randomBytes } from "crypto";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { supabaseAdmin, supabaseConfigured, supabaseUrl as baseUrl } from "./supabase";
 
 const BUCKET = (process.env.SUPABASE_BUCKET ?? "").trim() || "surfing-whale";
 
-function baseUrl(): string {
-  return (process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "")
-    .trim()
-    .replace(/\/+$/, "");
-}
+export const storageConfigured = supabaseConfigured;
 
-export const storageConfigured = () =>
-  Boolean(baseUrl() && process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-let client: SupabaseClient | null = null;
-function bucket() {
-  if (!storageConfigured()) throw new Error("Supabase storage is not configured.");
-  client ??= createClient(baseUrl(), process.env.SUPABASE_SERVICE_ROLE_KEY!, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  return client.storage.from(BUCKET);
-}
+const bucket = () => supabaseAdmin().storage.from(BUCKET);
 
 export type Folder = "darkroom" | "archive" | "projects";
 
@@ -88,7 +74,7 @@ export async function uploadPhoto(
   // is one dashboard step fewer — public to read, images only, and no larger
   // than the route would accept anyway.
   if (error && /bucket not found/i.test(error.message)) {
-    const made = await client!.storage.createBucket(BUCKET, {
+    const made = await supabaseAdmin().storage.createBucket(BUCKET, {
       public: true,
       allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/avif"],
       fileSizeLimit: "8MB",
