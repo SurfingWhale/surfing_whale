@@ -13,12 +13,28 @@ function clientKey(req: NextRequest): string {
 }
 
 export async function GET(): Promise<NextResponse> {
+  // An unconfigured guest book is an empty guest book, not a server error.
+  //
+  // Without NOTION_GUESTBOOK_DATABASE_ID the lister throws, and this handler
+  // turned that into a 500 on every single page load — in the browser console
+  // for every visitor, and in the deployment's error log often enough to bury
+  // anything that actually went wrong. The body it returned was already
+  // `{notes: []}`, which is exactly what the section renders as "No notes yet";
+  // only the status was wrong.
+  //
+  // A real failure — Notion unreachable, a bad token, a malformed response —
+  // still answers 502, because that one a reader cannot do anything about and
+  // is worth seeing in a log.
+  if (!process.env.NOTION_GUESTBOOK_DATABASE_ID) {
+    return NextResponse.json({ notes: [], configured: false });
+  }
   try {
     const notes = await getApprovedNotes();
-    return NextResponse.json({ notes });
+    return NextResponse.json({ notes, configured: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: message, notes: [] }, { status: 500 });
+    console.error("Guest notes list failed:", message);
+    return NextResponse.json({ error: message, notes: [] }, { status: 502 });
   }
 }
 

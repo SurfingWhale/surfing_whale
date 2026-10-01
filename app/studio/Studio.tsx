@@ -155,14 +155,40 @@ export function Studio({ start = "write" }: { start?: Room }) {
   );
 }
 
-/** The narrow column the sign-in sits in, before there is a studio to show. */
+/**
+ * The narrow column the sign-in sits in, before there is a studio to show.
+ *
+ * It carries a way home. Checking and signed out were dead ends: on a phone
+ * opened from the home screen there is no browser chrome to fall back on, so
+ * someone who triggered the entry gesture by accident was stuck on a sign-in
+ * screen with nothing to press. Same tab, not a new one — there is no work
+ * here to protect.
+ */
 function Door({ children }: { children: React.ReactNode }) {
   return (
     <main className="min-h-screen bg-bg text-fg">
-      <div className="container mx-auto px-6 py-16 max-w-[420px]">
-        <h1 className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-8">
-          Studio
-        </h1>
+      <header className="sticky top-0 z-20 bg-bg border-b border-border">
+        <div className="mx-auto max-w-[1080px] px-6 h-12 flex items-center justify-between gap-4">
+          <Link
+            href="/"
+            className="group -ml-3 h-11 px-3 inline-flex items-center gap-2 rounded-lg text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap text-fg-body hover:text-fg transition-colors duration-200"
+          >
+            <svg
+              viewBox="0 0 12 12"
+              aria-hidden="true"
+              className="w-3 h-3 fill-none stroke-current stroke-[1.6] [stroke-linecap:round] [stroke-linejoin:round] transition-transform duration-200 group-hover:-translate-x-0.5"
+            >
+              <path d="M10 6H2M5.5 2.5L2 6l3.5 3.5" />
+            </svg>
+            Surfing Whale
+          </Link>
+          <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-fg-label">
+            Studio
+          </span>
+        </div>
+      </header>
+      <div className="container mx-auto px-6 py-12 max-w-[420px]">
+        <h1 className="sr-only">Studio</h1>
         {children}
       </div>
     </main>
