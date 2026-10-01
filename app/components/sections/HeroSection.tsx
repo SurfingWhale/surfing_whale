@@ -12,7 +12,6 @@ import { useProfileMode, MODE_KICKER } from "@/app/components/ProfileMode";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { HeroWordmark } from "@/app/components/HeroWordmark";
 import { DecodeText } from "@/app/components/DecodeText";
-import { DitherField } from "@/app/components/DitherField";
 
 // These are observations about how the work actually goes, drawn from a
 // read-back of how I talk about it rather than from a CV line. They used to
@@ -118,12 +117,7 @@ export function HeroSection() {
   const copy = COPY[mode];
 
   return (
-    <section data-spot className="relative isolate w-full">
-      {/* The header's band: from the top of the page, behind the fixed bar,
-          to a little below it, fading to nothing well above the name — the
-          name stands on clean page with open space over it. -top-14 reaches
-          up under the header. */}
-      <DitherField className="pointer-events-none absolute inset-x-0 -top-14 -z-10 w-full h-[150px]" />
+    <section data-spot className="w-full">
       {/* The first screen: kicker, name, the one sentence, the switch. On a
           wide screen it fills the viewport (globals.css, .hero-stage); on a
           phone it is the same column it always was. */}
@@ -135,12 +129,7 @@ export function HeroSection() {
             11px the section labels use, so it reads as a caption on the
             photographs rather than as a title competing with the name. */}
         <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mt-5">
-          {/* It sits on the densest part of the dither, so it carries a strip
-              of the page behind it — a label laid on the halftone, legible
-              at 11px instead of dissolving into the dots. */}
-          <span className="bg-bg px-1.5 -mx-1.5 py-0.5 [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
-            {MODE_KICKER[mode]}
-          </span>
+          {MODE_KICKER[mode]}
         </p>
 
         {/* The greeting used to live here at 13px. The name now says itself at

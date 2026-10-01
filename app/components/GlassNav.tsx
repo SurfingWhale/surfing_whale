@@ -89,7 +89,7 @@ export function GlassNav({ links }: { links: NavLink[] }) {
       ref={listRef}
       onMouseMove={trackLight}
       onMouseLeave={() => setHover(null)}
-      className="glass-nav relative hidden md:flex items-center rounded-full transition-[background-color,box-shadow] duration-300"
+      className="relative hidden md:flex items-center"
     >
       {pill && (
         <span

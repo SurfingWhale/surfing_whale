@@ -19,7 +19,6 @@ import { VisitorCard } from "./components/VisitorCard";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
-import { TopNav } from "./components/TopNav";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -50,7 +49,7 @@ export default async function Home() {
       <a href="#project" className="skip-link text-[13px] font-medium">
         Skip to content
       </a>
-      <TopNav>
+      <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="frame h-14 flex items-center justify-between gap-6">
           <AdminEntry>
             <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">
@@ -68,7 +67,7 @@ export default async function Home() {
             <MobileNav links={navLinks} />
           </div>
         </div>
-      </TopNav>
+      </nav>
 
       <div className="pt-14">
         <UnlockedBanner />
