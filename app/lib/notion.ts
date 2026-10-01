@@ -1,5 +1,6 @@
 // app/lib/notion.ts
 import { PROJECTS_DB, PROJECTS_DB_DEFAULT } from "./notionIds";
+import { storageHost } from "./storage";
 
 /**
  * Anything that marks a row as not-for-publication. The site reads a Notion
@@ -75,7 +76,9 @@ export function isRestricted(page: any): boolean {
      * needs no list of the hosts we do not, which keeps the private domain out
      * of this file and out of the source map built from it.
      */
-    const IMAGE_HOSTS = ["res.cloudinary.com", "images.unsplash.com"];
+    const IMAGE_HOSTS = ["res.cloudinary.com", "images.unsplash.com", storageHost()].filter(
+        (h): h is string => Boolean(h)
+    );
 
     function publicImage(raw: string): string {
     const v = (raw ?? "").trim();

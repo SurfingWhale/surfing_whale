@@ -1,6 +1,7 @@
 // app/lib/darkroomSession.ts
-// The darkroom writes to Cloudinary and to Notion, so the gate in front of it
-// has to hold on the server. The cookie carries nothing but an expiry and an
+// The studio writes to Supabase Storage and to Notion, so the gate in front of
+// it has to hold on the server. Getting in is a Google sign-in, verified in
+// adminAuth.ts; this file is what that sign-in turns into. The cookie carries nothing but an expiry and an
 // HMAC over it — there is no session store to go stale, and nothing in the
 // cookie is worth forging without the secret.
 import { createHmac, timingSafeEqual, randomBytes } from "crypto";
@@ -21,9 +22,9 @@ export const COOKIE = "sw-darkroom";
 const MAX_AGE_S = 60 * 60 * 24 * 7;
 
 function secret(): string {
-  // Falling back to a random per-boot value means a misconfigured deployment
-  // fails closed — every cookie it issues stops verifying on the next boot —
-  // rather than signing with a guessable constant.
+  // Falling back to a fresh random value on every call means a misconfigured
+  // deployment fails closed — no cookie it issues ever verifies — rather than
+  // signing with a guessable constant.
   return process.env.DARKROOM_SECRET ?? randomBytes(32).toString("hex");
 }
 
@@ -37,13 +38,6 @@ function safeEqual(a: string, b: string): boolean {
   const bb = Buffer.from(b);
   if (ab.length !== bb.length) return false;
   return timingSafeEqual(ab, bb);
-}
-
-export function checkPassword(given: string): boolean {
-  const expected = process.env.DARKROOM_PASSWORD;
-  // No password configured means the darkroom is shut, not open to everyone.
-  if (!expected) return false;
-  return safeEqual(given, expected);
 }
 
 export function issueToken(): { value: string; maxAge: number } {
@@ -69,6 +63,7 @@ export async function isUnlocked(): Promise<boolean> {
   return verifyToken(jar.get(COOKIE)?.value);
 }
 
+/** The two halves of getting in: a sign-in to verify, a key to sign with. */
 export function configured(): boolean {
-  return Boolean(process.env.DARKROOM_PASSWORD && process.env.DARKROOM_SECRET);
+  return Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.DARKROOM_SECRET);
 }

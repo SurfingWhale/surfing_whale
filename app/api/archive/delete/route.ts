@@ -3,8 +3,9 @@
 // this cannot be turned into a way to delete an essay's photographs or a
 // project screenshot, even with a valid session.
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
-import { deleteFromCloudinary, ARCHIVE_FOLDER } from "@/app/lib/cloudinary";
+import { deletePhoto } from "@/app/lib/storage";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   if (!(await isUnlocked())) {
@@ -15,11 +16,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (typeof publicId !== "string" || !publicId) {
     return NextResponse.json({ error: "No publicId." }, { status: 400 });
   }
-  if (!publicId.startsWith(`${ARCHIVE_FOLDER}/`)) {
+  // One level under archive/, and nothing that could climb out of it.
+  if (!/^archive\/[^/]+$/.test(publicId) || publicId.includes("..")) {
     return NextResponse.json({ error: "Out of scope." }, { status: 403 });
   }
   try {
-    await deleteFromCloudinary(publicId);
+    await deletePhoto(publicId);
+    revalidatePath("/archive");
+    revalidatePath("/");
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Archive delete failed:", err instanceof Error ? err.message : err);

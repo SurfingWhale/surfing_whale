@@ -1,6 +1,8 @@
 // app/api/darkroom/essay/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
+import { isOwnImage } from "@/app/lib/storage";
 import {
   type Block,
   type Shot,
@@ -20,7 +22,7 @@ function cleanShot(raw: unknown): Shot | null {
   const s = raw as Record<string, unknown>;
   const url = typeof s.url === "string" ? s.url : "";
   // Only ever store URLs we put there ourselves.
-  if (!/^https:\/\/res\.cloudinary\.com\//.test(url)) return null;
+  if (!isOwnImage(url)) return null;
   const width = Number(s.width);
   const height = Number(s.height);
   if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1) {
@@ -33,6 +35,14 @@ function cleanShot(raw: unknown): Shot | null {
     height: Math.round(height),
     alt: (typeof s.alt === "string" ? s.alt : "").slice(0, 300),
   };
+}
+
+// Saving should show on the next load, not up to a minute later. The 60s
+// window on the pages stays as the fallback. The home page is in the list
+// because its nav only offers the darkroom once something is in it.
+function published() {
+  revalidatePath("/photo", "layout");
+  revalidatePath("/");
 }
 
 function cleanBlocks(raw: unknown): Block[] {
@@ -126,6 +136,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       count: 0,
       blocks: cleanBlocks(body.blocks),
     });
+    published();
     return NextResponse.json({ id: saved.id, slug });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -142,6 +153,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
   if (!id) return NextResponse.json({ error: "No id." }, { status: 400 });
   try {
     await deleteEssay(id);
+    published();
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Could not archive it." }, { status: 502 });

@@ -1,8 +1,10 @@
 // app/api/studio/post/route.ts
-// Same gate as the darkroom: one password, one cookie, checked on the server
+// Same gate as the darkroom: one sign-in, one cookie, checked on the server
 // before the body is read.
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
+import { isOwnImage } from "@/app/lib/storage";
 import {
   type Block,
   type BlockKind,
@@ -33,7 +35,7 @@ function cleanBlocks(raw: unknown): Block[] {
     if (kind === "image") {
       const url = String((b as { url?: unknown }).url ?? "");
       // Only ever store URLs we put there ourselves.
-      if (!/^https:\/\/res\.cloudinary\.com\//.test(url)) continue;
+      if (!isOwnImage(url)) continue;
       const width = Number((b as { width?: unknown }).width);
       const height = Number((b as { height?: unknown }).height);
       if (!Number.isFinite(width) || !Number.isFinite(height)) continue;
@@ -50,6 +52,13 @@ function cleanBlocks(raw: unknown): Block[] {
     if (text.trim()) out.push({ kind: kind as BlockKind, text });
   }
   return out;
+}
+
+// Same as the darkroom: visible on the next load, with the pages' 60s window
+// as the fallback, and the home page because its nav depends on posts existing.
+function published() {
+  revalidatePath("/writing", "layout");
+  revalidatePath("/");
 }
 
 function guard(): NextResponse | null {
@@ -126,6 +135,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       words: 0,
       blocks: cleanBlocks(body.blocks),
     });
+    published();
     return NextResponse.json({ id: saved.id, slug });
   } catch (err) {
     console.error("Post save failed:", err instanceof Error ? err.message : err);
@@ -144,6 +154,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
   if (!id) return NextResponse.json({ error: "No id." }, { status: 400 });
   try {
     await deletePost(id);
+    published();
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Unable to archive it." }, { status: 502 });

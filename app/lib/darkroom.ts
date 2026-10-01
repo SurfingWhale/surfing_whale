@@ -5,9 +5,9 @@
 // code block, because a Notion page cannot express "these three sit in a row"
 // and rebuilding a layout from a flat list of image blocks would be a guess.
 //
-// The photographs themselves live on Cloudinary. Notion's own file URLs are
-// signed and expire within the hour, so anything stored here is already a
-// permanent URL.
+// The photographs themselves live in Supabase Storage (app/lib/storage.ts).
+// Notion's own file URLs are signed and expire within the hour, so anything
+// stored here is already a permanent URL.
 import { DARKROOM_DB } from "./notionIds";
 
 const NOTION = "https://api.notion.com/v1";

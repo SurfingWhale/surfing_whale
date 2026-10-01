@@ -1,23 +1,26 @@
 // app/api/darkroom/session/route.ts
+// Trades a verified Google sign-in for the studio's own cookie.
+//
+// There used to be a password here, and an in-memory limiter in front of it
+// that reset on every cold start. A Firebase ID token cannot be guessed at, so
+// both are gone: the only thing this accepts is a token Google signed for this
+// project, carrying the admin's verified address.
 import { NextRequest, NextResponse } from "next/server";
 import { configured as notionReady } from "@/app/lib/darkroom";
-import {
-  COOKIE,
-  checkPassword,
-  configured,
-  issueToken,
-  isUnlocked,
-} from "@/app/lib/darkroomSession";
+import { verifyAdmin } from "@/app/lib/adminAuth";
+import { storageConfigured } from "@/app/lib/storage";
+import { COOKIE, configured, issueToken, isUnlocked } from "@/app/lib/darkroomSession";
 
-// A password field on the open internet gets guessed at. This is not a
-// replacement for a real limiter, but it turns an unattended dictionary run
-// into something that takes a very long time from one address.
-const attempts = new Map<string, { n: number; until: number }>();
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_TRIES = 8;
-
-function ipOf(req: NextRequest): string {
-  return (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0].trim();
+function withSession(res: NextResponse): NextResponse {
+  const { value, maxAge } = issueToken();
+  res.cookies.set(COOKIE, value, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge,
+  });
+  return res;
 }
 
 export async function GET(): Promise<NextResponse> {
@@ -27,6 +30,7 @@ export async function GET(): Promise<NextResponse> {
     // Says whether the deployment has its secrets, never what they are.
     configured: configured(),
     notion: notionReady(),
+    storage: storageConfigured(),
   });
   // Never cached. This is the one answer on the site that differs per person,
   // and a browser that heuristically caches it would report yesterday's state
@@ -36,49 +40,22 @@ export async function GET(): Promise<NextResponse> {
   // Sliding renewal: every visit that finds the session valid pushes its
   // expiry out again, so the week is a week of inactivity rather than a hard
   // stop a week after logging in.
-  if (unlocked) {
-    const { value, maxAge } = issueToken();
-    res.cookies.set(COOKIE, value, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge,
-    });
-  }
-  return res;
+  return unlocked ? withSession(res) : res;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const ip = ipOf(req);
-  const now = Date.now();
-  const record = attempts.get(ip);
-  if (record && record.until > now && record.n >= MAX_TRIES) {
+  if (!configured()) {
     return NextResponse.json(
-      { error: "Too many attempts. Try again later." },
-      { status: 429 }
+      { error: "Sign-in is not set up on this deployment." },
+      { status: 503 }
     );
   }
-
-  const { password } = await req.json().catch(() => ({ password: "" }));
-
-  if (typeof password !== "string" || !checkPassword(password)) {
-    const next = record && record.until > now ? record : { n: 0, until: now + WINDOW_MS };
-    attempts.set(ip, { n: next.n + 1, until: next.until });
-    return NextResponse.json({ error: "That is not the password." }, { status: 401 });
+  const { idToken } = await req.json().catch(() => ({ idToken: null }));
+  const refused = await verifyAdmin(idToken);
+  if (refused) {
+    return NextResponse.json({ error: refused.error }, { status: refused.status });
   }
-
-  attempts.delete(ip);
-  const { value, maxAge } = issueToken();
-  const res = NextResponse.json({ unlocked: true });
-  res.cookies.set(COOKIE, value, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge,
-  });
-  return res;
+  return withSession(NextResponse.json({ unlocked: true }));
 }
 
 export async function DELETE(): Promise<NextResponse> {

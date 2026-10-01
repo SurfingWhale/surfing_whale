@@ -86,12 +86,19 @@ chunking are written. Supabase or Firebase would be a better database and a
 worse fit — a second system to keep in sync, for a site with one author.
 Revisit only if a list exceeds a few hundred rows or a query needs joins.
 
-**Cloudinary stays the file store.** Notion's own file URLs are signed and
-expire within the hour, which makes them unusable for anything published.
+**Supabase Storage is the file store** *(2026-10-01, was Cloudinary)*. Notion's
+own file URLs are signed and expire within the hour, which makes them unusable
+for anything published. One public bucket, written only from the server with
+the service-role key; the browser compresses first (WebP, long edge bounded,
+EXIF and GPS dropped), so a phone upload is a few hundred kilobytes. Images
+already on Cloudinary keep rendering.
 
-**One session, not four.** `DARKROOM_PASSWORD` becomes `ADMIN_PASSWORD`, and
-the existing cookie carries the whole of `/studio`. Two passwords for one
-person is two passwords to lose.
+**One session, not four** *(2026-10-01: Google sign-in, no password)*. Getting
+in is a Firebase Google sign-in, per creative-hub's auth standard. The server
+verifies the ID token against Google's keys for this project and checks the
+verified admin email (`app/lib/adminAuth.ts`), then issues the same signed
+cookie that carries the whole of `/studio`. There is no password to lose or
+to guess at.
 
 **Publishing is explicit.** Everything is a draft until a checkbox says
 otherwise, and a draft's URL returns 404 rather than rendering. This already
@@ -109,19 +116,16 @@ route inherits, because these are the parts that are easy to lose in a
 refactor:
 
 - Every write route checks the session before it reads the body.
-- The password compares in constant time; eight wrong guesses from one
-  address stop the attempts.
+- Sign-in is a Google-signed token for this Firebase project with the admin's
+  verified email; nothing else is accepted, so there is nothing to guess.
 - A missing `ADMIN_SECRET` signs with a per-boot random value, so a
   misconfigured deployment fails closed instead of using a guessable key.
 - Everything from the browser is re-validated on the server before it reaches
-  Notion, including that image URLs point at our own Cloudinary account.
+  Notion, including that image URLs point at our own bucket.
 - `/studio` is `noindex`, and admin routes never appear in the sitemap.
 
-Not yet true, and required before this ships:
-
-- **The in-memory rate limiter resets on every cold start.** Acceptable for
-  one password on a personal site, and it should say so in the code rather
-  than imply more protection than it gives.
+The in-memory rate limiter that guarded the password is gone with the
+password.
 
 ## 6. Quality bar
 
@@ -154,8 +158,8 @@ view showing what needs attention.
 **Phase 4 — Profile (two hours, next).** Hero tagline and bio from the store, with
 the current strings as fallback.
 
-**Phase 5 — On-demand revalidation (two hours).** `revalidatePath` on save
-for every affected public route.
+**Phase 5 — On-demand revalidation — shipped.** Saving or deleting an essay,
+a post or an archive frame revalidates its public pages and the home page.
 
 ## 8. Non-goals
 
@@ -173,6 +177,4 @@ for every affected public route.
    the darkroom the way photo essays currently are?
 2. Do guest notes need an email reply from inside the studio, or is knowing
    the address enough?
-3. Is one password enough, or is this the point to move to a real login? One
-   password is fine for one person on a site with nothing to steal; it stops
-   being fine the moment anything private lives behind it.
+3. ~~Is one password enough?~~ Answered 2026-10-01: Google sign-in.

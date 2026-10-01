@@ -5,7 +5,7 @@
 // a visual archive is for.
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listArchivePhotos } from "@/app/lib/cloudinary";
+import { listArchivePhotos } from "@/app/lib/storage";
 import { SectionLabel } from "@/app/components/SectionLabel";
 
 export const revalidate = 300;

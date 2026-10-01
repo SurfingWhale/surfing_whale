@@ -9,7 +9,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { downscale } from "@/app/darkroom/downscale";
+import { size } from "@/app/darkroom/downscale";
+import { sendPhoto } from "@/app/darkroom/sendPhoto";
 
 interface Frame {
   publicId: string;
@@ -21,8 +22,9 @@ interface Frame {
 
 interface Pending {
   name: string;
-  state: "resizing" | "uploading" | "failed";
+  state: "compressing" | "uploading" | "failed";
   error?: string;
+  saved?: string;
 }
 
 const chip =
@@ -47,43 +49,42 @@ export function Archive() {
     const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
     if (!list.length) return;
     setNote(null);
-    setPending(list.map((f) => ({ name: f.name, state: "resizing" })));
+    setPending(list.map((f) => ({ name: f.name, state: "compressing" })));
 
-    // One at a time, on purpose. Forty parallel uploads is forty parallel
-    // Cloudinary transformations and a queue the browser cannot show progress
-    // through; sequential means the count on screen is the truth.
-    let ok = 0;
+    // One at a time, on purpose: a phone on mobile data shows a count that is
+    // the truth, rather than forty bars that all sit at half.
+    let ok = 0, before = 0, after = 0;
     for (let i = 0; i < list.length; i++) {
-      const mark = (state: Pending["state"], error?: string) =>
-        setPending((p) => p.map((q, k) => (k === i ? { ...q, state, error } : q)));
+      const mark = (patch: Partial<Pending>) =>
+        setPending((p) => p.map((q, k) => (k === i ? { ...q, ...patch } : q)));
       try {
-        const small = await downscale(list[i]);
-        mark("uploading");
-        const body = new FormData();
-        body.append("file", small.file);
-        const res = await fetch("/api/archive/upload", { method: "POST", body });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+        const shot = await sendPhoto(list[i], "archive", (b, a) =>
+          mark({ state: "uploading", saved: `${size(b)} → ${size(a)}` })
+        );
+        before += shot.before; after += shot.after;
         // Prepended as it lands, so a long batch is visibly making progress
         // rather than sitting still until the last file is done.
         setFrames((f) => [
           {
-            publicId: data.publicId,
-            url: data.url,
-            width: data.width,
-            height: data.height,
+            publicId: shot.publicId,
+            url: shot.url,
+            width: shot.width,
+            height: shot.height,
             takenAt: new Date().toISOString(),
           },
           ...(f ?? []),
         ]);
         ok++;
       } catch (err) {
-        mark("failed", err instanceof Error ? err.message : String(err));
+        mark({ state: "failed", error: err instanceof Error ? err.message : String(err) });
       }
     }
     // Failures stay on screen with their reason; everything else clears.
     setPending((p) => p.filter((q) => q.state === "failed"));
-    setNote(`${ok} of ${list.length} uploaded.`);
+    setNote(
+      `${ok} of ${list.length} uploaded` +
+        (ok ? `, compressed from ${size(before)} to ${size(after)}.` : ".")
+    );
   };
 
   const remove = async (publicId: string) => {
@@ -125,7 +126,7 @@ export function Archive() {
           .
         </p>
         <p className="text-[11px] leading-[1.7] text-fg-muted mt-2">
-          Resized in the browser before sending. JPEG, PNG, WebP or AVIF.
+          Compressed in the browser before sending, location data removed. JPEG, PNG, WebP, AVIF — or HEIC from an iPhone.
         </p>
         <input
           ref={input}
@@ -145,6 +146,7 @@ export function Archive() {
           {pending.map((p, i) => (
             <li key={`${p.name}-${i}`} className="text-[11px] leading-[1.8] text-fg-muted">
               {p.name} — {p.state === "failed" ? `failed: ${p.error}` : `${p.state}…`}
+              {p.saved && <span className="font-mono"> {p.saved}</span>}
             </li>
           ))}
         </ul>

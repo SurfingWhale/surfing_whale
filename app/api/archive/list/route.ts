@@ -3,7 +3,7 @@
 // the same list on the server instead, so this is not on a visitor's path.
 import { NextResponse } from "next/server";
 import { isUnlocked } from "@/app/lib/darkroomSession";
-import { listArchivePhotos } from "@/app/lib/cloudinary";
+import { listArchivePhotos } from "@/app/lib/storage";
 
 export async function GET(): Promise<NextResponse> {
   if (!(await isUnlocked())) {

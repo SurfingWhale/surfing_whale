@@ -10,7 +10,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Block, BlockKind, PostMeta } from "@/app/lib/writing";
-import { downscale } from "@/app/darkroom/downscale";
+import { size } from "@/app/darkroom/downscale";
+import { sendPhoto } from "@/app/darkroom/sendPhoto";
 
 const link =
   "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200 disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed";
@@ -214,17 +215,13 @@ export function Writer() {
     setBusyImage(true);
     setStatus(null);
     try {
-      const small = await downscale(file);
-      const body = new FormData();
-      body.append("file", small.file);
-      const res = await fetch("/api/darkroom/upload", { method: "POST", body });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      const shot = await sendPhoto(file, "darkroom");
       edit((b) => [
         ...b,
-        { kind: "image", text: "", url: data.url, width: data.width, height: data.height },
+        { kind: "image", text: "", url: shot.url, width: shot.width, height: shot.height },
         { kind: "paragraph", text: "" },
       ]);
+      setStatus(`Image added, compressed from ${size(shot.before)} to ${size(shot.after)}.`);
     } catch (err) {
       setStatus(err instanceof Error ? err.message : "Unable to add that image.");
     }

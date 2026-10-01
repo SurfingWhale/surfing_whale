@@ -1,15 +1,29 @@
 // app/api/sync-images/route.ts
+import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
-import { uploadToCloudinary } from "@/app/lib/cloudinary";
+import { uploadPhoto } from "@/app/lib/storage";
 import { PROJECTS_DB } from "@/app/lib/notionIds";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY! });
 
 const DATABASE_ID = PROJECTS_DB();
-const SYNC_SECRET = process.env.SYNC_SECRET ?? "dev-secret";
+// No default. This route drives a headless browser and writes to Notion, so
+// a deployment without SYNC_SECRET refuses everyone instead of accepting a
+// value printed in the repository. Locally, set it in .env.local.
+const SYNC_SECRET = process.env.SYNC_SECRET ?? "";
+
+function authorised(given: string | null): boolean {
+  if (!SYNC_SECRET || !given) return false;
+  const a = Buffer.from(given);
+  const b = Buffer.from(SYNC_SECRET);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+// The card's 1200×630, taken at that size rather than cropped afterwards.
+const SHOT = { width: 1200, height: 630 };
 
 interface NotionProject {
   id: string;
@@ -22,7 +36,7 @@ interface SyncResult {
   projectId: string;
   name: string;
   status: "synced" | "skipped" | "failed";
-  cloudinaryUrl?: string;
+  url?: string;
   error?: string;
 }
 
@@ -78,7 +92,7 @@ async function updateNotionImage(pageId: string, imageUrl: string): Promise<void
 async function screenshotUrl(url: string): Promise<Buffer> {
   const browser = await puppeteer.launch({
     args: chromium.args,
-    defaultViewport: { width: 1280, height: 720 },
+    defaultViewport: SHOT,
     executablePath: await chromium.executablePath(),
     headless: true,
   });
@@ -113,8 +127,7 @@ function toSlug(name: string): string {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const secret = req.headers.get("x-sync-secret");
-  if (secret !== SYNC_SECRET) {
+  if (!authorised(req.headers.get("x-sync-secret"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -136,9 +149,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       try {
         const buffer = await screenshotUrl(project.citationUrl);
         const slug = toSlug(project.name);
-        const { secure_url } = await uploadToCloudinary(buffer, slug);
-        await updateNotionImage(project.id, secure_url);
-        results.push({ projectId: project.id, name: project.name, status: "synced", cloudinaryUrl: secure_url });
+        const { url } = await uploadPhoto("projects", buffer, "image/jpeg", slug, SHOT.width, SHOT.height);
+        await updateNotionImage(project.id, url);
+        results.push({ projectId: project.id, name: project.name, status: "synced", url });
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         results.push({ projectId: project.id, name: project.name, status: "failed", error: message });

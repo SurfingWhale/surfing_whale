@@ -6,7 +6,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Block, EssayMeta, Shot } from "@/app/lib/darkroom";
-import { downscale } from "./downscale";
+import { size } from "./downscale";
+import { sendPhoto } from "./sendPhoto";
 
 const MAX_PER_ROW = 3;
 
@@ -19,96 +20,10 @@ const chip =
 
 interface Pending {
   name: string;
-  state: "resizing" | "uploading" | "failed";
+  state: "compressing" | "uploading" | "failed";
   error?: string;
-}
-
-export function Composer() {
-  const [unlocked, setUnlocked] = useState<boolean | null>(null);
-  const [ready, setReady] = useState(false);
-  const [notion, setNotion] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/darkroom/session")
-      .then((r) => r.json())
-      .then((d) => {
-        setUnlocked(Boolean(d.unlocked));
-        setReady(Boolean(d.configured));
-        setNotion(Boolean(d.notion));
-      })
-      .catch(() => setUnlocked(false));
-  }, []);
-
-  if (unlocked === null) {
-    return <Shell><p className="text-fg-muted">Checking…</p></Shell>;
-  }
-  if (!unlocked) {
-    return <Shell><Lock configured={ready} notion={notion} onIn={() => setUnlocked(true)} /></Shell>;
-  }
-  return <Shell wide><Editor /></Shell>;
-}
-
-function Shell({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
-  return (
-    <main className="min-h-screen bg-bg text-fg">
-      <div className={`container mx-auto px-6 py-16 ${wide ? "max-w-[900px]" : "max-w-[420px]"}`}>
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-8">
-          Darkroom
-        </p>
-        {children}
-      </div>
-    </main>
-  );
-}
-
-export function Lock({ configured, notion, onIn }: { configured: boolean; notion: boolean; onIn: () => void }) {
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  const submit = async () => {
-    setBusy(true);
-    setError(null);
-    const res = await fetch("/api/darkroom/session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    }).catch(() => null);
-    if (res?.ok) return onIn();
-    setError((await res?.json().catch(() => null))?.error ?? "Could not reach the server.");
-    setBusy(false);
-  };
-
-  return (
-    <>
-      <input
-        type="password"
-        value={password}
-        autoFocus
-        onChange={(e) => setPassword(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter" && password) submit(); }}
-        placeholder="Password"
-        aria-label="Darkroom password"
-        className={field}
-      />
-      <button onClick={submit} disabled={!password || busy} className={`${link} text-[13px] mt-5`}>
-        {busy ? "Opening…" : "Open →"}
-      </button>
-      {error && <p className="text-[13px] leading-[2] text-fg mt-4">{error}</p>}
-      {!configured && (
-        <p className="text-[11px] leading-[1.7] text-fg-muted mt-6">
-          DARKROOM_PASSWORD and DARKROOM_SECRET are not both set on this
-          deployment, so nothing will unlock.
-        </p>
-      )}
-      {configured && !notion && (
-        <p className="text-[11px] leading-[1.7] text-fg-muted mt-6">
-          NOTION_DARKROOM_DATABASE_ID is not set, so essays would upload but
-          have nowhere to save.
-        </p>
-      )}
-    </>
-  );
+  /** "6.2 MB → 410 KB", once compressing is done. */
+  saved?: string;
 }
 
 export function Editor() {
@@ -152,33 +67,28 @@ export function Editor() {
   const ingest = async (files: FileList | File[]) => {
     const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
     if (!list.length) return;
-    setPending(list.map((f) => ({ name: f.name, state: "resizing" })));
+    setPending(list.map((f) => ({ name: f.name, state: "compressing" })));
 
+    let before = 0, after = 0, sent = 0;
     for (let i = 0; i < list.length; i++) {
       const file = list[i];
-      const mark = (state: Pending["state"], error?: string) =>
-        setPending((p) => p.map((q, k) => (k === i ? { ...q, state, error } : q)));
+      const mark = (patch: Partial<Pending>) =>
+        setPending((p) => p.map((q, k) => (k === i ? { ...q, ...patch } : q)));
       try {
-        const small = await downscale(file);
-        mark("uploading");
-        const body = new FormData();
-        body.append("file", small.file);
-        const res = await fetch("/api/darkroom/upload", { method: "POST", body });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-        const shot: Shot = {
-          url: data.url, publicId: data.publicId,
-          width: data.width, height: data.height,
-          alt: "",
-        };
+        const shot = await sendPhoto(file, "darkroom", (b, a) =>
+          mark({ state: "uploading", saved: `${size(b)} → ${size(a)}` })
+        );
+        before += shot.before; after += shot.after; sent++;
+        const { url, publicId, width, height } = shot;
         // Appended as it arrives, so a long batch is visibly making progress.
-        setBlocks((b) => [...b, { type: "images", items: [shot] }]);
+        setBlocks((b) => [...b, { type: "images", items: [{ url, publicId, width, height, alt: "" }] }]);
       } catch (err) {
-        mark("failed", err instanceof Error ? err.message : String(err));
+        mark({ state: "failed", error: err instanceof Error ? err.message : String(err) });
       }
     }
     // Leave failures on screen; clear the rest.
     setPending((p) => p.filter((q) => q.state === "failed"));
+    if (sent) setStatus(`${sent} up, compressed from ${size(before)} to ${size(after)}.`);
   };
 
   // ── arranging ────────────────────────────────────────────────────────────
@@ -347,8 +257,9 @@ export function Editor() {
         <input ref={fileInput} type="file" accept="image/*" multiple hidden
           onChange={(e) => { if (e.target.files) ingest(e.target.files); e.target.value = ""; }} />
         <p className="text-[11px] leading-[1.7] text-fg-muted mt-4">
-          Resized to 2000px in the browser before they go up, so a full memory
-          card does not have to cross the wire at full size.
+          Compressed in the browser before they go up — 2000px on the long
+          edge, and the location a phone writes into every photograph is left
+          behind.
         </p>
       </div>
 
@@ -360,6 +271,7 @@ export function Editor() {
               <span className={p.state === "failed" ? "text-fg" : "text-fg-muted"}>
                 {p.state === "failed" ? `failed — ${p.error}` : `${p.state}…`}
               </span>
+              {p.saved && <span className="font-mono text-fg-muted">{p.saved}</span>}
             </li>
           ))}
         </ul>

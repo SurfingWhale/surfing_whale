@@ -5,10 +5,14 @@
 import "dotenv/config";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-const SYNC_SECRET = process.env.SYNC_SECRET ?? "dev-secret";
+const SYNC_SECRET = process.env.SYNC_SECRET ?? "";
+if (!SYNC_SECRET) {
+    console.error("❌ SYNC_SECRET is not set — the route refuses requests without it.");
+    process.exit(1);
+}
 
 async function main() {
-    console.log("🐳 Surfing Whale — Cloudinary Image Sync");
+    console.log("🐳 Surfing Whale — Project Screenshot Sync");
     console.log(`📡 Hitting: ${BASE_URL}/api/sync-images`);
     console.log("─".repeat(50));
 
@@ -36,7 +40,7 @@ async function main() {
         for (const r of data.results) {
             const icon = r.status === "synced" ? "✅" : r.status === "skipped" ? "⏭️" : "❌";
             console.log(`  ${icon} ${r.name}`);
-            if (r.cloudinaryUrl) console.log(`     → ${r.cloudinaryUrl}`);
+            if (r.url) console.log(`     → ${r.url}`);
             if (r.error) console.log(`     ⚠ ${r.error}`);
         }
         } else {
