@@ -30,7 +30,7 @@ const link =
 export function ActivitySection() {
   return (
     <section data-spot id="activity" className="w-full py-16 sm:py-24 border-t border-border">
-      <div data-reveal className="container mx-auto px-6 max-w-[720px]">
+      <div data-reveal className="frame frame-split">
         <SectionLabel note="Published notebooks.">Activity</SectionLabel>
 
         <RowList>

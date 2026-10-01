@@ -95,7 +95,7 @@ export function ContactSection() {
 
     return (
         <section data-spot id="contact" className="w-full py-16 sm:py-24 border-t border-border">
-        <div data-reveal className="container mx-auto px-6 max-w-[720px]">
+        <div data-reveal className="frame frame-split">
             {/* Not "open to roles".
                 This was the same availability notice the hero carried, left
                 standing in a second place after the first was taken out — and

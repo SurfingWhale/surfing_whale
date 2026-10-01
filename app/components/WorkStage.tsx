@@ -9,8 +9,10 @@
 // places. These rows carry pale maps on near-white paper, and white type over
 // an isochrone is invisible. So the media sits under a scrim heavy enough to
 // carry text and light enough to still read as the picture it is, and the
-// picture is blurred slightly, because a legend and street labels behind a
-// headline is noise either way.
+// picture is blurred past reading, because a legend and street labels behind a
+// headline is noise either way. Two pixels was enough at 672px; on a wide
+// screen object-cover scales the screenshot up and its figures came back
+// legible behind the titles, so the blur is set for the widest stage.
 //
 // Everything else is the reference: the path heading, the counter, the year
 // as a superior, the accent rule under the live row, the arrow chip.
@@ -62,7 +64,7 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
             src={src}
             alt=""
             aria-hidden="true"
-            className="stage-bg absolute inset-0 w-full h-full object-cover blur-[2px]"
+            className="stage-bg absolute inset-0 w-full h-full object-cover blur-[12px]"
             style={
               {
                 opacity: i === active ? 0.6 : 0,

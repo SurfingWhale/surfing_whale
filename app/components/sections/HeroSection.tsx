@@ -118,14 +118,16 @@ export function HeroSection() {
 
   return (
     <section data-spot className="w-full">
-      <div data-reveal className="container mx-auto px-6 pt-14 pb-12 sm:pt-20 sm:pb-16 max-w-[720px]">
+      <div data-reveal className="frame frame-split pt-14 pb-12 sm:pt-20 sm:pb-16">
         {/* What this is, before who it is. A stranger deciding whether to keep
             reading wants the second question answered first, and the toggle
             above already knows the answer — it was just saying it to screen
             readers only. Set as a label rather than a heading: it is the same
             11px the section labels use, so it reads as a caption on the
             photographs rather than as a title competing with the name. */}
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mt-5">
+        {/* On a wide screen this is the hero's rail, level with the top of the
+            name rather than above it, and balanced so it breaks at the dot. */}
+        <p className="frame-rail text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mt-5 [text-wrap:balance] min-[66rem]:pt-[34px]">
           {MODE_KICKER[mode]}
         </p>
 

@@ -20,7 +20,7 @@ function Banner() {
       role="status"
       className="border-b border-border bg-bg-subtle"
     >
-      <div className="container mx-auto px-6 max-w-[720px] py-3 flex items-start justify-between gap-6">
+      <div className="frame py-3 flex items-start justify-between gap-6">
         <p className="text-[13px] leading-[2] text-fg-body">
           {ok
             ? "You're in. Every project reads in full from here, on this browser, for the next six months."

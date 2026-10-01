@@ -73,7 +73,7 @@ const ROWS: WorkRow[] = [
 export function DirectorySection() {
   return (
     <section data-spot id="directory" className="w-full py-16 sm:py-24 border-t border-border">
-      <div data-reveal className="container mx-auto px-6 max-w-[720px]">
+      <div data-reveal className="frame frame-split">
         <SectionLabel note="Everything with a page of its own.">Index</SectionLabel>
         <div className="mt-8">
           <WorkStage label="Work" rows={ROWS} />

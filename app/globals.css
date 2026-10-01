@@ -191,6 +191,65 @@ h1, h2, h3, h4 {
   scroll-margin-top: 4.5rem;
 }
 
+/* ---- Frame ------------------------------------------------------------
+   Every section sits in one frame. Below 66rem it is the 720px column the
+   site was designed around, so a phone sees no change. From 66rem the frame
+   opens to the 1120px the design direction asks for and splits: the section
+   label and its note move into a 240px rail on the leading side, and the
+   content takes the rest.
+
+   A lone 720px column left half of a laptop screen empty, and a section with
+   one row in it read as a band of nothing between two hairlines. The rail
+   turns that space into structure — two edges the whole page keeps to, the
+   label beside its content instead of stacked over it.
+
+   66rem is where the rail, the gap and the widest single row of content (the
+   hero's name beside its facts, about 684px) fit together; any narrower and
+   the content would be squeezed, so the page keeps the column instead. */
+.frame {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (min-width: 66rem) {
+  .frame {
+    max-width: 1120px;
+  }
+
+  .frame-split {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    column-gap: 4rem;
+    align-items: start;
+  }
+
+  .frame-split > * {
+    grid-column: 2;
+  }
+
+  /* Spans every row the content makes, so a long section does not stretch
+     its first row to the rail's height or leave the rail behind. */
+  .frame-split > .frame-rail {
+    grid-column: 1;
+    grid-row: 1 / span 40;
+    margin-block: 0;
+  }
+
+  /* A long section — the work, the photographs — keeps its name in view. */
+  .frame-split > .frame-sticky {
+    position: sticky;
+    top: 5rem;
+  }
+
+  /* The first block of content used to sit under its label and kept a gap
+     for it. Beside the label, that gap only pushes the two out of line. */
+  .frame-split > .frame-rail + * {
+    margin-top: 0;
+  }
+}
+
 /* ---- Focus ------------------------------------------------------------
    Several fields carry Tailwind's `outline-none` so the hairline underline
    can do the work on mouse focus, which leaves a keyboard user with nothing
@@ -292,7 +351,7 @@ h1, h2, h3, h4 {
   display: flex;
   gap: 4px;
   width: 100vw;
-  margin-left: calc(50% - 50vw);
+  margin-inline: calc(50% - 50vw);
   padding-inline: 4px;
   margin-block: 4px;
 }
@@ -317,7 +376,7 @@ h1, h2, h3, h4 {
   columns: 4;
   column-gap: 4px;
   width: 100vw;
-  margin-left: calc(50% - 50vw);
+  margin-inline: calc(50% - 50vw);
   padding-inline: 4px;
 }
 

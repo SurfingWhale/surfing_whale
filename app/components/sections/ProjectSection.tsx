@@ -106,10 +106,11 @@ export function ProjectSection({ projects }: Props) {
 
     return (
         <section className="w-full py-16 sm:py-24 border-t border-border">
-        <div id="project" data-reveal className="container mx-auto px-6 max-w-[720px]">
+        <div id="project" data-reveal className="frame">
 
             {/* ── Tier one: the featured case study ─────────────────────── */}
-            <div data-spot>
+            <div className="frame-split">
+            <div data-spot className="frame-rail frame-sticky">
             <SectionLabel note="The longer story behind how I think about data.">
             Selected case studies
             </SectionLabel>
@@ -132,10 +133,11 @@ export function ProjectSection({ projects }: Props) {
                 sheets={PADEL_SHEETS}
             />
             </div>
+            </div>
 
             {/* ── Tier two: everything else, as a list ──────────────────── */}
-            <div data-reveal style={{ ["--reveal-delay" as string]: "90ms" }} className="mt-20">
-            <div data-spot>
+            <div data-reveal style={{ ["--reveal-delay" as string]: "90ms" }} className="mt-20 frame-split">
+            <div data-spot className="frame-rail frame-sticky">
             <SectionLabel note={`${projects.length + WRITTEN_UP.length} projects.`}>
                 Other work
             </SectionLabel>

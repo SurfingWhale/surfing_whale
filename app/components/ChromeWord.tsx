@@ -38,7 +38,7 @@
 //   than an object sitting inside it.
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 const PALETTE = {
   /** The site's own range: deep teal through to amber. */
@@ -105,9 +105,10 @@ export function ChromeWord({
   const svg = useRef<SVGSVGElement>(null);
   const stripe = useRef<SVGLinearGradientElement>(null);
   // Filter ids are document-global. Two of these on one page without a prefix
-  // each and the second silently renders with the first's palette.
-  const uid = useRef(`cw${Math.random().toString(36).slice(2, 8)}`);
-  const id = uid.current;
+  // each and the second silently renders with the first's palette. useId
+  // rather than a random string, so the server and the browser agree on it;
+  // its colons are dropped because they do not survive inside url(#…).
+  const id = `cw${useId().replace(/:/g, "")}`;
   const p = PALETTE[tone];
 
   useEffect(() => {

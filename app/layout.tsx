@@ -116,8 +116,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // The two scripts below add classes to <html> before React hydrates, on
+    // purpose; this tells React the difference is expected. It covers this
+    // element's own attributes only, not anything inside it.
     <html
       lang="id"
+      suppressHydrationWarning
       className={`${jakarta.variable} ${geistMono.variable} ${oswald.variable} ${serif.variable} h-full antialiased`}
     >
       <head>

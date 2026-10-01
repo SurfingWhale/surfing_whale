@@ -1,6 +1,7 @@
 // app/components/SectionLabel.tsx
 // 11px / 500 / 0.14em uppercase, with a 32px gap beneath — the reference
-// site's section label, measured from its stylesheet.
+// site's section label, measured from its stylesheet. Inside a .frame-split
+// on a wide screen it becomes the section's rail instead (globals.css).
 
 export function SectionLabel({
   children,
@@ -10,7 +11,7 @@ export function SectionLabel({
   note?: React.ReactNode;
 }) {
   return (
-    <div className="mb-8">
+    <div className="mb-8 frame-rail frame-sticky">
       <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label">
         {children}
       </h2>

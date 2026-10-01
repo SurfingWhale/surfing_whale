@@ -43,7 +43,7 @@ export function PhotographySection({
 
   return (
     <section data-spot id="photography" className="w-full py-16 sm:py-24 border-t border-border">
-      <div data-reveal className="container mx-auto px-6 max-w-[720px]">
+      <div data-reveal className="frame frame-split">
         <div className="mb-16 space-y-5 text-[13px] leading-[2] text-fg-body max-w-[560px]">
           <p>
             I might snap myself in a mirror, someone laughing, a random moment,
