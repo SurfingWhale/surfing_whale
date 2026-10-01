@@ -319,6 +319,30 @@ h1, h2, h3, h4 {
   }
 }
 
+/* The record on the gallery's turntable (VinylPlayer): 33⅓ rpm is one turn
+   every 1.8 seconds. It holds still, mid-turn, whenever the music stops, and
+   does not turn at all for anyone who has asked for less motion. */
+@keyframes vinyl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.vinyl-spin {
+  animation: vinyl-spin 1.8s linear infinite;
+  animation-play-state: paused;
+}
+
+.vinyl-spin[data-playing] {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vinyl-spin {
+    animation: none;
+  }
+}
+
 /* ---- Focus ------------------------------------------------------------
    Several fields carry Tailwind's `outline-none` so the hairline underline
    can do the work on mouse focus, which leaves a keyboard user with nothing

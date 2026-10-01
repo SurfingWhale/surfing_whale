@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { photographs, type PhotoCategory } from "@/app/data/photography";
 import { SectionLabel } from "@/app/components/SectionLabel";
+import { VinylPlayer } from "@/app/components/VinylPlayer";
 
 const inline =
   "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200";
@@ -67,9 +68,14 @@ export function PhotographySection({
           </p>
         </div>
 
-        <SectionLabel note={`Photography archive · ${photographs.length} photographs.`}>
-          Selected photography
-        </SectionLabel>
+        {/* The rail carries a record as well as the label: the turntable stays
+            in view, sticky, while the photographs scroll past. */}
+        <div className="frame-rail frame-sticky mb-8">
+          <SectionLabel note={`Photography archive · ${photographs.length} photographs.`}>
+            Selected photography
+          </SectionLabel>
+          <VinylPlayer />
+        </div>
 
         {hasDarkroom && (
           <p className="text-[13px] leading-[2] text-fg-body mb-8 -mt-4">
