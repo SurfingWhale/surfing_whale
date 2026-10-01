@@ -34,7 +34,7 @@ function formatDate(iso: string) {
 
 // Bottom hairline only — a ruled line to write on, not a box to fill in.
 const FIELD =
-  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 " +
+  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-1.5 " +
   "text-[13px] leading-[2] text-fg placeholder:text-fg-muted " +
   "focus:outline-none focus:border-fg transition-colors duration-200";
 
@@ -189,8 +189,8 @@ export function GuestNotesSection() {
             className="absolute inset-0 bg-[rgba(10,13,16,.45)] backdrop-blur-[2px] cursor-default"
           />
 
-          <div className="relative w-full max-w-[340px] rounded-[20px] overflow-hidden bg-bg shadow-[0_24px_60px_rgba(10,13,16,.28)]">
-            <ChromeWord lines={["SURFING"]} height={124} tone="hot" />
+          <div className="relative w-full max-w-[440px] rounded-[20px] overflow-hidden bg-bg shadow-[0_24px_60px_rgba(10,13,16,.28)]">
+            <ChromeWord lines={["SURFING"]} height={128} tone="hot" />
             <button
               type="button"
               onClick={close}
@@ -207,7 +207,7 @@ export function GuestNotesSection() {
                 copy under the artwork and only the fields run full width —
                 left-aligned text under a centred band reads as two layouts
                 stacked rather than one card. */}
-            <div className="p-5 pt-6 max-h-[70vh] overflow-y-auto text-center">
+            <div className="px-5 pt-4 pb-4 max-h-[72vh] overflow-y-auto text-center">
               {status === "sent" ? (
                 <>
                   <p id="guest-note-card-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
@@ -216,7 +216,7 @@ export function GuestNotesSection() {
                   <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
                     It will show up below once I have had a look.
                   </p>
-                  <button type="button" onClick={close} className={`${SOLID} mt-4`}>
+                  <button type="button" onClick={close} className={`${SOLID} mt-3`}>
                     Done
                   </button>
                 </>
@@ -225,11 +225,11 @@ export function GuestNotesSection() {
                   <p id="guest-note-card-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
                     Leave a notes here
                   </p>
-                  <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
+                  <p className="text-[12px] leading-[1.7] text-fg-body mt-1.5">
                     Thank you for visiting my website
                   </p>
 
-                  <div className="mt-5 space-y-3 text-left">
+                  <div className="mt-3 space-y-1 text-left">
                     <input
                       ref={nameRef}
                       type="text"
@@ -242,10 +242,10 @@ export function GuestNotesSection() {
                       className={FIELD}
                     />
 
-                    <div>
-                      <textarea
+                    <textarea
                         ref={messageRef}
-                        rows={3}
+                        rows={2}
+                        style={{ minHeight: 52 }}
                         maxLength={MAX_MESSAGE}
                         value={form.message}
                         onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -253,27 +253,6 @@ export function GuestNotesSection() {
                         aria-label="Your note"
                         className={`${FIELD} resize-none`}
                       />
-                      <p className="text-[11px] text-fg-muted mt-1 text-right tabular-nums">
-                        {form.message.length}/{MAX_MESSAGE}
-                      </p>
-                    </div>
-
-                    <div>
-                      <input
-                        type="email"
-                        maxLength={254}
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        placeholder="Email (optional)"
-                        aria-label="Your email, optional"
-                        autoComplete="email"
-                        className={FIELD}
-                      />
-                      <p className="text-[11px] leading-[1.7] text-fg-muted mt-2">
-                        Only so I can reply. Never shown publicly, never shared,
-                        never added to a mailing list.
-                      </p>
-                    </div>
 
                     {/* Honeypot — hidden from people, tempting to bots. */}
                     <input
@@ -298,7 +277,7 @@ export function GuestNotesSection() {
                     type="button"
                     onClick={submit}
                     disabled={status === "sending"}
-                    className={`${SOLID} mt-4`}
+                    className={`${SOLID} mt-3`}
                   >
                     {status === "sending" ? "Sending…" : "Leave a note"}
                   </button>
