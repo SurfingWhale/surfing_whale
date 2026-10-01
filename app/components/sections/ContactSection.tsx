@@ -3,11 +3,17 @@
 
 import { useRef, useState } from "react";
 import { SectionLabel } from "@/app/components/SectionLabel";
+import { useAccess } from "@/app/components/AccessGate";
 
-const WA_NUMBER = "6285156964766";
+// The number is not here any more. It used to be a const in this file, which
+// is a client component — so it shipped in the JavaScript bundle to every
+// visitor, and a scraper never had to so much as press the button. It now
+// lives in an environment variable on the server and comes back from
+// /api/contact/wa, which answers only an approved reader.
 const EMAIL = "fauzymuhamad43@gmail.com";
 
 export function ContactSection() {
+    const { unlocked, requireAccess } = useAccess();
     const [form, setForm] = useState({ name: "", message: "" });
     const [sent, setSent] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -31,13 +37,43 @@ export function ContactSection() {
         return false;
     };
 
-    const handleWA = () => {
+    const handleWA = async () => {
         if (missing()) return;
-        const text = encodeURIComponent(
-        `Halo, nama saya ${form.name}.\n\n${form.message}`
-        );
-        window.open(`https://wa.me/${WA_NUMBER}?text=${text}`, "_blank");
-        setSent(true);
+        // Not approved: the gate opens instead of a dead button. Asking is the
+        // step, and the gate already knows how to explain itself.
+        if (!unlocked) {
+            // The gate explains itself; opening WhatsApp afterwards is not
+            // attempted here because under approval nothing is granted in the
+            // same breath — the reader gets a link by email and comes back.
+            requireAccess("Project", () => {});
+            return;
+        }
+        // The window is opened synchronously and its address filled in after,
+        // because a popup opened from inside a promise is blocked by Safari.
+        const w = window.open("", "_blank");
+        try {
+            const res = await fetch("/api/contact/wa", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.url) {
+                w?.close();
+                setError(
+                    res.status === 403
+                        ? "That link opens once I have approved your email."
+                        : "Could not open WhatsApp just now."
+                );
+                return;
+            }
+            if (w) w.location.href = data.url;
+            else window.location.href = data.url;
+            setSent(true);
+        } catch {
+            w?.close();
+            setError("Could not reach the server.");
+        }
     };
 
     const handleEmail = () => {

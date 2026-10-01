@@ -23,13 +23,14 @@ import {
   type ReactNode,
 } from "react";
 import type { AccessReason } from "@/app/lib/accessRequests";
+import { ChromeWord } from "@/app/components/ChromeWord";
 
 const STORAGE_KEY = "sw-access-granted";
 
 // One underline for every field, so three of them read as one form rather
 // than three widgets that happen to be stacked.
 const FIELD =
-  "w-full mt-5 bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
+  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
 
 export type GateMode = "open" | "approval";
 
@@ -133,6 +134,10 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// The same dialog now stands in front of three different things — the CV, a
+// project write-up, and the WhatsApp number — so the words have to work
+// whichever one was pressed. "Before you open this project" was wrong the
+// moment contact started using it.
 const COPY: Record<GateMode, Record<AccessReason, { title: string; blurb: string }>> = {
   open: {
     CV: {
@@ -140,22 +145,22 @@ const COPY: Record<GateMode, Record<AccessReason, { title: string; blurb: string
       blurb: "Leave an email so I know who stopped by.",
     },
     Project: {
-      title: "Before you open this project",
+      title: "One email first",
       blurb: "Leave an email so I know who stopped by.",
     },
   },
   approval: {
     CV: {
       title: "Ask to read my CV",
-      blurb: "Tell me who you are and I will send a link to the full version. Usually the same day.",
+      blurb: "Tell me who you are and I will send a link. Usually the same day.",
     },
     Project: {
-      title: "Ask to read the whole project",
-      blurb: "Some of this is client work, so I open it one person at a time. Tell me who you are and I will send you a link.",
+      title: "Ask for access",
+      blurb:
+        "Client work, and my number is not public — so I open it one person at a time. One link opens the write-ups, the CV and WhatsApp.",
     },
   },
 };
-
 function GateDialog({
   reason,
   gate,
@@ -260,35 +265,41 @@ function GateDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="gate-title"
-        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-3rem)] max-w-md bg-bg border border-border rounded-2xl p-7"
+        // The same card the rest of the site asks with: artwork cropped by
+        // the top edge, the type centred under it, one button across the
+        // bottom. 440px and overflow-hidden are what make the band read as
+        // something the card is cut out of rather than a picture inside it.
+        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-[440px] bg-bg rounded-[20px] overflow-hidden shadow-[0_24px_60px_rgba(10,13,16,.28)]"
       >
+        <ChromeWord lines={["SURFING"]} height={128} tone="hot" />
+        <div className="px-5 pt-4 pb-4 text-center">
         {sent ? (
           <>
-            <h2 id="gate-title" className="text-[15px] font-medium tracking-[-0.02em]">
+            <h2 id="gate-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
               Asked. Now it is on me.
             </h2>
-            <p className="text-[13px] leading-[2] text-fg-body mt-2">
+            <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
               I read every one of these myself, so it is a person deciding, not
               a queue. When I open it you will get a link at{" "}
               <span className="font-mono text-fg break-all">{email}</span> — the
               link is yours, and it keeps working.
             </p>
-            <div className="flex gap-5 mt-6 text-[13px]">
-              <button
-                onClick={onDismiss}
-                className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-              >
-                Back to the work →
-              </button>
-            </div>
+            <button
+              onClick={onDismiss}
+              className="mt-4 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-2.5
+                hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-200"
+            >
+              Back to the work
+            </button>
           </>
         ) : (
           <>
-            <h2 id="gate-title" className="text-[15px] font-medium tracking-[-0.02em]">
+            <h2 id="gate-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
               {copy.title}
             </h2>
-            <p className="text-[13px] leading-[2] text-fg-body mt-2">{copy.blurb}</p>
+            <p className="text-[12px] leading-[1.7] text-fg-body mt-1.5">{copy.blurb}</p>
 
+            <div className="mt-4 space-y-2.5 text-left">
             <input
               ref={inputRef}
               type="email"
@@ -317,14 +328,16 @@ function GateDialog({
                 <textarea
                   value={message}
                   maxLength={500}
-                  rows={3}
+                  rows={2}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Where you found this, and what you are looking for"
+                  placeholder="Where you found this, and what you are after"
                   aria-label="Why you are asking"
                   className={`${FIELD} resize-none`}
                 />
               </>
             )}
+
+            </div>
 
             {/* Honeypot */}
             <input
@@ -338,9 +351,9 @@ function GateDialog({
               className="hidden"
             />
 
-            <p className="text-[11px] text-fg-muted mt-2">
+            <p className="text-[11px] leading-[1.6] text-fg-muted mt-2">
               {asking
-                ? "Goes to me and nowhere else. Never shown publicly, never shared, never added to a mailing list."
+                ? "Goes to me and nowhere else. Never shared, never a mailing list."
                 : "Used only so I know who visited. Never shown publicly, never shared, and never added to a mailing list."}
             </p>
 
@@ -350,23 +363,24 @@ function GateDialog({
               </p>
             )}
 
-            <div className="flex gap-5 mt-6 text-[13px]">
-              <button
-                onClick={submit}
-                disabled={!email || sending}
-                className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200 disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed"
-              >
-                {sending ? (asking ? "Sending…" : "Opening…") : asking ? "Ask →" : "Continue →"}
-              </button>
-              <button
-                onClick={onDismiss}
-                className="text-fg-body hover:text-fg transition-colors duration-300"
-              >
-                Not now
-              </button>
-            </div>
+            <button
+              onClick={submit}
+              disabled={!email || sending}
+              className="mt-3 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-2.5
+                hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-200
+                disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {sending ? (asking ? "Sending…" : "Opening…") : asking ? "Ask for access" : "Continue"}
+            </button>
+            <button
+              onClick={onDismiss}
+              className="mt-2 text-[12px] text-fg-muted hover:text-fg-body transition-colors duration-200"
+            >
+              Not now
+            </button>
           </>
         )}
+        </div>
       </div>
     </>
   );

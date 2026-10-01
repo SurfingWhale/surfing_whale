@@ -114,9 +114,12 @@ export default async function Home() {
             captureContent={<PhotographySection hasDarkroom={essays.length > 0} hasArchive={archive.length > 0} />}
           />
         </ProfileModeProvider>
-        </AccessProvider>
+        {/* Inside the provider now. Contact asks the gate whether this reader
+            is approved before it will open WhatsApp, so it has to be able to
+            see it — and the gate is the thing that explains the wait. */}
         <GuestNotesSection />
         <ContactSection />
+        </AccessProvider>
       </div>
 
       <footer data-spot className="border-t border-border py-8 px-6 mt-16">

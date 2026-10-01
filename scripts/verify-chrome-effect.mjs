@@ -10,7 +10,9 @@ const ctx = await b.newContext({viewport:{width:390,height:844},deviceScaleFacto
 const p = await ctx.newPage();
 await p.goto(`http://localhost:${PORT}/`,{waitUntil:'networkidle'});
 await p.evaluate(()=>document.getElementById('guest-notes').scrollIntoView());
-await p.locator('#guest-notes').getByRole('button',{name:'Leave a note'}).first().click();
+// Opens the section's own trigger without depending on its wording — the
+// copy has already broken this check once.
+await p.locator('#guest-notes button').first().click();
 await p.waitForSelector('[role=dialog] svg[role="img"]');
 await p.waitForTimeout(800);
 const band = await p.$('[role=dialog] svg[role="img"]');
@@ -57,7 +59,7 @@ const rc=await b.newContext({viewport:{width:390,height:844},reducedMotion:'redu
 const rp=await rc.newPage();
 await rp.goto(`http://localhost:${PORT}/`,{waitUntil:'networkidle'});
 await rp.evaluate(()=>document.getElementById('guest-notes').scrollIntoView());
-await rp.locator('#guest-notes').getByRole('button',{name:'Leave a note'}).first().click();
+await rp.locator('#guest-notes button').first().click();
 await rp.waitForSelector('[role=dialog] svg[role="img"]');
 await rp.waitForTimeout(700);
 const rb=await rp.$('[role=dialog] svg[role="img"]');

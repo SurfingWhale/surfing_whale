@@ -125,7 +125,7 @@ export function GuestNotesSection() {
   return (
     <section data-spot id="guest-notes" className="w-full py-16 sm:py-24 border-t border-border">
       <div data-reveal className="container mx-auto px-6 max-w-[720px]">
-        <SectionLabel note="Leave a note if you passed by. I read every one.">
+        <SectionLabel note="Anyone can write in here — a hello, a question, a correction. Notes show up below once I have read them.">
           Guest notes
         </SectionLabel>
 
@@ -143,7 +143,7 @@ export function GuestNotesSection() {
           // the only thing the section asks anyone to do.
           className={`${SOLID} max-w-[520px] py-3.5 text-[14px]`}
         >
-          Leave a note
+          Write in the guest book
         </button>
 
         <div className="mt-16">
