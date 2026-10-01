@@ -67,11 +67,16 @@ export function ChromeMark({
   tone = "calm",
   title = "Surfing Whale",
   className = "",
+  style,
+  cover = false,
 }: {
   size?: number;
   tone?: keyof typeof PALETTE;
   title?: string;
   className?: string;
+  style?: React.CSSProperties;
+  /** Fill the parent and crop, the way object-fit: cover does for an image. */
+  cover?: boolean;
 }) {
   const svg = useRef<SVGSVGElement>(null);
   // Filter ids are document-global, so two of these on one page would collide
@@ -116,11 +121,13 @@ export function ChromeMark({
     <svg
       ref={svg}
       viewBox="0 0 100 100"
-      width={size}
-      height={size}
+      width={cover ? "100%" : size}
+      height={cover ? "100%" : size}
+      preserveAspectRatio={cover ? "xMidYMid slice" : undefined}
       role="img"
       aria-label={title}
       className={className}
+      style={style}
     >
       <title>{title}</title>
       <defs>
@@ -177,5 +184,47 @@ export function ChromeMark({
         </g>
       </g>
     </svg>
+  );
+}
+
+/**
+ * The same mark as a band across the top of a card, cropped by the card's own
+ * edge so the bars run off it.
+ *
+ * This is the part the first attempt got wrong. A filtered mark floating in
+ * the middle of white space is a sticker — it has no relationship to anything
+ * around it, and at the size that keeps it tasteful it is too small for the
+ * bevel to read. Cropped, it stops being an object on the page and becomes a
+ * surface the card is cut out of: the bars continue past the edge, so the eye
+ * reads something larger than the frame rather than something small inside it.
+ *
+ * The band carries its own solid backdrop. The chrome is made of overlay
+ * blends and a lookup table over whatever is behind it, so on a translucent
+ * panel it picks up the page underneath and turns to mud.
+ */
+export function ChromeBand({
+  height = 128,
+  tone = "hot",
+  className = "",
+  title = "Surfing Whale",
+}: {
+  height?: number;
+  tone?: keyof typeof PALETTE;
+  className?: string;
+  title?: string;
+}) {
+  return (
+    <div
+      className={`relative overflow-hidden bg-bg-muted ${className}`}
+      style={{ height }}
+    >
+      {/* cover, not a fixed size. A mark sized off the band's HEIGHT leaves
+          the band's width empty either side — 300px of artwork adrift in a
+          672px strip, which is the sticker problem again at a larger scale.
+          Covering scales the mark until it fills the box and lets the box
+          crop it, so what is on screen is a slice through bars far taller
+          than the band. That is what the reference is doing to its letters. */}
+      <ChromeMark cover tone={tone} title={title} />
+    </div>
   );
 }

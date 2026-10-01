@@ -12,6 +12,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ChromeBand } from "./ChromeMark";
 
 const KEY = "sw-visitor-card";
 const QUIET_DAYS = 30;
@@ -144,37 +145,54 @@ export function VisitorCard() {
       aria-label="Leave a note"
       // Clears the home indicator on a phone rather than sitting under it.
       style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
-      className={`fixed z-40 glass glass-panel rounded-[20px] p-5
+      // overflow-hidden is what makes the band work: the card's own rounded
+      // edge does the cropping, so the mark runs off the top instead of
+      // sitting inside it.
+      className={`fixed z-40 glass glass-panel rounded-[20px] overflow-hidden
         left-4 right-4 sm:left-auto sm:right-6 sm:w-[310px]
         transition-[opacity,transform] duration-[380ms]
         ease-[cubic-bezier(0.34,1.24,0.64,1)] motion-reduce:transition-none
         ${leaving ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}
     >
       <div className="relative z-10">
-        <div className="flex items-start justify-between gap-4">
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label">
-            Guest notes
-          </p>
-          <button
-            onClick={close}
-            aria-label="Dismiss"
-            // 22x22 was under the 24px minimum; the box grows, the icon does not.
-            className="-mt-2 -mr-2 grid place-items-center w-8 h-8 text-fg-muted hover:text-fg transition-colors duration-200"
-          >
-            <svg viewBox="0 0 14 14" className="w-3.5 h-3.5 stroke-current stroke-[1.5] [stroke-linecap:round]" fill="none" aria-hidden="true">
-              <path d="M3 3l8 8M11 3l-8 8" />
-            </svg>
-          </button>
-        </div>
+        <ChromeBand height={112} title="Surfing Whale" />
+        <button
+          onClick={close}
+          aria-label="Dismiss"
+          // Over the band rather than beside the label. The band is the only
+          // place on the card with nothing in it, and a dismiss control is the
+          // one thing that may sit on top of artwork.
+          className="absolute top-2 right-2 grid place-items-center w-8 h-8 rounded-full
+            bg-bg/70 backdrop-blur-sm text-fg-body hover:text-fg transition-colors duration-200"
+        >
+          <svg viewBox="0 0 14 14" className="w-3.5 h-3.5 stroke-current stroke-[1.5] [stroke-linecap:round]" fill="none" aria-hidden="true">
+            <path d="M3 3l8 8M11 3l-8 8" />
+          </svg>
+        </button>
+
+        <div className="p-5">
 
         {state === "sent" ? (
-          <p className="text-[13px] leading-[2] text-fg mt-2">
-            Thank you — I read every one.
-          </p>
+          <>
+            <p className="font-display font-bold text-[22px] leading-[1.15] text-fg">
+              Noted.
+            </p>
+            <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
+              Thank you — I read every one.
+            </p>
+          </>
         ) : (
           <>
-            <p className="text-[13px] leading-[1.9] text-fg-body mt-1.5">
-              Passing through? Leave a note.
+            {/* The label and the sentence used to be two lines at 11 and 13px,
+                which under a band this loud read as a caption with nothing to
+                caption. One heading at display size instead, with the sentence
+                demoted under it. */}
+            <p className="font-display font-bold text-[22px] leading-[1.15] text-fg">
+              Passing through?
+            </p>
+            <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
+              Leave a note — it lands in the guest book at the bottom of this
+              page.
             </p>
 
             <div className="mt-3 space-y-2.5">
@@ -214,12 +232,18 @@ export function VisitorCard() {
               />
             </div>
 
+            {/* Full width and solid. An underlined text link was the right
+                weight when the card was all 13px type; under a band it reads
+                as an afterthought, and this is the one thing the card is
+                asking anyone to do. */}
             <button
               onClick={send}
               disabled={busy}
-              className="mt-4 text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200 disabled:text-fg-muted disabled:no-underline disabled:cursor-not-allowed"
+              className="mt-4 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-2.5
+                hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-200
+                disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {state === "sending" ? "Sending…" : "Leave a note →"}
+              {state === "sending" ? "Sending…" : "Leave a note"}
             </button>
 
             {error && (
@@ -229,6 +253,7 @@ export function VisitorCard() {
             )}
           </>
         )}
+        </div>
       </div>
     </aside>
   );
