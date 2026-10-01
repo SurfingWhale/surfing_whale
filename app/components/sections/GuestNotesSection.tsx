@@ -190,7 +190,7 @@ export function GuestNotesSection() {
           />
 
           <div className="relative w-full max-w-[340px] rounded-[20px] overflow-hidden bg-bg shadow-[0_24px_60px_rgba(10,13,16,.28)]">
-            <ChromeWord lines={["SURFING", "WHALE"]} height={124} tone="hot" />
+            <ChromeWord lines={["SURFING"]} height={124} tone="hot" />
             <button
               type="button"
               onClick={close}
@@ -203,10 +203,14 @@ export function GuestNotesSection() {
               </svg>
             </button>
 
-            <div className="p-5 max-h-[70vh] overflow-y-auto">
+            {/* Centred. The reference centres its heading and its line of
+                copy under the artwork and only the fields run full width —
+                left-aligned text under a centred band reads as two layouts
+                stacked rather than one card. */}
+            <div className="p-5 pt-6 max-h-[70vh] overflow-y-auto text-center">
               {status === "sent" ? (
                 <>
-                  <p id="guest-note-card-title" className="font-display font-bold text-[22px] leading-[1.15] text-fg">
+                  <p id="guest-note-card-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
                     Noted.
                   </p>
                   <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
@@ -218,15 +222,14 @@ export function GuestNotesSection() {
                 </>
               ) : (
                 <>
-                  <p id="guest-note-card-title" className="font-display font-bold text-[22px] leading-[1.15] text-fg">
-                    Passing through?
+                  <p id="guest-note-card-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+                    Leave a notes here
                   </p>
                   <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
-                    Leave a note — it shows up under this card once I have read
-                    it.
+                    Thank you for visiting my website
                   </p>
 
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-5 space-y-3 text-left">
                     <input
                       ref={nameRef}
                       type="text"

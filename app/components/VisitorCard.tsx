@@ -155,7 +155,7 @@ export function VisitorCard() {
         ${leaving ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}
     >
       <div className="relative z-10">
-        <ChromeWord lines={["SURFING", "WHALE"]} height={124} tone="hot" />
+        <ChromeWord lines={["SURFING"]} height={124} tone="hot" />
         <button
           onClick={close}
           aria-label="Dismiss"
@@ -170,11 +170,11 @@ export function VisitorCard() {
           </svg>
         </button>
 
-        <div className="p-5">
+        <div className="p-5 pt-6 text-center">
 
         {state === "sent" ? (
           <>
-            <p className="font-display font-bold text-[22px] leading-[1.15] text-fg">
+            <p className="font-display font-bold text-[24px] leading-[1.15] text-fg">
               Noted.
             </p>
             <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
@@ -187,15 +187,14 @@ export function VisitorCard() {
                 which under a band this loud read as a caption with nothing to
                 caption. One heading at display size instead, with the sentence
                 demoted under it. */}
-            <p className="font-display font-bold text-[22px] leading-[1.15] text-fg">
-              Passing through?
+            <p className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+              Leave a notes here
             </p>
             <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
-              Leave a note — it lands in the guest book at the bottom of this
-              page.
+              Thank you for visiting my website
             </p>
 
-            <div className="mt-3 space-y-2.5">
+            <div className="mt-5 space-y-2.5 text-left">
               <input
                 ref={nameRef}
                 value={form.name}
