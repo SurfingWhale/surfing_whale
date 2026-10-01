@@ -30,7 +30,7 @@ export default async function WritingIndex() {
       </nav>
 
       <div className="container mx-auto px-6 py-16 max-w-[720px]">
-        <SectionLabel note="Taking something messy and finding the structure in it.">
+        <SectionLabel as="h1" note="Taking something messy and finding the structure in it.">
           Writing
         </SectionLabel>
 

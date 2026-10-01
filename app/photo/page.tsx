@@ -32,7 +32,7 @@ export default async function DarkroomIndex() {
       </nav>
 
       <div className="container mx-auto px-6 py-16 max-w-[720px]">
-        <SectionLabel note="Writing, and the photographs that go with it.">
+        <SectionLabel as="h1" note="Writing, and the photographs that go with it.">
           Darkroom
         </SectionLabel>
 

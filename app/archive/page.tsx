@@ -29,7 +29,7 @@ export default async function ArchivePage() {
         </Link>
 
         <div className="mt-8">
-          <SectionLabel>Archive</SectionLabel>
+          <SectionLabel as="h1">Archive</SectionLabel>
         </div>
         <p className="text-[13px] leading-[2] text-fg-body mt-4 max-w-[560px]">
           {frames.length > 0
