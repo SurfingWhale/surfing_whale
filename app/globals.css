@@ -26,7 +26,7 @@
   --bg-muted: #f0f0f0;
   --fg: #111111;
   --fg-secondary: rgba(17, 17, 17, 0.75);
-  --fg-muted: rgba(17, 17, 17, 0.45);
+  --fg-muted: rgba(17, 17, 17, 0.58);
   --border: rgba(17, 17, 17, 0.08);
   --border-strong: rgba(17, 17, 17, 0.14);
 
@@ -38,11 +38,13 @@
   /* Running copy sits a shade lighter than --fg-secondary on that site,
      and section labels lighter still. */
   --fg-body: #6f6f6f;
-  --fg-label: #84817c;
+  --fg-label: #76736f;
 
   /* The one colour on an otherwise neutral page — text selection, link
      hover underlines, highlights. */
   --accent-soft: #c8ddd4;
+  --sel-bg: #c8ddd4;
+  --sel-fg: #111111;
   /* Warm paper for the case folder — at #f0f0f0 it vanished against the page. */
   --folder: #ebe9e4;
   --glass-tint: rgba(255, 255, 255, 0.55);
@@ -63,7 +65,7 @@
     --bg-muted: #222222;
     --fg: #f0f0f0;
     --fg-secondary: rgba(240, 240, 240, 0.75);
-    --fg-muted: rgba(240, 240, 240, 0.45);
+    --fg-muted: rgba(240, 240, 240, 0.49);
     --border: rgba(240, 240, 240, 0.07);
     --border-strong: rgba(240, 240, 240, 0.12);
     --doc: #191919;
@@ -88,7 +90,7 @@
   --bg-muted: #222222;
   --fg: #f0f0f0;
   --fg-secondary: rgba(240, 240, 240, 0.75);
-  --fg-muted: rgba(240, 240, 240, 0.45);
+  --fg-muted: rgba(240, 240, 240, 0.49);
   --border: rgba(240, 240, 240, 0.07);
   --border-strong: rgba(240, 240, 240, 0.12);
   --doc: #191919;
@@ -112,13 +114,13 @@
   --bg-muted: #f0f0f0;
   --fg: #111111;
   --fg-secondary: rgba(17, 17, 17, 0.75);
-  --fg-muted: rgba(17, 17, 17, 0.45);
+  --fg-muted: rgba(17, 17, 17, 0.58);
   --border: rgba(17, 17, 17, 0.08);
   --border-strong: rgba(17, 17, 17, 0.14);
   --doc: #ffffff;
   --doc-stack: #efeeea;
   --fg-body: #6f6f6f;
-  --fg-label: #84817c;
+  --fg-label: #76736f;
   --folder: #ebe9e4;
   --glass-tint: rgba(255, 255, 255, 0.55);
   --glass-rim:
@@ -221,9 +223,35 @@ h1, h2, h3, h4 {
   transform: translateY(0);
 }
 
+/* Selection.
+ *
+ * The ink was var(--fg), which flips to near-white in dark mode while the
+ * highlight stayed the same pale mint — so selecting anything on a dark page
+ * put #f0f0f0 on #c8ddd4, a contrast ratio of 1.25:1. The text did not go
+ * grey, it went away.
+ *
+ * The highlight is light in both themes, so the ink is pinned dark in both
+ * rather than following the page. Measured, the pair is 13.26:1. It is a
+ * token rather than a literal so a future theme can move it without having
+ * to rediscover why it is not var(--fg).
+ *
+ * This also covers the one place the old rule would have failed in light
+ * mode: the dark work panel, where the type is near-white on a photograph
+ * whatever the page theme says. */
+/* The quiet greys.
+ *
+ * --fg-label was #84817c and --fg-muted 45% ink, which measured 3.72:1 and
+ * 3.02:1 against the page in light, and 4.1:1 in dark. WCAG AA wants 4.5 for
+ * text this size, so section labels, the hero kicker, the standing facts and
+ * every placeholder were below it. These are the first values that reach
+ * 4.5 — #76736f at 4.52, 58% ink at 4.54, 49% at 4.5 — so they are as quiet
+ * as they can be and still be read.
+ *
+ * Solved rather than nudged: the search walks one step at a time until the
+ * ratio crosses, so nothing here is darker than it has to be. */
 ::selection {
-  background: var(--accent-soft);
-  color: var(--fg);
+  background: var(--sel-bg);
+  color: var(--sel-fg);
 }
 
 /* Spotlight: hovering one project row pushes the rest of the page back, so
