@@ -193,19 +193,23 @@ h1, h2, h3, h4 {
 
 /* ---- Frame ------------------------------------------------------------
    Every section sits in one frame. Below 66rem it is the 720px column the
-   site was designed around, so a phone sees no change. From 66rem the frame
-   opens to the 1120px the design direction asks for and splits: the section
-   label and its note move into a 240px rail on the leading side, and the
-   content takes the rest.
+   site was designed around, so a phone sees no change.
 
-   A lone 720px column left half of a laptop screen empty, and a section with
-   one row in it read as a band of nothing between two hairlines. The rail
-   turns that space into structure — two edges the whole page keeps to, the
-   label beside its content instead of stacked over it.
+   From 66rem the frame is the whole width of the window, 24px in from each
+   edge, and splits on one 12-column grid — the way the reference lays out
+   its page. A section's label and note take columns 1–3; its content takes
+   4–10. Everything that runs edge to edge (the header, the first screen, the
+   index, the footer) starts on the same 24px line the labels do.
 
-   66rem is where the rail, the gap and the widest single row of content (the
-   hero's name beside its facts, about 684px) fit together; any narrower and
-   the content would be squeezed, so the page keeps the column instead. */
+   This replaced a centred 1120px box with a 240px rail. That box put three
+   unrelated leading edges on one page — 24px for the full-width parts, then
+   184px for labels and 488px for content at 1440px, drifting to 424/728px at
+   1920px — so the page read as some parts full-screen and some half. One
+   grid leaves two edges, and both are shared top to bottom: column 1 and
+   column 4.
+
+   66rem is where columns 4–10 are still wide enough for the widest row of
+   content in them; any narrower and the page keeps the column instead. */
 .frame {
   width: 100%;
   max-width: 720px;
@@ -215,24 +219,24 @@ h1, h2, h3, h4 {
 
 @media (min-width: 66rem) {
   .frame {
-    max-width: 1120px;
+    max-width: none;
   }
 
   .frame-split {
     display: grid;
-    grid-template-columns: 15rem minmax(0, 1fr);
-    column-gap: 4rem;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
     align-items: start;
   }
 
   .frame-split > * {
-    grid-column: 2;
+    grid-column: 4 / span 7;
   }
 
   /* Spans every row the content makes, so a long section does not stretch
      its first row to the rail's height or leave the rail behind. */
   .frame-split > .frame-rail {
-    grid-column: 1;
+    grid-column: 1 / span 3;
     grid-row: 1 / span 40;
     margin-block: 0;
   }
@@ -249,10 +253,19 @@ h1, h2, h3, h4 {
     margin-top: 0;
   }
 
-  /* Edge to edge, the way the reference runs its header and its first
-     screen: the frame's gutter, none of its width. */
-  .frame.frame-wide {
-    max-width: none;
+  /* The bio and the frame under the first screen carry on from the sentence
+     above them, so they keep its edge — column 1 — rather than stepping in
+     to the content column with nothing beside them. */
+  .frame-split.frame-flush > * {
+    grid-column: 1 / span 10;
+  }
+
+  /* One separator, not two. Sections already sit 192px apart, which says
+     where one ends; a hairline on top of that only fences off the short
+     ones into empty bands. On a phone, where the gap is smaller, the line
+     stays. */
+  .section-rule {
+    border-top-width: 0;
   }
 
   /* ---- The first screen -------------------------------------------------

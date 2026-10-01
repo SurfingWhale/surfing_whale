@@ -24,7 +24,7 @@ const CV_LINK = "https://drive.google.com/file/d/123vUTdVxQ9LwOFwezuILq5FezI2nUv
         });
 
     return (
-        <section data-spot id="CV" className="w-full py-16 sm:py-24 border-t border-border">
+        <section data-spot id="CV" className="w-full py-16 sm:py-24 border-t border-border section-rule">
         <div data-reveal className="frame frame-split">
             <SectionLabel>About</SectionLabel>
 

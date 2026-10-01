@@ -121,7 +121,7 @@ export function HeroSection() {
       {/* The first screen: kicker, name, the one sentence, the switch. On a
           wide screen it fills the viewport (globals.css, .hero-stage); on a
           phone it is the same column it always was. */}
-      <div data-reveal className="frame frame-wide hero-stage pt-14 sm:pt-20">
+      <div data-reveal className="frame hero-stage pt-14 sm:pt-20">
         {/* What this is, before who it is. A stranger deciding whether to keep
             reading wants the second question answered first, and the toggle
             above already knows the answer — it was just saying it to screen
@@ -189,9 +189,9 @@ export function HeroSection() {
         />
       </div>
 
-      {/* Below the fold on a wide screen, in the content column every other
-          section keeps to. */}
-      <div data-reveal className="frame frame-split pb-12 sm:pb-16 min-[66rem]:pt-16">
+      {/* Below the fold on a wide screen, on the first screen's own edge — the
+          bio carries on from the sentence above it. */}
+      <div data-reveal className="frame frame-split frame-flush pb-12 sm:pb-16 min-[66rem]:pt-16">
         <DecodeText
           key={`bio-${mode}`}
           text={copy.bio}

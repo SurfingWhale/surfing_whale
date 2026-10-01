@@ -124,7 +124,7 @@ export function GuestNotesSection() {
   };
 
   return (
-    <section data-spot id="guest-notes" className="w-full py-16 sm:py-24 border-t border-border">
+    <section data-spot id="guest-notes" className="w-full py-16 sm:py-24 border-t border-border section-rule">
       <div data-reveal className="frame frame-split">
         <SectionLabel note="Anyone can write in here — a hello, a question, a correction. Notes show up below once I have read them.">
           Guest notes

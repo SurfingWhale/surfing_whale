@@ -114,7 +114,10 @@ export function EmbedFrame({
           </div>
         )}
       </div>
-      <figcaption className="text-[11px] leading-[1.7] text-fg-muted mt-2 px-6 sm:px-0">
+      {/* Capped at a readable measure: on a wide screen the frame is over
+          1100px across, and a caption that runs the full width is one line
+          nobody follows to its end. */}
+      <figcaption className="text-[11px] leading-[1.7] text-fg-muted mt-2 px-6 sm:px-0 max-w-[90ch]">
         {caption}
         {opens && (
           <>

@@ -105,7 +105,7 @@ export function ProjectSection({ projects }: Props) {
     const openProject = (project: NotionProject) => setSelectedProject(project);
 
     return (
-        <section className="w-full py-16 sm:py-24 border-t border-border">
+        <section className="w-full py-16 sm:py-24 border-t border-border section-rule">
         <div id="project" data-reveal className="frame">
 
             {/* ── Tier one: the featured case study ─────────────────────── */}

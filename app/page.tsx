@@ -75,7 +75,7 @@ export default async function Home() {
         Skip to content
       </a>
       <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className="frame frame-wide h-14 flex items-center justify-between gap-6">
+        <div className="frame h-14 flex items-center justify-between gap-6">
           <AdminEntry>
             <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">
               Surfing Whale
@@ -123,7 +123,7 @@ export default async function Home() {
       </div>
 
       <footer data-spot className="border-t border-border py-8 mt-16">
-        <div className="frame frame-wide flex flex-col md:flex-row justify-between items-center gap-3">
+        <div className="frame flex flex-col md:flex-row justify-between items-center gap-3">
           <span className="text-[13px] text-fg-secondary">Muhammad Fauzy</span>
           <span className="text-[13px] text-fg-muted">
             © {new Date().getFullYear()} Surfing Whale
