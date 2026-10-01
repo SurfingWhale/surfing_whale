@@ -25,10 +25,8 @@ type Filter = "all" | PhotoCategory;
 
 export function PhotographySection({
   hasDarkroom = false,
-  hasArchive = false,
 }: {
   hasDarkroom?: boolean;
-  hasArchive?: boolean;
 }) {
   const [filter, setFilter] = useState<Filter>("all");
   // Index runs against the filtered set, so arrows walk what is on screen.
@@ -73,30 +71,14 @@ export function PhotographySection({
           Selected photography
         </SectionLabel>
 
-        {(hasDarkroom || hasArchive) && (
+        {hasDarkroom && (
           <p className="text-[13px] leading-[2] text-fg-body mb-8 -mt-4">
-            {hasDarkroom && (
-              <>
-                Longer pieces, where the writing and the frames go together,
-                live in the{" "}
-                <a href="/photo" className={inline}>
-                  darkroom
-                </a>
-                .{" "}
-              </>
-            )}
-            {/* The selection above is five. Everything else is one link away
-                rather than nowhere, which is the difference between a
-                portfolio and an archive. */}
-            {hasArchive && (
-              <>
-                Everything else is in the{" "}
-                <a href="/archive" className={inline}>
-                  archive
-                </a>
-                .
-              </>
-            )}
+            Longer pieces, where the writing and the frames go together, live
+            in the{" "}
+            <a href="/photo" className={inline}>
+              darkroom
+            </a>
+            .
           </p>
         )}
 

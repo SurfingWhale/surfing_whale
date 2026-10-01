@@ -9,9 +9,9 @@
 import { useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 // ── rooms ──────────────────────────────────────────────────────────────────
-export type Room = "write" | "darkroom" | "archive" | "notes" | "access";
+export type Room = "write" | "darkroom" | "photos" | "notes" | "access";
 
-export const ROOM_ORDER: Room[] = ["write", "darkroom", "archive", "notes", "access"];
+export const ROOM_ORDER: Room[] = ["write", "darkroom", "photos", "notes", "access"];
 
 // The nav names a room; the line under its title says what it is for and
 // where its work ends up, which is the question a name alone cannot answer.
@@ -24,9 +24,9 @@ export const ROOMS: Record<Room, { label: string; lede: string }> = {
     label: "Darkroom",
     lede: "Photo essays for /photo. Writing and frames, in the order they publish.",
   },
-  archive: {
-    label: "Archive",
-    lede: "Loose photographs for /archive. They go live as soon as they upload.",
+  photos: {
+    label: "Photos",
+    lede: "Your photo library. Upload once, use in any essay or post — nothing here is public by itself.",
   },
   notes: {
     label: "Notes",

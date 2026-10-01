@@ -19,7 +19,6 @@ import { VisitorCard } from "./components/VisitorCard";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
-import { listArchivePhotos } from "./lib/storage";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -37,37 +36,13 @@ const NAV_LINKS: NavLink[] = [
 // [] when their database is unconfigured, so this needs no extra guard and the
 // links reappear on their own once posts exist.
 export default async function Home() {
-  const [posts, essays, archive] = await Promise.all([
+  const [posts, essays] = await Promise.all([
     listPosts(),
     listEssays(),
-    // Only whether it is empty matters here, so this asks for one row rather
-    // than three hundred.
-    listArchivePhotos(1),
   ]);
   const navLinks = NAV_LINKS.filter(
     (l) => l.href !== "/writing" || posts.length > 0
   );
-
-  // The studio is where photographs get uploaded and essays get written, and
-  // it has always been reachable only by typing the URL. It is in the nav now
-  // — but the check runs here, on the server, against the same signed cookie
-  // the studio's own routes check. A visitor is not served a link they cannot
-  // use, and more to the point the markup they receive contains no mention
-  // that a studio exists. Hiding it with CSS would have shipped the word to
-  // everyone and only stopped them seeing it.
-  // Same rule as writing and the darkroom: a nav item that lands on "nothing
-  // here yet" reads as an unfinished site, so the archive is advertised only
-  // once there is something in it.
-  if (archive.length > 0) {
-    // findIndex returns -1 when the anchor is missing, and splice(-1, ...)
-    // quietly inserts second-from-last instead of failing, so the fallback is
-    // explicit: append.
-    const at = navLinks.findIndex((l) => l.href === "#activity");
-    navLinks.splice(at < 0 ? navLinks.length : at, 0, {
-      label: "Archive",
-      href: "/archive",
-    });
-  }
 
   return (
     <main className="relative min-h-screen bg-bg text-fg">
@@ -111,7 +86,7 @@ export default async function Home() {
                 <CVSection />
               </>
             }
-            captureContent={<PhotographySection hasDarkroom={essays.length > 0} hasArchive={archive.length > 0} />}
+            captureContent={<PhotographySection hasDarkroom={essays.length > 0} />}
           />
         </ProfileModeProvider>
         {/* Inside the provider now. Contact asks the gate whether this reader

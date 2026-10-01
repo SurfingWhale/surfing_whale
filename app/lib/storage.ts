@@ -23,17 +23,21 @@ export const storageConfigured = supabaseConfigured;
 
 const bucket = () => supabaseAdmin().storage.from(BUCKET);
 
-export type Folder = "darkroom" | "archive" | "projects";
+// One library for every photograph the studio takes in; essays and posts are
+// drawn from it. "darkroom" and "archive" are where uploads went before the two
+// were merged — still read and still deletable, never written to again.
+export type Folder = "library" | "projects";
+export const LIBRARY_FOLDERS = ["library", "darkroom", "archive"] as const;
 
 export interface StoredPhoto {
   url: string;
-  /** The object's path inside the bucket, e.g. "archive/2026-10-01-….webp". */
+  /** The object's path inside the bucket, e.g. "library/2026-10-01-….webp". */
   publicId: string;
   width: number;
   height: number;
 }
 
-export interface ArchiveFrame extends StoredPhoto {
+export interface LibraryPhoto extends StoredPhoto {
   takenAt: string;
 }
 
@@ -86,33 +90,44 @@ export async function uploadPhoto(
   return { url: bucket().getPublicUrl(path).data.publicUrl, publicId: path, width, height };
 }
 
-/** Newest first. An archive that cannot be listed is empty, not a 500. */
-export async function listArchivePhotos(limit = 200): Promise<ArchiveFrame[]> {
+/** Every photograph in the library, newest first. */
+export async function listLibrary(limit = 500): Promise<LibraryPhoto[]> {
   if (!storageConfigured()) return [];
-  try {
-    const { data, error } = await bucket().list("archive", {
-      limit: Math.min(limit, 1000),
-      sortBy: { column: "created_at", order: "desc" },
-    });
-    if (error) throw new Error(error.message);
-    const frames: ArchiveFrame[] = [];
-    for (const o of data ?? []) {
-      const dims = dimsOf(o.name);
-      if (!dims) continue; // Supabase's folder placeholder, or a stray file
-      const path = `archive/${o.name}`;
-      frames.push({
-        url: bucket().getPublicUrl(path).data.publicUrl,
-        publicId: path,
-        ...dims,
-        takenAt: o.created_at ?? "",
+  const all = await Promise.all(
+    LIBRARY_FOLDERS.map(async (folder) => {
+      const { data, error } = await bucket().list(folder, {
+        limit: Math.min(limit, 1000),
+        sortBy: { column: "created_at", order: "desc" },
       });
-    }
-    return frames;
-  } catch (err) {
-    console.error("Archive list failed:", err instanceof Error ? err.message : err);
-    return [];
-  }
+      if (error) throw new Error(error.message);
+      const photos: LibraryPhoto[] = [];
+      for (const o of data ?? []) {
+        const dims = dimsOf(o.name);
+        if (!dims) continue; // Supabase's folder placeholder, or a stray file
+        const path = `${folder}/${o.name}`;
+        photos.push({
+          url: bucket().getPublicUrl(path).data.publicUrl,
+          publicId: path,
+          ...dims,
+          takenAt: o.created_at ?? "",
+        });
+      }
+      return photos;
+    })
+  );
+  return all
+    .flat()
+    .sort((a, b) => b.takenAt.localeCompare(a.takenAt))
+    .slice(0, limit);
 }
+
+export const publicUrlOf = (path: string) => bucket().getPublicUrl(path).data.publicUrl;
+
+/** A path that belongs to the library and cannot climb out of it. */
+export const isLibraryPath = (p: unknown): p is string =>
+  typeof p === "string" &&
+  !p.includes("..") &&
+  LIBRARY_FOLDERS.some((f) => new RegExp(`^${f}/[^/]+$`).test(p));
 
 export async function deletePhoto(publicId: string): Promise<void> {
   const { error } = await bucket().remove([publicId]);

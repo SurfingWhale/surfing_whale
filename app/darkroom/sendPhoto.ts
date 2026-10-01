@@ -1,6 +1,7 @@
 // app/darkroom/sendPhoto.ts
-// Compress in the browser, then post — the one path every room in the studio
-// uses to put a photograph up, so a phone and a laptop send the same thing.
+// Compress in the browser, then post into the library — the one path every
+// room in the studio uses to put a photograph up, so a phone and a laptop send
+// the same thing, and an upload from an editor is in the library afterwards.
 import { downscale } from "./downscale";
 
 export interface Sent {
@@ -12,22 +13,22 @@ export interface Sent {
   after: number;
 }
 
-// The archive keeps a little more: it is the pile the essays are drawn from.
-const LONG_EDGE = { darkroom: 2000, archive: 2400 } as const;
+// Enough for a full-width frame on a 2x laptop screen, and the most any page
+// on the site asks of a photograph.
+const LONG_EDGE = 2400;
 
 export async function sendPhoto(
   file: File,
-  to: keyof typeof LONG_EDGE,
   onCompressed?: (before: number, after: number) => void
 ): Promise<Sent> {
-  const small = await downscale(file, LONG_EDGE[to]);
+  const small = await downscale(file, LONG_EDGE);
   onCompressed?.(small.before, small.after);
 
   const body = new FormData();
   body.append("file", small.file);
   body.append("width", String(small.width));
   body.append("height", String(small.height));
-  const res = await fetch(`/api/${to}/upload`, { method: "POST", body });
+  const res = await fetch("/api/library/upload", { method: "POST", body });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error(

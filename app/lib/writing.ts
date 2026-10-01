@@ -138,6 +138,16 @@ export async function savePost(post: Omit<Post, "id"> & { id?: string }): Promis
   ) as { id: string };
 }
 
+/** Titles of the posts a library photograph sits in, drafts included. */
+export async function postsUsing(url: string): Promise<string[]> {
+  if (!configured()) return [];
+  const rows = unwrap(
+    await table("surfingwhale_posts").select("title").contains("blocks", [{ kind: "image", url }]),
+    "Find posts using a photo"
+  ) as { title: string }[];
+  return rows.map((r) => r.title || "Untitled");
+}
+
 export async function deletePost(id: string): Promise<void> {
   if (!isUuid(id)) throw new Error("That post does not exist.");
   unwrap(await table("surfingwhale_posts").delete().eq("id", id), "Delete post");

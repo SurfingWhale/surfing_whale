@@ -131,6 +131,18 @@ export async function saveEssay(essay: Omit<Essay, "id"> & { id?: string }): Pro
   ) as { id: string };
 }
 
+/** Titles of the essays a library photograph sits in, drafts included. */
+export async function essaysUsing(publicId: string): Promise<string[]> {
+  if (!configured()) return [];
+  const rows = unwrap(
+    await table("surfingwhale_essays")
+      .select("title")
+      .contains("blocks", [{ type: "images", items: [{ publicId }] }]),
+    "Find essays using a photo"
+  ) as { title: string }[];
+  return rows.map((r) => r.title || "Untitled");
+}
+
 export async function deleteEssay(id: string): Promise<void> {
   if (!isUuid(id)) throw new Error("That essay does not exist.");
   unwrap(await table("surfingwhale_essays").delete().eq("id", id), "Delete essay");

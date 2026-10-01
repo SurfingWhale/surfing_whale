@@ -11,14 +11,14 @@ import { signOutOfFirebase } from "./firebase";
 import { Writer } from "./Writer";
 import { Notes } from "./Notes";
 import { Access } from "./Access";
-import { Archive } from "./Archive";
+import { Photos } from "./Photos";
 import { ROOMS, ROOM_ORDER, type Room } from "./ui";
 
 // Rooms that hold work in progress — a half-written post, an essay being
 // arranged, a batch still uploading — stay mounted once opened, so stepping
 // out to approve a note does not throw the work away. Notes and Access hold
 // nothing of the owner's, so they load fresh each time they are opened.
-const KEPT: Room[] = ["write", "darkroom", "archive"];
+const KEPT: Room[] = ["write", "darkroom", "photos"];
 
 export function Studio({ start = "write" }: { start?: Room }) {
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
@@ -134,9 +134,9 @@ export function Studio({ start = "write" }: { start?: Room }) {
               <DarkroomEditor />
             </div>
           )}
-          {kept("archive") && (
-            <div hidden={room !== "archive"} className="pb-16">
-              <Archive />
+          {kept("photos") && (
+            <div hidden={room !== "photos"} className="pb-16">
+              <Photos />
             </div>
           )}
           {room === "notes" && (

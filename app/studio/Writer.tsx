@@ -12,6 +12,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { Block, BlockKind, PostMeta } from "@/app/lib/writing";
 import { size } from "@/app/darkroom/downscale";
 import { sendPhoto } from "@/app/darkroom/sendPhoto";
+import { LibraryPicker, type LibraryPhoto } from "./LibraryPicker";
 import {
   ActionBar,
   Button,
@@ -99,6 +100,7 @@ export function Writer() {
   const [message, setMessage] = useState<Message | null>(null);
   const [busyImage, setBusyImage] = useState(false);
   const [imageNote, setImageNote] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
 
   const areas = useRef<(HTMLTextAreaElement | null)[]>([]);
   const wanted = useRef<{ index: number; caret: number } | null>(null);
@@ -291,7 +293,7 @@ export function Writer() {
     setBusyImage(true);
     setImageNote(null);
     try {
-      const shot = await sendPhoto(file, "darkroom");
+      const shot = await sendPhoto(file);
       edit((b) => [
         ...b,
         { kind: "image", text: "", url: shot.url, width: shot.width, height: shot.height },
@@ -302,6 +304,16 @@ export function Writer() {
       setImageNote(err instanceof Error ? err.message : "Unable to add that photo.");
     }
     setBusyImage(false);
+  };
+
+  const fromLibrary = ([photo]: LibraryPhoto[]) => {
+    if (!photo) return;
+    edit((b) => [
+      ...b,
+      { kind: "image", text: "", url: photo.url, width: photo.width, height: photo.height },
+      { kind: "paragraph", text: "" },
+    ]);
+    setImageNote("Photo added from the library.");
   };
 
   const words = blocks.reduce(
@@ -495,6 +507,13 @@ export function Writer() {
             </Button>
             <input ref={fileInput} type="file" accept="image/*" hidden
               onChange={(e) => { if (e.target.files) addImage(e.target.files); e.target.value = ""; }} />
+            <Button onClick={() => setPicking(true)}>From library</Button>
+            <LibraryPicker
+              open={picking}
+              multiple={false}
+              onPick={fromLibrary}
+              onClose={() => setPicking(false)}
+            />
             <span className="text-[11px] leading-[1.6] text-fg-muted tabular-nums">
               {words} word{words === 1 ? "" : "s"}
             </span>

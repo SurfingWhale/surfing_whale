@@ -34,10 +34,10 @@ export default function NotFound() {
             The work
           </Link>
           <Link
-            href="/archive"
+            href="/photo"
             className="text-fg-body hover:text-fg transition-colors duration-200"
           >
-            The archive
+            The darkroom
           </Link>
         </div>
       </div>

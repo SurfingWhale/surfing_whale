@@ -26,6 +26,7 @@ import {
   type Message,
   type Pending,
 } from "@/app/studio/ui";
+import { LibraryPicker, type LibraryPhoto } from "@/app/studio/LibraryPicker";
 
 const MAX_PER_ROW = 3;
 
@@ -58,6 +59,7 @@ export function Editor() {
   const [savedAs, setSavedAs] = useState(() => snap("", "", today(), []));
   const [savedHere, setSavedHere] = useState(false);
   const [pending, setPending] = useState<Pending[]>([]);
+  const [picking, setPicking] = useState(false);
   const [uploadNote, setUploadNote] = useState<string | null>(null);
   const [busy, setBusy] = useState<Busy>(null);
   const [message, setMessage] = useState<Message | null>(null);
@@ -141,7 +143,7 @@ export function Editor() {
       const mark = (patch: Partial<Pending>) =>
         setPending((p) => p.map((q, k) => (k === i ? { ...q, ...patch } : q)));
       try {
-        const shot = await sendPhoto(file, "darkroom", (b, a) =>
+        const shot = await sendPhoto(file, (b, a) =>
           mark({ state: "uploading", saved: `${size(b)} → ${size(a)}` })
         );
         before += shot.before; after += shot.after; sent++;
@@ -156,6 +158,17 @@ export function Editor() {
     setPending((p) => p.filter((q) => q.state === "failed"));
     if (sent) setUploadNote(`${sent} up, compressed from ${size(before)} to ${size(after)}.`);
   };
+
+  // Photographs already in the library go in the same way uploads do: one row
+  // each, at the end, in the order they were picked.
+  const fromLibrary = (photos: LibraryPhoto[]) =>
+    setBlocks((b) => [
+      ...b,
+      ...photos.map(({ url, publicId, width, height }) => ({
+        type: "images" as const,
+        items: [{ url, publicId, width, height, alt: "" }],
+      })),
+    ]);
 
   // ── arranging ────────────────────────────────────────────────────────────
   const edit = (fn: (b: Block[]) => Block[]) => setBlocks((b) => fn([...b]));
@@ -453,19 +466,25 @@ export function Editor() {
               <DropZone
                 onFiles={ingest}
                 extra={
-                  <Button onClick={() => addText()} className="w-full sm:w-auto">
-                    <Plus />
-                    Add writing
-                  </Button>
+                  <>
+                    <Button onClick={() => setPicking(true)} className="w-full sm:w-auto">
+                      From library
+                    </Button>
+                    <Button onClick={() => addText()} className="w-full sm:w-auto">
+                      <Plus />
+                      Add writing
+                    </Button>
+                  </>
                 }
                 hint={
                   <>
-                    Compressed in the browser before they go up — 2000px on the
-                    long edge, and the location a phone writes into every
-                    photograph is left behind.
+                    New photos are compressed in the browser — 2400px on the long
+                    edge, the location a phone writes into them left behind — and
+                    kept in the library for next time.
                   </>
                 }
               />
+              <LibraryPicker open={picking} onPick={fromLibrary} onClose={() => setPicking(false)} />
               <p role="status" className="text-[11px] leading-[1.7] text-fg-body empty:hidden px-2">
                 {uploadNote}
               </p>

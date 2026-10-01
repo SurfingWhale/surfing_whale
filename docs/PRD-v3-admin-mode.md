@@ -88,6 +88,14 @@ chunked JSON code block and rewriting the page on every save; once photographs
 were in Supabase anyway, keeping the words in a second system was the odd one
 out. Projects, guest notes and access requests are still read from Notion.
 
+**One photo library** *(2026-10-02)*. The archive room and the darkroom's
+uploads were two piles of the same photographs, and the archive had a public
+page of its own. Now every upload lands in one private library (the Photos
+room); the darkroom and the writing room pick from it with "From library", and
+a photograph reaches the site only inside an essay or a post. /archive is gone
+(it redirects home). A photograph still used in an essay or a post cannot be
+deleted from the library — the refusal names the pieces.
+
 **Supabase Storage is the file store** *(2026-10-01, was Cloudinary)*. Notion's
 own file URLs are signed and expire within the hour, which makes them unusable
 for anything published. One public bucket, written only from the server with

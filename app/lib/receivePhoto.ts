@@ -1,10 +1,9 @@
 // app/lib/receivePhoto.ts
-// One photograph per request, shared by the darkroom and the archive. The
+// One photograph per request, into the studio's one library. The
 // browser compresses before sending (app/darkroom/downscale.ts), so a phone's
 // 8MB frame arrives as a few hundred kilobytes — well under the platform's
 // 4.5MB body limit — and a batch of forty goes up as forty small requests.
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
 import { type Folder, storageConfigured, uploadPhoto } from "@/app/lib/storage";
 
@@ -18,7 +17,7 @@ function dimension(v: FormDataEntryValue | null): number | null {
   return Number.isFinite(n) && n >= 1 && n <= 12000 ? n : null;
 }
 
-export async function receivePhoto(req: NextRequest, folder: Folder): Promise<NextResponse> {
+export async function receivePhoto(req: NextRequest, folder: Folder = "library"): Promise<NextResponse> {
   if (!(await isUnlocked())) {
     return NextResponse.json({ error: "Locked." }, { status: 401 });
   }
@@ -54,14 +53,9 @@ export async function receivePhoto(req: NextRequest, folder: Folder): Promise<Ne
   try {
     const bytes = Buffer.from(await file.arrayBuffer());
     const base = file.name.replace(/\.[^.]+$/, "");
-    const shot = await uploadPhoto(folder, bytes, file.type, base, width, height);
-    // A loose frame is public the moment it lands; an essay's photograph is
-    // not public until the essay is saved, which revalidates on its own.
-    if (folder === "archive") {
-      revalidatePath("/archive");
-      revalidatePath("/");
-    }
-    return NextResponse.json(shot);
+    // Nothing in the library is public by itself — a photograph reaches the
+    // site only inside an essay or a post, whose save revalidates the pages.
+    return NextResponse.json(await uploadPhoto(folder, bytes, file.type, base, width, height));
   } catch (err) {
     console.error(`Upload to ${folder} failed:`, err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Upload failed." }, { status: 502 });

@@ -1,11 +1,11 @@
-// app/studio/Archive.tsx
-// The visual archive: loose frames that belong to no essay.
+// app/studio/Photos.tsx
+// The photo library: every photograph the studio has taken in, in one place.
 //
-// The darkroom next door takes photographs in too, but everything that goes
-// through it has to belong to a piece of writing — which is the right shape
-// for a photo essay and the wrong shape for "here are forty frames from this
-// month". This room has no title field, no ordering, no publish step. Drop
-// files, they go up, they are in the archive.
+// There used to be two — an archive of loose frames with a public page of its
+// own, and the darkroom's uploads, which belonged to essays. One pile is what
+// the owner actually has, so it is one pile here: upload once, then pick from
+// it in the darkroom or the writing room. Nothing in the library is public by
+// itself; a photograph reaches the site only inside an essay or a post.
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -21,7 +21,7 @@ interface Frame {
   takenAt: string;
 }
 
-export function Archive() {
+export function Photos() {
   const [frames, setFrames] = useState<Frame[] | null>(null);
   const [pending, setPending] = useState<Pending[]>([]);
   const [note, setNote] = useState<string | null>(null);
@@ -29,10 +29,16 @@ export function Archive() {
   const [removing, setRemoving] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    fetch("/api/archive/list")
-      .then((r) => r.json())
-      .then((d) => setFrames(d.frames ?? []))
-      .catch(() => setFrames([]));
+    fetch("/api/library/list", { cache: "no-store" })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error ?? "Could not load the library.");
+        setFrames(d.photos ?? []);
+      })
+      .catch((err) => {
+        setFrames([]);
+        setNote(err instanceof Error ? err.message : "Could not load the library.");
+      });
   }, []);
   useEffect(load, [load]);
 
@@ -58,7 +64,7 @@ export function Archive() {
       const mark = (patch: Partial<Pending>) =>
         setPending((p) => p.map((q, k) => (k === i ? { ...q, ...patch } : q)));
       try {
-        const shot = await sendPhoto(list[i], "archive", (b, a) =>
+        const shot = await sendPhoto(list[i], (b, a) =>
           mark({ state: "uploading", saved: `${size(b)} → ${size(a)}` })
         );
         before += shot.before; after += shot.after;
@@ -91,23 +97,26 @@ export function Archive() {
     if (armed !== publicId) return setArmed(publicId);
     setArmed(null);
     setRemoving(publicId);
-    const res = await fetch("/api/archive/delete", {
+    const res = await fetch("/api/library/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ publicId }),
     }).catch(() => null);
     if (res?.ok) {
       setFrames((f) => (f ?? []).filter((x) => x.publicId !== publicId));
-      setNote("Removed from the archive.");
+      setNote("Deleted from the library.");
     } else {
-      setNote("Could not remove that frame. Try again in a moment.");
+      // A photograph still in an essay or a post is refused, and the answer
+      // names them — that is the message worth showing as it is.
+      const data = await res?.json().catch(() => null);
+      setNote(data?.error ?? "Could not delete that photo. Try again in a moment.");
     }
     setRemoving(null);
   };
 
   return (
     <div>
-      <RoomHeader room="archive" />
+      <RoomHeader room="photos" />
 
       <div className="space-y-3">
         <DropZone
@@ -118,17 +127,17 @@ export function Archive() {
         <p role="status" className="text-[13px] leading-[1.7] text-fg-body empty:hidden">{note}</p>
       </div>
 
-      <section aria-labelledby="archive-frames" className="mt-8">
-        <h3 id="archive-frames" className={`${labelClass} mb-3`}>
-          In the archive{frames ? ` · ${frames.length}` : ""}
+      <section aria-labelledby="library-photos" className="mt-8">
+        <h3 id="library-photos" className={`${labelClass} mb-3`}>
+          In the library{frames ? ` · ${frames.length}` : ""}
         </h3>
 
         {frames === null && <p className="text-[13px] leading-[1.7] text-fg-muted">Loading…</p>}
         {frames?.length === 0 && (
           <div className="rounded-xl border border-border px-4 py-5">
-            <p className="text-[13px] leading-[1.7] text-fg-body">Nothing in the archive yet.</p>
+            <p className="text-[13px] leading-[1.7] text-fg-body">The library is empty.</p>
             <p className="text-[13px] leading-[1.7] text-fg-muted">
-              The public archive page stays hidden until there is something in here.
+              Photos added here, or with Choose photos in an editor, all land in one place.
             </p>
           </div>
         )}
@@ -156,8 +165,8 @@ export function Archive() {
                     disabled={removing === f.publicId}
                     aria-label={
                       armed === f.publicId
-                        ? "Tap again to remove this frame for good"
-                        : "Remove this frame from the archive"
+                        ? "Tap again to delete this photo for good"
+                        : "Delete this photo from the library"
                     }
                     className={
                       armed === f.publicId
@@ -165,7 +174,7 @@ export function Archive() {
                         : "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-visible:opacity-100"
                     }
                   >
-                    {removing === f.publicId ? "Removing…" : armed === f.publicId ? "Confirm" : "Remove"}
+                    {removing === f.publicId ? "Deleting…" : armed === f.publicId ? "Confirm" : "Delete"}
                   </Button>
                 </span>
               </li>

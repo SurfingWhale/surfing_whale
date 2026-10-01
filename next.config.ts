@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
   // home-screen app on an iPhone keeps its storage apart from Safari's, and a
   // redirect that comes back through firebaseapp.com lands in the wrong one.
   // See app/studio/firebase.ts and creative-hub standards/auth.md.
+  // The public archive was folded into the studio's photo library, which is
+  // private. Anything bookmarked lands on the front page, not a 404.
+  async redirects() {
+    return [{ source: "/archive", destination: "/", permanent: false }];
+  },
   async rewrites() {
     if (!firebaseProject) return [];
     const origin = `https://${firebaseProject}.firebaseapp.com`;
