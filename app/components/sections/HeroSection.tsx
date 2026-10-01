@@ -7,7 +7,7 @@
 // ways to reach me are at the end, where someone who wants them will be.
 "use client";
 
-import { AvatarPicker } from "@/app/components/AvatarPicker";
+import { AvatarPicker, ModeSwitch } from "@/app/components/AvatarPicker";
 import { useProfileMode, MODE_KICKER } from "@/app/components/ProfileMode";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { HeroWordmark } from "@/app/components/HeroWordmark";
@@ -151,6 +151,8 @@ export function HeroSection() {
             {/* The switch changes the face inside the name, so it belongs
                 within reach of it rather than a paragraph below. */}
             <AvatarPicker />
+            {/* The deck says nothing a reader can read. This does. */}
+            <ModeSwitch />
             {/* The facts a stranger checks first, and the only place on the
                 page that answers them without scrolling. Set at the kicker's
                 size so the two read as one voice bracketing the name. */}
