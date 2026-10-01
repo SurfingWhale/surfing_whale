@@ -14,12 +14,12 @@ import { ProfileModeProvider } from "./components/ProfileMode";
 import { AccessProvider } from "./components/AccessGate";
 import { UnlockedBanner } from "./components/UnlockedBanner";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { AdminEntry, AdminLink } from "./components/AdminEntry";
 import { VisitorCard } from "./components/VisitorCard";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
 import { listArchivePhotos } from "./lib/cloudinary";
-import { isUnlocked } from "./lib/darkroomSession";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -37,13 +37,12 @@ const NAV_LINKS: NavLink[] = [
 // [] when their database is unconfigured, so this needs no extra guard and the
 // links reappear on their own once posts exist.
 export default async function Home() {
-  const [posts, essays, archive, unlocked] = await Promise.all([
+  const [posts, essays, archive] = await Promise.all([
     listPosts(),
     listEssays(),
     // Only whether it is empty matters here, so this asks for one row rather
     // than three hundred.
     listArchivePhotos(1),
-    isUnlocked(),
   ]);
   const navLinks = NAV_LINKS.filter(
     (l) => l.href !== "/writing" || posts.length > 0
@@ -70,8 +69,6 @@ export default async function Home() {
     });
   }
 
-  if (unlocked) navLinks.push({ label: "Studio", href: "/studio" });
-
   return (
     <main className="relative min-h-screen bg-bg text-fg">
       <a href="#project" className="skip-link text-[13px] font-medium">
@@ -79,11 +76,18 @@ export default async function Home() {
       </a>
       <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="container mx-auto px-6 h-14 flex items-center justify-between gap-6 max-w-[720px]">
-          <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">Surfing Whale</span>
+          <AdminEntry>
+            <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">
+              Surfing Whale
+            </span>
+          </AdminEntry>
 
           <GlassNav links={navLinks} />
 
           <div className="flex items-center gap-1">
+            {/* Decided in the browser, not baked into the document — see the
+                note in AdminEntry. */}
+            <AdminLink className="hidden sm:block text-[13px] font-medium text-fg-body hover:text-fg transition-colors duration-200 mr-3" />
             <ThemeToggle />
             <MobileNav links={navLinks} />
           </div>

@@ -21,12 +21,32 @@ function ipOf(req: NextRequest): string {
 }
 
 export async function GET(): Promise<NextResponse> {
-  return NextResponse.json({
-    unlocked: await isUnlocked(),
+  const unlocked = await isUnlocked();
+  const res = NextResponse.json({
+    unlocked,
     // Says whether the deployment has its secrets, never what they are.
     configured: configured(),
     notion: notionReady(),
   });
+  // Never cached. This is the one answer on the site that differs per person,
+  // and a browser that heuristically caches it would report yesterday's state
+  // — which is indistinguishable from the feature being broken.
+  res.headers.set("Cache-Control", "no-store, max-age=0");
+
+  // Sliding renewal: every visit that finds the session valid pushes its
+  // expiry out again, so the week is a week of inactivity rather than a hard
+  // stop a week after logging in.
+  if (unlocked) {
+    const { value, maxAge } = issueToken();
+    res.cookies.set(COOKIE, value, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge,
+    });
+  }
+  return res;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {

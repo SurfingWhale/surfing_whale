@@ -7,7 +7,18 @@ import { createHmac, timingSafeEqual, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 
 export const COOKIE = "sw-darkroom";
-const MAX_AGE_S = 60 * 60 * 12;
+// Twelve hours meant unlocking the studio twice a day and finding the link
+// gone every morning — which reads as "it is broken", not as "you are logged
+// out", because a missing nav item explains nothing. A week, renewed on every
+// visit that finds it valid, means ordinary use never ends the session.
+//
+// The trade is stated rather than hidden: a stolen cookie is good for longer.
+// What stands behind it is unchanged — httpOnly so no script can read it,
+// secure so it never crosses plain HTTP, SameSite=Lax, and an HMAC that
+// cannot be forged without DARKROOM_SECRET. For a single-person CMS that is
+// the right side of the trade; revoking is a matter of rotating the secret,
+// which invalidates every cookie ever issued at once.
+const MAX_AGE_S = 60 * 60 * 24 * 7;
 
 function secret(): string {
   // Falling back to a random per-boot value means a misconfigured deployment
