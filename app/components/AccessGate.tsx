@@ -271,14 +271,14 @@ function GateDialog({
         // something the card is cut out of rather than a picture inside it.
         className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-[440px] bg-bg rounded-[20px] overflow-hidden shadow-[0_24px_60px_rgba(10,13,16,.28)]"
       >
-        <ChromeWord lines={["SURFING"]} height={128} tone="hot" />
+        <ChromeWord lines={["SURFING"]} height={128} tone="hot" className="bg-bg" />
         <div className="px-5 pt-4 pb-4 text-center">
         {sent ? (
           <>
-            <h2 id="gate-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+            <h2 id="gate-title" className="font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
               Asked. Now it is on me.
             </h2>
-            <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
+            <p className="text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">
               I read every one of these myself, so it is a person deciding, not
               a queue. When I open it you will get a link at{" "}
               <span className="font-mono text-fg break-all">{email}</span> — the
@@ -294,10 +294,10 @@ function GateDialog({
           </>
         ) : (
           <>
-            <h2 id="gate-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+            <h2 id="gate-title" className="font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
               {copy.title}
             </h2>
-            <p className="text-[12px] leading-[1.7] text-fg-body mt-1.5">{copy.blurb}</p>
+            <p className="text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">{copy.blurb}</p>
 
             <div className="mt-4 space-y-2.5 text-left">
             <input

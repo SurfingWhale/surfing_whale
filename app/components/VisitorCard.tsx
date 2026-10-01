@@ -155,7 +155,7 @@ export function VisitorCard() {
         ${leaving ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}
     >
       <div className="relative z-10">
-        <ChromeWord lines={["SURFING"]} height={124} tone="hot" />
+        <ChromeWord lines={["SURFING"]} height={124} tone="hot" className="bg-bg" />
         <button
           onClick={close}
           aria-label="Dismiss"
@@ -174,10 +174,10 @@ export function VisitorCard() {
 
         {state === "sent" ? (
           <>
-            <p className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+            <p className="font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
               Noted.
             </p>
-            <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
+            <p className="text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">
               Thank you — I read every one.
             </p>
           </>
@@ -187,10 +187,10 @@ export function VisitorCard() {
                 which under a band this loud read as a caption with nothing to
                 caption. One heading at display size instead, with the sentence
                 demoted under it. */}
-            <p className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+            <p className="font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
               Leave a notes here
             </p>
-            <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
+            <p className="text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">
               Thank you for visiting my website
             </p>
 

@@ -147,6 +147,7 @@
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display-face);
+  --font-serif: var(--font-serif-face);
 }
 
 body {

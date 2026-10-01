@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Geist_Mono, Oswald } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono, Oswald, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
 import { REVEAL_INIT_SCRIPT } from "./components/Reveal";
@@ -26,6 +26,22 @@ const oswald = Oswald({
   variable: "--font-display-face",
   subsets: ["latin"],
   weight: ["500", "700"],
+});
+
+// For the card headings, and nothing else.
+//
+// The reference sets its card in a serif, and that is most of why its two
+// lines read as a printed note rather than as UI. Oswald is a condensed
+// grotesque — right for a wordmark the width of the page, wrong at 26px in
+// the middle of a small white card, where it reads as a label.
+//
+// One weight, one subset, self-hosted at build time like the other three, so
+// this costs one small file and no request to a font CDN.
+const serif = Instrument_Serif({
+  variable: "--font-serif-face",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
 });
 
 // The status bar colour follows the theme, so a dark-mode home screen does
@@ -102,7 +118,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${jakarta.variable} ${geistMono.variable} ${oswald.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${geistMono.variable} ${oswald.variable} ${serif.variable} h-full antialiased`}
     >
       <head>
         {/* Both run before first paint: one applies a stored theme choice,

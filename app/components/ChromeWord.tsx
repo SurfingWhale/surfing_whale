@@ -152,7 +152,14 @@ export function ChromeWord({
 
   return (
     <div
-      className={`relative overflow-hidden bg-bg-muted ${rounded} ${className}`}
+      // No background of its own. The reference has no seam between the
+      // artwork and the card — the letters sit on the same white as the
+      // heading under them and simply stop. A tinted band made the card two
+      // surfaces stacked, which is the separation that was being pointed at.
+      // The caller gives it a solid backdrop; what must not happen is the
+      // chrome landing on something translucent, where its overlay blends
+      // pick up the page behind and turn to mud.
+      className={`relative overflow-hidden ${rounded} ${className}`}
       style={{ height }}
     >
       <svg

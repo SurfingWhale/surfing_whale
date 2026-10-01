@@ -156,12 +156,12 @@ export function GuestNotesSection() {
             motion-reduce:transition-none motion-reduce:hover:translate-y-0
             focus-visible:outline-2 focus-visible:outline-offset-4"
         >
-          <ChromeWord lines={["SURFING"]} height={128} tone="hot" />
-          <span className="block px-5 pt-4 pb-5 text-center">
-            <span className="block font-display font-bold text-[24px] leading-[1.15] text-fg">
+          <ChromeWord lines={["SURFING"]} height={128} tone="hot" className="bg-bg" />
+          <span className="block px-5 pt-3 pb-5 text-center">
+            <span className="block font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
               Leave a notes here
             </span>
-            <span className="block text-[12px] leading-[1.7] text-fg-body mt-1.5">
+            <span className="block text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">
               Thank you for visiting my website
             </span>
             <span className="inline-flex items-center gap-1.5 mt-4 text-[13px] font-medium text-fg">
@@ -215,7 +215,7 @@ export function GuestNotesSection() {
           />
 
           <div className="relative w-full max-w-[440px] rounded-[20px] overflow-hidden bg-bg shadow-[0_24px_60px_rgba(10,13,16,.28)]">
-            <ChromeWord lines={["SURFING"]} height={128} tone="hot" />
+            <ChromeWord lines={["SURFING"]} height={128} tone="hot" className="bg-bg" />
             <button
               type="button"
               onClick={close}
@@ -235,10 +235,10 @@ export function GuestNotesSection() {
             <div className="px-5 pt-4 pb-4 max-h-[72vh] overflow-y-auto text-center">
               {status === "sent" ? (
                 <>
-                  <p id="guest-note-card-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+                  <p id="guest-note-card-title" className="font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
                     Noted.
                   </p>
-                  <p className="text-[12px] leading-[1.8] text-fg-body mt-2">
+                  <p className="text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">
                     It will show up below once I have had a look.
                   </p>
                   <button type="button" onClick={close} className={`${SOLID} mt-3`}>
@@ -247,10 +247,10 @@ export function GuestNotesSection() {
                 </>
               ) : (
                 <>
-                  <p id="guest-note-card-title" className="font-display font-bold text-[24px] leading-[1.15] text-fg">
+                  <p id="guest-note-card-title" className="font-[family-name:var(--font-serif)] font-normal text-[30px] leading-[1.06] tracking-[-0.012em] text-fg">
                     Leave a notes here
                   </p>
-                  <p className="text-[12px] leading-[1.7] text-fg-body mt-1.5">
+                  <p className="text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">
                     Thank you for visiting my website
                   </p>
 
