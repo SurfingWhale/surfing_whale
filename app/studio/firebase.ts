@@ -14,19 +14,23 @@ const { apiKey, projectId, appId } = FIREBASE;
 
 export const signInReady = Boolean(projectId && apiKey);
 
-// Firebase's sign-in handler is proxied through this site (next.config.ts), so
-// a redirect from the home-screen app comes back to the same origin and the
-// same storage. Only on the production host: a preview has no redirect URI
-// registered with Google, so it keeps firebaseapp.com.
-function authDomain(): string {
-  return location.host === SIGN_IN_HOST ? location.host : `${projectId}.firebaseapp.com`;
-}
-
 // Opened from the home screen. A popup there leaves for Safari and never
 // reports back, so sign-in goes by redirect within the app instead.
 const standalone = () =>
   matchMedia("(display-mode: standalone)").matches ||
   (navigator as Navigator & { standalone?: boolean }).standalone === true;
+
+// Only the home-screen app needs Firebase's handler on this site's own origin
+// (proxied in next.config.ts): its redirect has to come back to the app's own
+// storage. A browser tab signs in by popup, which works through
+// firebaseapp.com — and that handler's redirect URI Google registers by
+// itself, so a browser sign-in never waits on a hand-entered URI in the
+// Google Cloud console. A preview has no URI of its own either way.
+function authDomain(): string {
+  return standalone() && location.host === SIGN_IN_HOST
+    ? location.host
+    : `${projectId}.firebaseapp.com`;
+}
 
 type Kit = { auth: Auth; mod: typeof import("firebase/auth") };
 let kit: Promise<Kit> | null = null;
