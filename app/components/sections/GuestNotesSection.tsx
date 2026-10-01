@@ -130,7 +130,14 @@ export function GuestNotesSection() {
           Guest notes
         </SectionLabel>
 
-        {/* One button where four fields used to be. */}
+        {/* The trigger is a card, not a button.
+            A black pill reading "Write in the guest book" is a control; it
+            tells a reader what would happen and gives them no reason to want
+            it. The card carries the artwork on its face, so the thing that
+            makes the pop-up worth opening is already on the page — the tap
+            just brings it closer. Same band, same type, same proportions as
+            the card it opens, so pressing it reads as the card growing rather
+            than as one object being swapped for another. */}
         <button
           type="button"
           onClick={(e) => {
@@ -139,12 +146,33 @@ export function GuestNotesSection() {
             setError(null);
             setOpen(true);
           }}
-          // Full width to the reading measure, not a 240px chip. The
-          // reference ends its card on a button that spans it, and this is
-          // the only thing the section asks anyone to do.
-          className={`${SOLID} max-w-[520px] py-3.5 text-[14px]`}
+          aria-haspopup="dialog"
+          className="group block w-full max-w-[440px] text-left rounded-[20px] overflow-hidden
+            bg-bg border border-border cursor-pointer
+            shadow-[0_1px_2px_rgba(24,24,24,.05),0_10px_28px_rgba(24,24,24,.07)]
+            hover:shadow-[0_2px_4px_rgba(24,24,24,.07),0_18px_44px_rgba(24,24,24,.12)]
+            hover:-translate-y-0.5 active:translate-y-0
+            transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.2,0,0,1)]
+            motion-reduce:transition-none motion-reduce:hover:translate-y-0
+            focus-visible:outline-2 focus-visible:outline-offset-4"
         >
-          Write in the guest book
+          <ChromeWord lines={["SURFING"]} height={128} tone="hot" />
+          <span className="block px-5 pt-4 pb-5 text-center">
+            <span className="block font-display font-bold text-[24px] leading-[1.15] text-fg">
+              Leave a notes here
+            </span>
+            <span className="block text-[12px] leading-[1.7] text-fg-body mt-1.5">
+              Thank you for visiting my website
+            </span>
+            <span className="inline-flex items-center gap-1.5 mt-4 text-[13px] font-medium text-fg">
+              Write in the guest book
+              <svg viewBox="0 0 12 12" aria-hidden="true"
+                className="w-3 h-3 stroke-current stroke-[1.6] [stroke-linecap:round] [stroke-linejoin:round]
+                  transition-transform duration-300 group-hover:translate-x-0.5">
+                <path d="M2 6h8M6.5 2.5L10 6l-3.5 3.5" />
+              </svg>
+            </span>
+          </span>
         </button>
 
         <div className="mt-16">
