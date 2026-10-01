@@ -5,10 +5,10 @@
 // fragment shader instead of react-three-fiber, so the first screen does not
 // pay ~150KB of three.js for a background.
 //
-// It is dense under the header and thins out through the name, and the lower
-// third of the first screen is left empty, so the page arrives at the words on
-// a clean canvas. The dots are the page's own ink at low opacity, read from
-// --fg, so they follow the theme and never compete with the type on top.
+// It belongs to the header: dense behind the bar, thinning just below it, and
+// gone well before the name, so the type stands on a clean canvas with open
+// space above it. The dots are the page's own ink at low opacity, read from
+// --fg, so they follow the theme.
 //
 // Cheap on purpose: drawn at a third of the resolution and scaled up with
 // pixelated sampling (the dots are meant to be blocky), about 30 frames a
@@ -70,7 +70,9 @@ float bayer2(vec2 a) { a = floor(a); return fract(a.x / 2.0 + a.y * a.y * 0.75);
 void main() {
   vec2 frag = gl_FragCoord.xy;
   vec2 uv = frag / uRes;
-  vec2 p = frag / uRes.y * 2.4;
+  // A fixed scale in dither dots, not a fraction of the canvas: the band is
+  // short and wide, and scaling by its height would squash the waves flat.
+  vec2 p = frag / 120.0;
   float t = uTime * 0.05;
 
   // Domain warping: the field is read through itself twice, which is what
@@ -81,12 +83,12 @@ void main() {
   float f = fbm(p + 3.0 * r);
   float tone = smoothstep(0.30, 0.95, f * f * 1.7 + 0.30 * length(q));
 
-  // Full under the header, thinning through the name, gone for the lower
-  // third: the negative space the words arrive on.
+  // Full through the header, then fading, and gone before the band ends —
+  // the band's last stretch is already empty page.
   float fromTop = 1.0 - uv.y;
-  tone *= 1.0 - smoothstep(0.18, 0.70, fromTop);
+  tone *= 1.0 - smoothstep(0.32, 0.9, fromTop);
   // Never a solid sheet, even at the densest point.
-  tone *= 0.62;
+  tone *= 0.85;
 
   float on = step(bayer8(frag) + 0.002, tone);
   gl_FragColor = vec4(uInk * uAlpha * on, uAlpha * on);

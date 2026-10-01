@@ -119,11 +119,11 @@ export function HeroSection() {
 
   return (
     <section data-spot className="relative isolate w-full">
-      {/* Behind everything in the hero, from under the header to the bottom of
-          the first screen; it fades out on its own before the words begin.
-          -top-14 reaches up under the fixed header, whose frosted bar then
-          shows the dots softened. */}
-      <DitherField className="pointer-events-none absolute inset-x-0 -top-14 -z-10 w-full h-[100svh]" />
+      {/* The header's band: from the top of the page, behind the fixed bar,
+          to a little below it, fading to nothing well above the name — the
+          name stands on clean page with open space over it. -top-14 reaches
+          up under the header. */}
+      <DitherField className="pointer-events-none absolute inset-x-0 -top-14 -z-10 w-full h-[150px]" />
       {/* The first screen: kicker, name, the one sentence, the switch. On a
           wide screen it fills the viewport (globals.css, .hero-stage); on a
           phone it is the same column it always was. */}

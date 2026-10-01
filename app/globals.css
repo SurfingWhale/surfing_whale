@@ -319,6 +319,26 @@ h1, h2, h3, h4 {
   }
 }
 
+/* The header at the very top of the page is clear, so the dither field
+   behind it shows crisp (TopNav, DitherField). Unlayered, so it outranks the
+   bar's own bg/blur/border utilities. */
+.top-nav[data-top] {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* The links sit on the densest part of the field, so while the bar is clear
+   they gather into one frosted capsule — glass on floating chrome, which is
+   where the design direction allows it — and stay readable at 13px. */
+.top-nav[data-top] .glass-nav {
+  background-color: color-mix(in srgb, var(--bg) 82%, transparent);
+  box-shadow: 0 0 0 1px var(--border);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
 /* ---- Focus ------------------------------------------------------------
    Several fields carry Tailwind's `outline-none` so the hairline underline
    can do the work on mouse focus, which leaves a keyboard user with nothing
