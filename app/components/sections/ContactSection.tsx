@@ -96,7 +96,17 @@ export function ContactSection() {
     return (
         <section data-spot id="contact" className="w-full py-16 sm:py-24 border-t border-border">
         <div data-reveal className="container mx-auto px-6 max-w-[720px]">
-            <SectionLabel note="Open to data analyst roles, freelance analysis, or just a chat.">
+            {/* Not "open to roles".
+                This was the same availability notice the hero carried, left
+                standing in a second place after the first was taken out — and
+                it does the same damage here. It makes the site a job
+                application, so every project above it reads as evidence
+                submitted rather than work done because the question was
+                interesting. It also dates: the day it stops being true it is
+                a lie sitting on the page.
+                What is true is steadier: this is where the data and the
+                photographs live, and the invitation is to talk about them. */}
+            <SectionLabel note="If something here is useful, wrong, or worth arguing about — say so. I answer everything.">
                 Get in touch
             </SectionLabel>
 
