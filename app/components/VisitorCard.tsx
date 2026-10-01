@@ -12,7 +12,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChromeBand } from "./ChromeMark";
+import { ChromeWord } from "./ChromeWord";
 
 const KEY = "sw-visitor-card";
 const QUIET_DAYS = 30;
@@ -155,7 +155,7 @@ export function VisitorCard() {
         ${leaving ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}
     >
       <div className="relative z-10">
-        <ChromeBand height={112} title="Surfing Whale" />
+        <ChromeWord text="SAY HELLO" height={112} tone="hot" />
         <button
           onClick={close}
           aria-label="Dismiss"

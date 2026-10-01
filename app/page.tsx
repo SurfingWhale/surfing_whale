@@ -15,7 +15,7 @@ import { AccessProvider } from "./components/AccessGate";
 import { UnlockedBanner } from "./components/UnlockedBanner";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { VisitorCard } from "./components/VisitorCard";
-import { ChromeBand } from "./components/ChromeMark";
+import { ChromeWord } from "./components/ChromeWord";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
@@ -128,8 +128,20 @@ export default async function Home() {
         {/* Held to the content column. Run full width, one mark centred in a
             1280px strip is an object adrift in grey; at the column's width the
             band is a panel the page ends on. */}
+        {/* Held to roughly the visitor card's width, and for the same reason.
+            The band crops by covering, so how much of the word survives is a
+            function of the band's own proportions: at 672 x 112 the scale is
+            set by the width and only the bottom quarter of the letters is
+            left, which reads as coloured blobs. At card width the same band
+            shows a little over half of them and the word is a word. */}
         <div className="container mx-auto max-w-[720px] px-6 pt-10">
-          <ChromeBand height={104} tone="calm" className="rounded-[14px]" />
+          <ChromeWord
+            text="FAUZY"
+            height={112}
+            tone="calm"
+            rounded="rounded-[14px]"
+            className="max-w-[330px] mx-auto"
+          />
         </div>
         <div className="container mx-auto max-w-[720px] px-6 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-3">

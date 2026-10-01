@@ -4,7 +4,7 @@
 // site it was. A dead end is still a page someone is standing on.
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChromeMark } from "./components/ChromeMark";
+import { ChromeWord } from "./components/ChromeWord";
 
 export const metadata: Metadata = {
   title: "Not found",
@@ -14,17 +14,11 @@ export default function NotFound() {
   return (
     <main className="min-h-screen bg-bg text-fg grid place-items-center px-6 py-20">
       <div className="max-w-[420px] text-center">
-        {/* The hot palette here and nowhere else. This is the one page with
-            nothing on it to compete with and nobody staying long, so it can
-            take the technique at full strength. */}
-        <div className="flex justify-center">
-          <ChromeMark size={168} tone="hot" title="Surfing Whale" />
-        </div>
+        {/* The number IS the artwork here, so it is not also set as a label
+            underneath — saying 404 twice on a page with four lines on it. */}
+        <ChromeWord text="404" height={150} tone="hot" rounded="rounded-[16px]" />
 
-        <p className="mt-10 text-[11px] font-medium uppercase tracking-[0.14em] text-fg-label">
-          404
-        </p>
-        <h1 className="mt-4 font-display font-bold text-[clamp(32px,9vw,56px)] leading-[0.95]">
+        <h1 className="mt-8 font-display font-bold text-[clamp(32px,9vw,56px)] leading-[0.95]">
           Nothing here
         </h1>
         <p className="mt-5 text-[13px] leading-[2] text-fg-body">
