@@ -9,28 +9,41 @@
 // the curtain is a wave rather than a straight line, and it is the same curve
 // twice rather than two ideas.
 //
+// NOTHING HERE IS ON A CLOCK THAT STARTS AT FIRST PAINT. The ink is painted by
+// INTRO_CRITICAL_CSS, inlined in <head>, and it stays until something says the
+// page is ready. That is the whole shape of this file and it is the second
+// version: the first put the ink in the external stylesheet with a fixed
+// 1400ms delay on its exit, which on a real phone over 4G produced a 1.3s
+// white screen and *then* the counter — two loading states, measured, where
+// the reference has one. The page is render-blocked on that stylesheet, so
+// until it lands there is no ink to paint.
+//
+// A fixed delay would have been wrong anyway. On a slow connection the exit
+// would fire before React had loaded to draw the number, and the whole count
+// would be skipped. The ink leaves when the count finishes, or when the
+// backstop in the inline script gives up on React — not when a timer that
+// started before anything was loaded says so.
+//
 // THREE RULES, because an intro is the one component that can lock somebody
 // out of a site they have not seen yet:
 //
 //  1. It never gates the content. The page is server-rendered underneath and
 //     complete before this mounts; this is an overlay that takes itself away.
-//     With JavaScript off, the pre-paint script below never adds the class,
-//     no overlay is painted, and the site is simply there.
+//     With JavaScript off, the inline script never adds the class, no overlay
+//     is painted, and the site is simply there.
 //
-//  2. It cannot get stuck. The panel's exit is a CSS animation with
-//     `forwards`, not a React state change, so it finishes and stops taking
-//     pointer events even if hydration never happens or throws. React only
-//     drives the number.
+//  2. It cannot get stuck. The backstop is a setTimeout in the inline script,
+//     which runs from the HTML itself rather than from a chunk that can fail
+//     to load, and the exit it triggers is a CSS animation with `forwards`.
+//     React is not on the path that removes this.
 //
 //  3. It plays once a session, and not at all for anyone who has asked for
-//     less motion. Replaying on every internal navigation is how a nice intro
-//     becomes the reason somebody leaves.
+//     less motion.
 //
 // The cost, stated rather than buried: for one visit per session the overlay
-// is the largest thing painted, so it is what LCP measures. 2.2s of ink is a
-// real number on that metric and it is the price of the thing being asked
-// for. Returning within the session, and anyone with reduced motion, pay
-// nothing — no overlay is rendered at all.
+// is the largest thing painted, so it is what LCP measures. Returning within
+// the session, and anyone with reduced motion, pay nothing — no overlay is
+// rendered at all.
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -54,11 +67,47 @@ const FADE_MS = 250;
 export const INTRO_MS = COUNT_MS + HOLD_MS + WAVE_MS + FADE_MS;
 
 const SEEN = "sw-intro-seen";
+// How long to wait for React before clearing the ink anyway.
+//
+// A real trade, both ends of which cost something. Too short and a phone on
+// bad data loses the count it was waiting through. Too long and a bundle that
+// never arrives holds somebody on a black screen for no reason. Five seconds
+// is past where JavaScript lands on a slow connection in testing (~1.3s with
+// the chunks held back 1.2s) with room to spare, and short enough that a
+// broken deploy reads as slow rather than as broken.
+//
+// If this does fire, React may still mount afterwards — so the component
+// checks for `intro-out` and renders nothing rather than drawing a counter
+// over an overlay that has already left.
+const BACKSTOP_MS = 5000;
+
+/**
+ * The ink, inlined in <head> so it is painted from the HTML itself.
+ *
+ * It cannot use var(--fg): those tokens live in the external stylesheet, and
+ * the whole point of this is to be on screen before that arrives. The two
+ * literals below are --fg's light and dark values; they have to be changed
+ * with globals.css, and there is a check for that in scripts/verify-intro.mjs.
+ *
+ * Theme resolution matches THEME_INIT_SCRIPT: an explicit data-theme wins,
+ * otherwise the system preference.
+ */
+export const INTRO_CRITICAL_CSS = `
+html.intro::before{content:"";position:fixed;inset:0;z-index:9998;background:#111111;pointer-events:none}
+html.intro[data-theme="dark"]::before{background:#f0f0f0}
+@media (prefers-color-scheme:dark){html.intro:not([data-theme="light"])::before{background:#f0f0f0}}
+html.intro-out::before{animation:sw-intro-gone ${FADE_MS}ms linear ${WAVE_MS}ms forwards}
+@keyframes sw-intro-gone{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){html.intro::before{display:none}}
+`.trim();
 
 /**
  * Runs before first paint, in <head>, the way the theme and reveal scripts
  * already do. Deciding here rather than in React is what stops a returning
  * visitor seeing a flash of ink before the component can say "not this time".
+ *
+ * The timeout is the backstop: it lives in the HTML, so a JavaScript bundle
+ * that never arrives cannot leave anyone looking at a black screen.
  */
 export const INTRO_INIT_SCRIPT = `
 try {
@@ -67,6 +116,9 @@ try {
   if (!seen && !still) {
     document.documentElement.classList.add('intro');
     sessionStorage.setItem('${SEEN}', '1');
+    setTimeout(function () {
+      document.documentElement.classList.add('intro-out');
+    }, ${BACKSTOP_MS});
   }
 } catch (e) {}
 `.trim();
@@ -100,9 +152,16 @@ export function Intro() {
   const raf = useRef(0);
 
   useEffect(() => {
-    if (!document.documentElement.classList.contains("intro")) return;
+    const html = document.documentElement;
+    if (!html.classList.contains("intro")) return;
+    // The backstop already gave up on us. Drawing a counter now would put it
+    // over an overlay that has finished leaving.
+    if (html.classList.contains("intro-out")) return;
     setOn(true);
 
+    // The count starts when React does, not when the page was requested. On a
+    // slow connection the ink has already been up for a while; this is the
+    // part that says the waiting is over.
     const start = performance.now();
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / COUNT_MS);
@@ -111,14 +170,16 @@ export function Intro() {
     };
     raf.current = requestAnimationFrame(tick);
 
-    // The class goes whatever happens to this component, so a second mount —
-    // a fast route change, Strict Mode in development — never replays it.
-    const done = setTimeout(() => {
-      document.documentElement.classList.remove("intro");
-    }, INTRO_MS);
+    // Counting done, hold on 100, then hand over to the CSS exit.
+    const out = setTimeout(() => html.classList.add("intro-out"), COUNT_MS + HOLD_MS);
+    // And the class that gates all of this goes once the exit has run, so a
+    // second mount — a fast route change, Strict Mode in development — never
+    // replays it.
+    const done = setTimeout(() => html.classList.remove("intro", "intro-out"), INTRO_MS + 400);
 
     return () => {
       cancelAnimationFrame(raf.current);
+      clearTimeout(out);
       clearTimeout(done);
     };
   }, []);

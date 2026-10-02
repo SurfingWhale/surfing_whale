@@ -487,8 +487,27 @@ not seen yet. Three rules, all checked by `scripts/verify-intro.mjs`:
 
 **A flash of the whole site, then black, then the site again.** The overlay was
 a React component, so it arrived a hydration late — measured at 149ms on a
-production build. The ink is now painted by `html.intro::before`, set by the
-pre-paint script, so it is there in the first frame.
+production build. The ink moved to `html.intro::before`, set by the pre-paint
+script.
+
+**That fix was not enough, and a phone found the rest of it.** `::before` was
+still defined in the external stylesheet, and the page is render-blocked on
+that file. On 4G Fauzy got **1.3 seconds of white and then the counter** — two
+loading states where the reference has one. Reproduced with the stylesheet
+held back 900ms: first ink at 1313ms, with white before it.
+
+The ink is now inlined in `<head>` as `INTRO_CRITICAL_CSS`. **First ink at
+25ms, zero white frames.** It cannot use `var(--fg)` — those tokens are in the
+file it is racing — so it carries `#111111` and `#f0f0f0` as literals, and
+case G of the checker fails if they drift from `globals.css`.
+
+**Nothing is on a clock that starts at first paint any more.** The exit used a
+fixed 1400ms delay, which on a slow connection would have fired before React
+had loaded to draw the number and skipped the whole count. Everything keys off
+an `.intro-out` class that React adds when the count finishes — or that a
+`setTimeout` in the inline script adds after 5s if React never arrives. That
+backstop lives in the HTML rather than in a chunk that can fail to load, and
+React stands down if it finds the exit already run.
 
 **The wave was invisible.** Two versions of it. First the curtain was one tall
 path whose top 30% was the swell: on a 390×844 phone the solid part came to

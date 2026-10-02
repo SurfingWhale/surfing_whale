@@ -8,7 +8,13 @@
 //   C  reduced motion gets no class and no overlay at all
 //   D  with JavaScript off the page is simply served
 //   E  with the JS chunks blocked — hydration never happens — the curtain
-//      still leaves, by CSS, and the page underneath is what a tap hits
+//      still leaves, and the page underneath is what a tap hits
+//   F  on a slow connection there is no white before the ink, and no second
+//      loading state. This is the bug it shipped with: the ink was in the
+//      external stylesheet, the page is render-blocked on that file, and a
+//      phone on 4G got 1.3s of white and THEN the counter
+//   G  the colours inlined in <head> still match the tokens in globals.css —
+//      the inline copy cannot use var(--fg), so it can drift
 //
 // E only means anything if the stylesheet still loads, so it blocks *.js and
 // not everything under chunks/. Blocking both tests nothing: there would be
@@ -85,7 +91,9 @@ const check=(n,ok,got)=>{ console.log(`  ${ok?'PASS':'FAIL'}  ${n}${ok?'':'  -> 
   await ctx.route('**/_next/static/chunks/**.js', r=>r.abort());
   const p=await ctx.newPage();
   await p.goto(`http://localhost:${PORT}/`,{waitUntil:'commit'}).catch(()=>{});
-  await p.waitForTimeout(2600);
+  // Past the backstop in Intro.tsx (5s) plus its exit. React never mounts
+  // here, so this is the only thing that can clear the ink.
+  await p.waitForTimeout(6400);
   const blocked=await p.evaluate(()=>{
     const cs=getComputedStyle(document.documentElement,'::before');
     const hit=document.elementFromPoint(195,400);
@@ -105,6 +113,47 @@ const check=(n,ok,got)=>{ console.log(`  ${ok?'PASS':'FAIL'}  ${n}${ok?'':'  -> 
   await p.screenshot({path:`${process.cwd()}/nohydrate.png`});
   await ctx.close();
 }
+// F — a slow connection must show ink first, never white
+{
+  const { PNG } = await import('pngjs');
+  const fs = await import('node:fs');
+  const ctx=await b.newContext({viewport:{width:390,height:844}});
+  // Held back the way a real connection holds them back.
+  await ctx.route('**/*.css', async r=>{ await new Promise(s=>setTimeout(s,900)); r.continue(); });
+  await ctx.route('**/*.js',  async r=>{ await new Promise(s=>setTimeout(s,1200)); r.continue(); });
+  const p=await ctx.newPage();
+  const t0=Date.now();
+  await p.goto(`http://localhost:${PORT}/`,{waitUntil:'commit'});
+  let firstInk=null, whiteBefore=0, sawCount=false;
+  for(let i=0;i<22;i++){
+    const t=Date.now()-t0;
+    const buf=await p.screenshot();
+    const png=PNG.sync.read(buf);
+    const idx=((png.height>>1)*png.width+(png.width>>1))<<2;
+    const [r,g,bl]=[png.data[idx],png.data[idx+1],png.data[idx+2]];
+    const ink = r<60&&g<60&&bl<60, white = r>230&&g>230&&bl>230;
+    if (ink && firstInk===null) firstInk=t;
+    if (firstInk===null && white) whiteBefore++;
+    if (!sawCount) sawCount = await p.evaluate(()=>!!document.querySelector('.sw-intro-count')).catch(()=>false);
+    await p.waitForTimeout(110);
+  }
+  check('slow connection: no white frame before the ink', whiteBefore===0, `${whiteBefore} white sample(s)`);
+  check('slow connection: ink is up inside 300ms', firstInk!==null && firstInk<300, `first ink at ${firstInk}ms`);
+  check('slow connection: the count still appears', sawCount===true, String(sawCount));
+  await ctx.close();
+}
+
+// G — the inlined colours must not drift from the tokens
+{
+  const fs = await import('node:fs');
+  const css = fs.readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
+  const intro = fs.readFileSync(new URL('../app/components/Intro.tsx', import.meta.url), 'utf8');
+  const light = (css.match(/--fg:\s*(#[0-9a-f]{3,8})/i)||[])[1];
+  const dark  = [...css.matchAll(/--fg:\s*(#[0-9a-f]{3,8})/gi)].map(m=>m[1]).find(v=>v!==light);
+  check(`inline ink matches --fg light (${light})`, intro.toLowerCase().includes(String(light).toLowerCase()), `globals has ${light}`);
+  check(`inline ink matches --fg dark (${dark})`, intro.toLowerCase().includes(String(dark).toLowerCase()), `globals has ${dark}`);
+}
+
 console.log(fails?`\n${fails} FAILED`:'\nALL PASS');
 await b.close();
 process.exit(fails?1:0);

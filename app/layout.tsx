@@ -5,7 +5,7 @@ import "./globals.css";
 import { SITE } from "./lib/site";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
 import { REVEAL_INIT_SCRIPT } from "./components/Reveal";
-import { Intro, INTRO_INIT_SCRIPT } from "./components/Intro";
+import { Intro, INTRO_INIT_SCRIPT, INTRO_CRITICAL_CSS } from "./components/Intro";
 
 // Matches the reference site, which loads Plus Jakarta Sans at 400/500/600 —
 // confirmed from its stylesheet link and from the font names embedded in a
@@ -144,9 +144,15 @@ export default function RootLayout({
             straight back out on load. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
+        {/* The opening's ink, inline. It has to be in the HTML rather than in
+            the stylesheet: the page is render-blocked on that file, so on a
+            slow connection putting it there showed white until the CSS landed
+            and only then the counter. */}
+        <style dangerouslySetInnerHTML={{ __html: INTRO_CRITICAL_CSS }} />
         {/* Decides, before anything is painted, whether this visit gets the
             opening — once a session, and never for anyone who has asked for
-            less motion. */}
+            less motion. Also carries the backstop that clears the ink if the
+            JavaScript never arrives. */}
         <script dangerouslySetInnerHTML={{ __html: INTRO_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">

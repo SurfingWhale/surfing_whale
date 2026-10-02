@@ -814,43 +814,35 @@ body:has(.photo-row) {
 }
 
 /* ---- The opening ------------------------------------------------------
-   app/components/Intro.tsx. Everything that takes the overlay away lives
-   here rather than in React state, on purpose: a CSS animation with
-   `forwards` finishes whether or not the component hydrates, so a failed or
-   slow hydration leaves a usable page instead of a black screen nobody can
-   get past. React only drives the number.
+   app/components/Intro.tsx.
 
-   NOTHING LIFTS. The first version slid the ink panel up out of the way at
-   the same time as the paper rose, and the ink's straight bottom edge is what
-   anyone actually saw — the wave was behind it the whole time. A frame-by-
-   frame capture at 45ms showed a clean horizontal line where the curve was
-   supposed to be. The ink now sits still and is covered, which is what the
-   reference does and the only way the edge of the wave is the edge anyone
-   sees.
+   The INK IS NOT HERE. It is in INTRO_CRITICAL_CSS, inlined in <head>, because
+   this file is an external stylesheet and the page is render-blocked on it:
+   on a phone over 4G that meant 1.3 seconds of white and then the counter, two
+   loading states where the reference has one. Measured, with the stylesheet
+   held back 900ms.
+
+   What is left here runs after the ink is already up, by which time this
+   stylesheet has certainly arrived.
+
+   NOTHING IS ON A TIMER THAT STARTS AT FIRST PAINT. Everything keys off
+   `.intro-out`, which React adds when the count finishes — or which the
+   backstop in the inline script adds if React never arrives. A fixed delay
+   would fire the exit before the number had loaded on a slow connection and
+   skip the whole count.
+
+   NOTHING LIFTS, either. An earlier version slid the ink up while the paper
+   rose, and the ink's straight bottom edge is what anyone actually saw. The
+   ink sits still and is covered, which is what the reference does.
 
    Timings mirror the constants in Intro.tsx; change them together. */
-
-/* The ink is painted by the class the pre-paint script adds, not by React.
-   Rendering it in the component meant the page was on screen for the ~150ms
-   before hydration and the overlay dropped on top of it — a flash of the
-   whole site, then black, then the site again. Measured at 149ms on a
-   production build; this closes it, because a ::before on <html> is painted
-   in the first frame.
-
-   It hides on its own schedule, with `forwards`, so it leaves on time even if
-   React never mounts to take the class off. */
-html.intro::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  background: var(--fg);
-  pointer-events: none;
-  animation: sw-intro-gone 250ms linear 1950ms forwards;
+.sw-intro {
+  /* Held open until the exit is called for. */
+  opacity: 1;
 }
 
-.sw-intro {
-  animation: sw-intro-gone 250ms linear 1950ms forwards;
+html.intro-out .sw-intro {
+  animation: sw-intro-gone 250ms linear 550ms forwards;
 }
 
 /* Paper, rising over the ink and over the count. It sits at `top: 100%` with
@@ -858,8 +850,8 @@ html.intro::before {
    to appear is the curve. It travels a viewport plus the crest's own height,
    which is what puts the body over the whole screen while the crest is still
    on it. */
-.sw-intro-wave {
-  animation: sw-intro-rise 550ms cubic-bezier(0.65, 0, 0.35, 1) 1400ms forwards;
+html.intro-out .sw-intro-wave {
+  animation: sw-intro-rise 550ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 @keyframes sw-intro-rise {
@@ -870,14 +862,13 @@ html.intro::before {
   to { opacity: 0; visibility: hidden; }
 }
 
-/* Nothing was rendered for this reader in the first place — the pre-paint
-   script never adds the class — but if the preference changes mid-animation
-   the overlay should leave immediately rather than finish its sweep. */
+/* Nothing was rendered for this reader in the first place — the inline script
+   never adds the class — but if the preference changes mid-animation the
+   overlay should leave immediately rather than finish its sweep. */
 @media (prefers-reduced-motion: reduce) {
   .sw-intro,
   .sw-intro-wave {
     animation: none;
   }
   .sw-intro { display: none; }
-  html.intro::before { display: none; }
 }
