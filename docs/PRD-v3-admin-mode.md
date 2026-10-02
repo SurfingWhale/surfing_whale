@@ -326,3 +326,71 @@ Everything known to be unfinished, in the order it costs something.
     `surfing-whale`. Once it passes, set `GOOGLE_IN_APP = true` in
     `app/lib/firebaseConfig.ts`. Browser tabs are unaffected: they sign in
     through `firebaseapp.com`.
+
+## 12. Discoverability audit — 2026-10-02
+
+Run against a production build with `scripts/audit-seo.mjs`, which crawls from
+the home page rather than taking a list of routes, because what a crawler can
+reach is itself one of the findings.
+
+This is an SEO audit, not a QA one. It would not have caught the gallery
+viewer having no way out — that was an interaction defect, and no checklist of
+this kind contains it. Kept separate on purpose.
+
+### 12.1 Nothing can find this site
+
+Three findings, and the first two are the reason the rest barely matter.
+
+1. **`/robots.txt` is a 404**, on localhost and on production.
+2. **`/sitemap.xml` is a 404.** There is no `app/sitemap.ts` and no
+   `public/sitemap.xml`. §5 of this document claims "admin routes never appear
+   in the sitemap", which is true only because no sitemap exists.
+3. **`/photo` and `/writing` are orphans.** Both have good titles and
+   descriptions, and neither appears in the home page's served HTML. The only
+   link to the darkroom is inside the photography section, which renders in
+   the "capture" profile mode — client state, reached by a click. No sitemap
+   plus no inbound link means the entire photo-essay and writing output is
+   invisible to a crawler.
+
+### 12.2 Measured, 13 pages crawled
+
+| Check | Result |
+| --- | --- |
+| Canonical tags | **0 of 13.** None anywhere on the site. |
+| Schema / structured data | **0 of 13.** No `application/ld+json` at all. |
+| `<html lang>` | `id` on every page, and the copy is English. Wrong for both search and screen readers. |
+| Titles 50–60 chars | 3 of 9 real pages. Home is 30 (`Muhammad Fauzy — Surfing Whale`), `/work/tracker-doc` is 26, the research page is 62. |
+| Meta descriptions | Present and unique on all 9 real pages. 3 outside 120–160 chars. |
+| One `<h1>` per page | 4 of 9. `/work/coffee-access`, `/work/padel` and the research page each carry **two**. |
+| Heading skips | None. |
+| Breadcrumbs | None anywhere. |
+| Image dimensions | The research page serves **10 images with no width/height** — layout shift, which is a Core Web Vitals cost. |
+
+### 12.3 Alt text is wrong where it matters
+
+23 images on the home page; 19 carry `alt=""`, which declares them decorative
+and hides them from search and from a screen reader.
+
+Correct for `a2.jpg`–`a7.jpg` (the screensaver frames). **Wrong** for the rest,
+which are content: `finance.jpg`, `coffee.jpg`, `crime.jpg` (the work
+thumbnails), `sheet-recap.jpg`, `sheet-beranda.jpg`, `coffee-1..3.jpg`,
+`crime-1..3.jpg`, `approval-flow.svg`. These are the case-study exhibits and
+they describe themselves to nobody.
+
+### 12.4 Raw files are being served as pages
+
+Four of the thirteen URLs a crawler reaches are assets linked directly from
+case studies: `/work/padel/gap-map.html`, `/work/padel/isochrone-multirange.html`,
+`/work/crime/harbor-map.html`, `/research/finance/executive-summary.pdf`, plus
+two `.jpg` paths. Empty title, no `<h1>`, no description, no `lang`. They are
+indexable thin pages carrying the site's name. Either wrap them in a page or
+exclude them in the robots.txt that does not yet exist.
+
+This is also where `public/work/maps/indonesia-nik-provinsi.html` belongs
+(§11.1 item 3) — the same class of file, with not even a link to it.
+
+### 12.5 Not measurable from here
+
+Keywords, search intent, cannibalisation, backlinks, competitor gaps, CTR and
+impressions all need Google Search Console, which is not connected. Nothing in
+this section guesses at them.
