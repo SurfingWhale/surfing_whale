@@ -16,10 +16,16 @@
 // the schema cache" error a missing table arrives as.
 import { createServer } from "node:http";
 
-const FILES = ["camera", "stairway", "mountain", "teddy", "sunset", "boatblue", "bwboat", "manboat"]
+// Fifteen, not eight. The depth matters: the publish panel sits under the
+// whole grid, and with eight photographs — three rows on a phone — it happens
+// to be on screen already. The bug it was written to catch only appears from
+// about five rows down, which is where a real library sits. A fixture smaller
+// than the real thing is a fixture that passes on broken code.
+const FILES = ["camera", "stairway", "mountain", "teddy", "sunset", "boatblue", "bwboat",
+               "manboat", "icecream", "desk", "platform", "worker", "market", "tower", "valley"]
   .map((n, i) => ({
     name: `2026-09-${String(i + 1).padStart(2, "0")}-${n}-aabbccdd-1200x800.webp`,
-    created_at: `2026-09-0${i + 1}T00:00:00Z`,
+    created_at: `2026-09-${String(i + 1).padStart(2, "0")}T00:00:00Z`,
   }));
 const STORE = { library: [...FILES], darkroom: [...FILES], archive: [] };
 

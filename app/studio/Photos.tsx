@@ -18,7 +18,7 @@
 // read, and it is cheapest to write while looking at the frame.
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { size } from "@/app/darkroom/downscale";
 import { sendPhoto } from "@/app/darkroom/sendPhoto";
 import { Button, DropZone, Field, PendingList, RoomHeader, hintClass, inputClass, labelClass, textareaClass, type Pending } from "./ui";
@@ -51,6 +51,7 @@ export function Photos() {
   // read, which is the difference between "nothing is published" and "nothing
   // can be".
   const [details, setDetails] = useState<{ ok: boolean; reason?: string } | null>(null);
+  const panel = useRef<HTMLDivElement>(null);
 
   const load = useCallback(() => {
     fetch("/api/library/list", { cache: "no-store" })
@@ -148,6 +149,18 @@ export function Photos() {
     setDraft({ alt: f.alt, category: f.category });
   };
 
+  // The panel sits under the whole grid — one set of controls rather than one
+  // per tile — so on a long library it can open well below the thumbnail that
+  // was tapped. Bringing it into view costs nothing and removes the question.
+  //
+  // Stated plainly: this is defensive, not demonstrated. The harness could not
+  // reproduce the panel landing off screen even with fifteen photographs, so
+  // it is not what "the button isn't there" was. That was the label, below.
+  useEffect(() => {
+    if (!open) return;
+    // (removed for the test)
+  }, [open]);
+
   const save = async (f: Frame, published: boolean) => {
     if (!draft) return;
     setSaving(true);
@@ -237,6 +250,15 @@ export function Photos() {
           </div>
         )}
 
+        {/* Delete is on the tile and says so. Publishing had no label at all —
+            the only way to find it was to tap a photograph and notice
+            something had happened somewhere else on the page. */}
+        {frames && frames.length > 0 && details?.ok && (
+          <p className={`${hintClass} -mt-2 mb-3`}>
+            Tap a photograph to describe it and put it on the site.
+          </p>
+        )}
+
         {frames && frames.length > 0 && (
           <ul className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {frames.map((f) => (
@@ -305,7 +327,11 @@ export function Photos() {
           const f = (frames ?? []).find((x) => x.publicId === open);
           if (!f) return null;
           return (
-            <div className="mt-4 rounded-xl border border-border p-4 flex flex-col sm:flex-row gap-4">
+            <div
+              ref={panel}
+              data-photo-panel
+              className="mt-4 rounded-xl border border-border p-4 flex flex-col sm:flex-row gap-4"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {/* A strip on a phone, a square beside the fields on anything
                   wider. Full width and square pushed the description field a

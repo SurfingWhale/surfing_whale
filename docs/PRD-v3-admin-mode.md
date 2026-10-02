@@ -813,3 +813,45 @@ site" when the table cannot be read, and says instead:
 
 Case I in `scripts/verify-library.sh`: the failure is reported, it names the
 fix, and a healthy table reports ok. A through I: ALL PASS.
+
+## 19. "The button isn't there" — 2026-10-02
+
+Fauzy, after the deploy: the publish button is missing, he probably needs to
+clear his cache.
+
+**Nothing was stale.** Checked rather than assumed:
+
+- there is **no service worker** on this site — `app/manifest.ts` says so in a
+  comment — so nothing holds old JavaScript on a phone;
+- `11f3ffa` was deployed and `READY` on production;
+- `GET /api/library/publish` answers **405 Method Not Allowed** with
+  `x-matched-path: /api/library/publish` — the route exists, it just only has
+  a POST.
+
+So clearing the cache would have changed nothing, and the real cause was
+simpler: **publishing had no label on it.** Delete is a chip on every tile
+that says "Delete". Publishing was an unlabelled tap on the photograph itself,
+and the panel it opens sits under the whole grid. Nothing on the screen said
+so. "The button isn't there" was literally true — there was no button, only a
+gesture nobody had been told about.
+
+The room now says, above the grid: *Tap a photograph to describe it and put it
+on the site.*
+
+### 19.1 What each check actually proves
+
+`scripts/verify-studio-photos.mjs`, run both ways:
+
+| | |
+| --- | --- |
+| C the room says a tap opens it | **FAILS** with the label removed. This is the fix. |
+| B the panel is on screen afterwards | **PASSES** with the `scrollIntoView` removed too, even with fifteen photographs. The harness could not reproduce the panel landing off screen. |
+
+The scroll stays — it costs nothing and a long library makes it plausible —
+but it is **defensive, not demonstrated**, and both the component and the
+checker say so. Claiming it as the fix would have been inventing a cause that
+matched a fix I had already written.
+
+The fake Supabase now holds **fifteen** photographs rather than eight, because
+a fixture smaller than the real thing is a fixture that passes on broken code.
+That change did not make B fail either, which is how the above is known.

@@ -29,7 +29,7 @@ check() {
 
 echo "-- A. the listing shows each photograph once --"
 N=$(curl -s --noproxy '*' -b "sw-darkroom=$C" "http://localhost:$OK_PORT/api/library/list" | python3 -c "import json,sys;print(len(json.load(sys.stdin)['photos']))")
-check "8 uploads across 2 folders -> 8 tiles, not 16" "8" "$N"
+check "15 uploads across 2 folders -> 15 tiles, not 30" "15" "$N"
 F=$(curl -s --noproxy '*' -b "sw-darkroom=$C" "http://localhost:$OK_PORT/api/library/list" | python3 -c "import json,sys;print(','.join(sorted({p['publicId'].split('/')[0] for p in json.load(sys.stdin)['photos']})))")
 check "and keeps the library/ copy, not darkroom/" "library" "$F"
 
