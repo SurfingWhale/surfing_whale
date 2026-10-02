@@ -394,3 +394,45 @@ This is also where `public/work/maps/indonesia-nik-provinsi.html` belongs
 Keywords, search intent, cannibalisation, backlinks, competitor gaps, CTR and
 impressions all need Google Search Console, which is not connected. Nothing in
 this section guesses at them.
+
+## 13. Dead ends — 2026-10-02
+
+Asked for after the photo library turned out to lead nowhere: a sweep for
+anything built that a reader, or Fauzy, cannot actually get to. Measured, not
+guessed — reachability was read off a production build, the data flows off the
+imports.
+
+### 13.1 Fixed in this pass
+
+**A photograph could not reach the site on its own.** There were two routes and
+both went the long way: write an essay or a post and pick the frame inside it,
+or hand-edit `app/data/photography.ts` and push a commit. The gallery read that
+array and nothing else. Now a frame can be published from the Photos room —
+description, category, on the site. See the commit "A photograph can go on the
+site on its own now".
+
+This one had been written into a comment as if it were a decision rather than
+an oversight, which is how it survived two sessions.
+
+### 13.2 Still dead
+
+| What | State |
+| --- | --- |
+| `/photo` and `/writing` | 200, good titles, good descriptions, **linked from nowhere**. `grep -c 'href="/photo"'` on the home page's served HTML returns 0. The only link to the darkroom sits inside the photography section, which renders in the "capture" profile mode — client state, reached by a click, invisible to a crawler. Combined with the missing sitemap (§12.1) nothing can find them. |
+| `app/components/ScrollVelocity` | Imported by no file. |
+| `app/components/RotatingText` | Imported by no file. |
+| `/api/sync-images` | Called from no file in the app. `SYNC_SECRET` defaults to `""`, which leaves the route open — see §10.2. |
+| `public/work/maps/indonesia-nik-provinsi.html` | 102KB, linked from nothing (§11.1). |
+| WhatsApp, for an approved reader | 503 until `WHATSAPP_NUMBER` is set (§10.2). The gate's promise is partly false until then. |
+
+### 13.3 The pattern
+
+Every one of these is the same shape: a thing that works, with no route to it.
+Nothing here is broken in a way a test would catch — the pages return 200, the
+components compile, the routes respond. What is missing is the link, the
+button, or the sitemap entry that lets anyone arrive.
+
+So the check worth keeping is not "does it work" but **"what can reach it"**,
+which is why `scripts/audit-seo.mjs` crawls from the home page rather than
+taking a list of routes. A route list would have reported `/photo` and
+`/writing` as healthy.
