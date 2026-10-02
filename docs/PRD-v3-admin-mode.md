@@ -418,10 +418,10 @@ an oversight, which is how it survived two sessions.
 
 | What | State |
 | --- | --- |
-| `/photo` and `/writing` | 200, good titles, good descriptions, **linked from nowhere**. `grep -c 'href="/photo"'` on the home page's served HTML returns 0. The only link to the darkroom sits inside the photography section, which renders in the "capture" profile mode — client state, reached by a click, invisible to a crawler. Combined with the missing sitemap (§12.1) nothing can find them. |
+| ~~`/photo` and `/writing`~~ | **Fixed 2026-10-02.** Both are in the sitemap whatever the nav decides, the darkroom has a nav entry it never had, and robots.txt exists. They still carry no inbound link until the first essay and post are published — by design, so neither lands a reader on "Nothing published yet" — which is exactly the gap a sitemap is for. |
 | `app/components/ScrollVelocity` | Imported by no file. |
 | `app/components/RotatingText` | Imported by no file. |
-| `/api/sync-images` | Called from no file in the app. `SYNC_SECRET` defaults to `""`, which leaves the route open — see §10.2. |
+| `/api/sync-images` | Called from no file in the app. `SYNC_SECRET` defaults to `""`, which leaves the route open — see §10.2. Now excluded in robots.txt along with the rest of `/api/`, which hides it but does not close it. |
 | `public/work/maps/indonesia-nik-provinsi.html` | 102KB, linked from nothing (§11.1). |
 | WhatsApp, for an approved reader | 503 until `WHATSAPP_NUMBER` is set (§10.2). The gate's promise is partly false until then. |
 
@@ -436,3 +436,23 @@ So the check worth keeping is not "does it work" but **"what can reach it"**,
 which is why `scripts/audit-seo.mjs` crawls from the home page rather than
 taking a list of routes. A route list would have reported `/photo` and
 `/writing` as healthy.
+
+### 13.4 After the discoverability pass — 2026-10-02
+
+Measured on a production build with `scripts/audit-seo.mjs`, before and after.
+
+| | before | after |
+| --- | --- | --- |
+| blocking findings | 9 | **0** |
+| warnings | 13 | 7 |
+| `/robots.txt` | 404 | ok |
+| `/sitemap.xml` | 404 | ok, 9 urls |
+| canonical tags | 0 of 13 | every page not excluded in robots.txt |
+| pages with two `<h1>` | 3 | 0 |
+| `<html lang>` | `id` on English copy | `en-GB` |
+
+Still open, and stated rather than closed quietly: no structured data on any
+page, images without `width`/`height` attributes (23 on the home page alone —
+§12.2), and three raw files still linked out of case studies as if they were
+pages. The last are excluded in robots.txt now, which stops them being indexed
+but does not stop them being linked.
