@@ -8,7 +8,7 @@ import { supabaseAdmin, supabaseConfigured } from "./supabase";
 
 export const dbConfigured = supabaseConfigured;
 
-export type Table = "surfingwhale_essays" | "surfingwhale_posts";
+export type Table = "surfingwhale_essays" | "surfingwhale_posts" | "surfingwhale_photos";
 
 export const table = (name: Table) => supabaseAdmin().from(name);
 

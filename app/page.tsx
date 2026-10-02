@@ -19,6 +19,7 @@ import { VisitorCard } from "./components/VisitorCard";
 import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
+import { listPublishedPhotos } from "./lib/photos";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -36,9 +37,10 @@ const NAV_LINKS: NavLink[] = [
 // [] when their database is unconfigured, so this needs no extra guard and the
 // links reappear on their own once posts exist.
 export default async function Home() {
-  const [posts, essays] = await Promise.all([
+  const [posts, essays, photos] = await Promise.all([
     listPosts(),
     listEssays(),
+    listPublishedPhotos(),
   ]);
   const navLinks = NAV_LINKS.filter(
     (l) => l.href !== "/writing" || posts.length > 0
@@ -86,7 +88,7 @@ export default async function Home() {
                 <CVSection />
               </>
             }
-            captureContent={<PhotographySection hasDarkroom={essays.length > 0} />}
+            captureContent={<PhotographySection hasDarkroom={essays.length > 0} photos={photos} />}
           />
         </ProfileModeProvider>
         {/* Inside the provider now. Contact asks the gate whether this reader

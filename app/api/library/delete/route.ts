@@ -11,9 +11,11 @@
 // person who sees this message is the only person who can act on it, and a
 // dead end told him nothing.
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
 import { deletePhoto, isLibraryPath, publicUrlOf } from "@/app/lib/storage";
 import { SetupError } from "@/app/lib/db";
+import { forgetPhoto } from "@/app/lib/photos";
 import { essaysUsing } from "@/app/lib/darkroom";
 import { postsUsing } from "@/app/lib/writing";
 
@@ -75,5 +77,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
+  // The file is gone, so its row must go too — a published row pointing at a
+  // deleted object is a hole in the gallery. Best-effort: the photograph is
+  // already deleted, and failing here would report that it was not.
+  await forgetPhoto(publicId);
+  revalidatePath("/");
   return NextResponse.json({ ok: true });
 }

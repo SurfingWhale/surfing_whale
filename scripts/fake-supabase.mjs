@@ -23,6 +23,11 @@ const FILES = ["camera", "stairway", "mountain", "teddy", "sunset", "boatblue", 
   }));
 const STORE = { library: [...FILES], darkroom: [...FILES], archive: [] };
 
+// The photographs table, in memory, so the publish path can be driven end to
+// end: upsert a row, then read the published ones back the way the home page
+// does.
+const PHOTOS = new Map();
+
 createServer(async (req, res) => {
   let body = "";
   for await (const c of req) body += c;
@@ -39,6 +44,19 @@ createServer(async (req, res) => {
   // does this — deletePhoto() names every library folder and relies on it.
   if (req.method === "DELETE" && req.url.startsWith("/storage/v1/object/"))
     return send(200, (JSON.parse(body || "{}").prefixes ?? []).map((p) => ({ name: p })));
+
+  if (req.url.startsWith("/rest/v1/surfingwhale_photos")) {
+    if (process.env.FAKE_PGRST_FAIL)
+      return send(404, { code: "PGRST205", message: "Could not find the table in the schema cache" });
+    if (req.method === "POST") {
+      for (const row of [].concat(JSON.parse(body || "[]"))) PHOTOS.set(row.public_id, row);
+      return send(201, []);
+    }
+    if (req.method === "DELETE") return send(200, []);
+    // GET: published=true for the gallery, public_id=in.(...) for the studio.
+    const rows = [...PHOTOS.values()];
+    return send(200, req.url.includes("published=eq.true") ? rows.filter((r) => r.published) : rows);
+  }
 
   if (req.method === "GET" && req.url.startsWith("/rest/v1/"))
     return process.env.FAKE_PGRST_FAIL

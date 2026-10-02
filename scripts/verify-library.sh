@@ -55,6 +55,44 @@ check "no session -> Locked" "Locked" "$L"
 O=$(curl -s --noproxy '*' -b "sw-darkroom=$C" -H 'content-type: application/json' -X POST "http://localhost:$OK_PORT/api/library/delete" -d '{"publicId":"../secrets/x-1x1.webp"}')
 check "path traversal -> Out of scope" "Out of scope" "$O"
 
+echo "-- E. a photograph reaches the site without an essay --"
+ID='library/2026-09-02-stairway-aabbccdd-1200x800.webp'
+N=$(curl -s --noproxy '*' -b "sw-darkroom=$C" -H 'content-type: application/json' -X POST \
+  "http://localhost:$OK_PORT/api/library/publish" \
+  -d "{\"publicId\":\"$ID\",\"alt\":\"\",\"category\":\"everyday\",\"published\":true,\"width\":1200,\"height\":800}")
+check "publishing with no description is refused" "Describe the photograph first" "$N"
+NC=$(curl -s -o /dev/null -w '%{http_code}' --noproxy '*' -b "sw-darkroom=$C" -H 'content-type: application/json' -X POST \
+  "http://localhost:$OK_PORT/api/library/publish" \
+  -d "{\"publicId\":\"$ID\",\"alt\":\"\",\"category\":\"everyday\",\"published\":true,\"width\":1200,\"height\":800}")
+check "  ... with 422, not a generic failure" "422" "$NC"
+
+P=$(curl -s --noproxy '*' -b "sw-darkroom=$C" -H 'content-type: application/json' -X POST \
+  "http://localhost:$OK_PORT/api/library/publish" \
+  -d "{\"publicId\":\"$ID\",\"alt\":\"A man on a stairway\",\"category\":\"landscapes\",\"published\":true,\"width\":1200,\"height\":800}")
+check "publishing with one succeeds" '"ok":true' "$P"
+
+G=$(curl -s --noproxy '*' "http://localhost:$OK_PORT/" | grep -c 'A man on a stairway')
+check "and the home page gallery shows it — no essay involved" "1" "$G"
+
+S=$(curl -s --noproxy '*' -b "sw-darkroom=$C" "http://localhost:$OK_PORT/api/library/list" | python3 -c "import json,sys;p=[x for x in json.load(sys.stdin)['photos'] if x['published']];print(len(p))")
+check "the studio shows it as published" "1" "$S"
+
+echo "-- F. the url on the row is the bucket's, never the browser's --"
+curl -s --noproxy '*' -b "sw-darkroom=$C" -H 'content-type: application/json' -X POST \
+  "http://localhost:$OK_PORT/api/library/publish" \
+  -d "{\"publicId\":\"$ID\",\"alt\":\"A man on a stairway\",\"category\":\"landscapes\",\"published\":true,\"width\":1200,\"height\":800,\"url\":\"https://evil.example/x.jpg\"}" > /dev/null
+H=$(curl -s --noproxy '*' "http://localhost:$OK_PORT/")
+check "the gallery serves the bucket url" "localhost:4999/storage/v1/object/public" "$H"
+if printf '%s' "$H" | grep -qF 'evil.example'; then
+  echo "  FAIL  a url supplied by the client reached the page"; fails=$((fails+1))
+else
+  echo "  PASS  a url supplied by the client never reached the page"
+fi
+
+echo "-- G. a missing table leaves the gallery standing --"
+F=$(curl -s --noproxy '*' "http://localhost:$BAD_PORT/" | grep -c 'from the photography archive')
+check "home page falls back to the manifest, does not 500" "1" "$F"
+
 echo
 [ "$fails" -eq 0 ] && echo "ALL PASS" || echo "$fails FAILED"
 exit $fails

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { photographs, type PhotoCategory } from "@/app/data/photography";
+import { photographs as fallback, type Photo, type PhotoCategory } from "@/app/data/photography";
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { VinylPlayer } from "@/app/components/VinylPlayer";
 
@@ -18,26 +18,34 @@ const LABEL: Record<PhotoCategory, string> = {
 
 const ORDER: PhotoCategory[] = ["portraits", "everyday", "landscapes"];
 
-// Only offer filters that actually have frames behind them, so a tab never
-// leads to an empty grid.
-const AVAILABLE = ORDER.filter((c) => photographs.some((p) => p.category === c));
-
 type Filter = "all" | PhotoCategory;
 
+/**
+ * `photos` comes from the studio — whatever has been put on the site from the
+ * photo library. The manifest in the repository stands in while that is empty,
+ * so a deployment without the table, or before the first photograph has been
+ * published, shows the frames it always showed rather than an empty section.
+ */
 export function PhotographySection({
   hasDarkroom = false,
+  photos,
 }: {
   hasDarkroom?: boolean;
+  photos?: Photo[];
 }) {
+  const photographs = photos?.length ? photos : fallback;
   const [filter, setFilter] = useState<Filter>("all");
   // Index runs against the filtered set, so arrows walk what is on screen.
   const [viewing, setViewing] = useState<number | null>(null);
   const visible =
     filter === "all" ? photographs : photographs.filter((p) => p.category === filter);
 
+  // Only offer filters that actually have frames behind them, so a tab never
+  // leads to an empty grid. Computed per render now that the set can change.
+  const available = ORDER.filter((c) => photographs.some((p) => p.category === c));
   const filters: { key: Filter; label: string }[] = [
     { key: "all", label: "All" },
-    ...AVAILABLE.map((c) => ({ key: c as Filter, label: LABEL[c] })),
+    ...available.map((c) => ({ key: c as Filter, label: LABEL[c] })),
   ];
 
   return (
