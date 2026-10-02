@@ -7,7 +7,9 @@ const BASE = 'http://localhost:' + (process.argv[2] || '3000');
 import { chromium } from 'playwright';
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
 const p=await (await b.newContext({viewport:{width:430,height:900}})).newPage();
-for (const path of ['/','/archive','/photo','/writing','/studio','/nope']) {
+// /archive is not a page any more: it redirects home, so reading its h1 would
+// only re-check the home page. Its redirect is asserted on its own below.
+for (const path of ['/','/photo','/writing','/studio','/nope']) {
   const r=await p.goto(BASE+path,{waitUntil:'networkidle'});
   await p.waitForTimeout(500);
   const m=await p.evaluate(()=>{
@@ -20,4 +22,6 @@ for (const path of ['/','/archive','/photo','/writing','/studio','/nope']) {
   });
   console.log(`${path.padEnd(10)} ${r.status()}  h1×${m.h1Count} "${m.h1}"  levels ${JSON.stringify(m.order)}  ${m.h1Count===1&&m.noSkips?'ok':'CHECK'}`);
 }
+const a=await p.goto(BASE+'/archive',{waitUntil:'networkidle'});
+console.log(`/archive   ${a.status()}  lands on ${new URL(p.url()).pathname}  ${new URL(p.url()).pathname==='/'?'ok':'CHECK'}`);
 await b.close();

@@ -18,6 +18,7 @@ export function Access() {
   const [rows, setRows] = useState<AccessRequest[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [mailOn, setMailOn] = useState(false);
+  const [whatsOn, setWhatsOn] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [links, setLinks] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<string | null>(null);
@@ -29,6 +30,7 @@ export function Access() {
         const d = await r.json().catch(() => ({}));
         setRows(d.requests ?? []);
         setMailOn(Boolean(d.mailConfigured));
+        setWhatsOn(d.whatsappConfigured !== false);
         setLoadError(r.ok ? null : d.error ?? `HTTP ${r.status}`);
       })
       .catch(() => {
@@ -83,6 +85,14 @@ export function Access() {
             No mail provider configured — set <code className="font-mono">RESEND_API_KEY</code>{" "}
             and <code className="font-mono">MAIL_FROM</code>. Approving still works; the
             link appears here to send by hand.
+          </p>
+        )}
+
+        {rows !== null && !loadError && !whatsOn && (
+          <p className="text-[11px] leading-[1.8] text-fg-body rounded-lg bg-bg-subtle border border-border px-3 py-2.5">
+            No WhatsApp number — set <code className="font-mono">WHATSAPP_NUMBER</code> (digits
+            only, country code first). Until then an approved reader who taps WhatsApp gets an
+            error instead of the chat.
           </p>
         )}
 

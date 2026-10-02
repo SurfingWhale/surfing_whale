@@ -15,6 +15,10 @@ export async function GET(): Promise<NextResponse> {
     return NextResponse.json({
       requests: await listRequests(),
       mailConfigured: mailConfigured(),
+      // The reward an approved reader is promised. Without the number they
+      // get a 503 and nothing on the site says why, so the admin is told here.
+      // Here and not on /api/darkroom/session, which anyone can read.
+      whatsappConfigured: Boolean(process.env.WHATSAPP_NUMBER),
     });
   } catch (err) {
     console.error("Access list error:", err);

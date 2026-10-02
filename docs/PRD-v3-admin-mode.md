@@ -205,6 +205,11 @@ repository is public.
 so anything those endpoints do not cover is marked **unverified** rather than
 guessed at.
 
+*Update 2026-10-02, later:* the names and targets below were then read with
+`vercel env ls` from a linked checkout — names and environments only, no
+value was decrypted. Rows marked "listed" are confirmed present on
+Production and Preview; rows marked "unset" are confirmed absent.
+
 ### 10.1 Required — the gate and the studio stop working without these
 
 | Variable | Without it | Set on prod |
@@ -221,13 +226,13 @@ guessed at.
 | Variable | Default | Effect | Set on prod |
 | --- | --- | --- | --- |
 | `ACCESS_GATE` | unset → open | Must be the literal string `on`. Anything else — including `approval` or `true` — leaves the gate open and everything readable. | ✅ `on` (live reports `gate: "approval"`, which is the *reported* state, not the variable's value) |
-| `WHATSAPP_NUMBER` | none | The WA button returns **503** to an approved reader. Digits only, no `+`. | ❌ **unverified — probably still missing** |
-| `RESEND_API_KEY` + `MAIL_FROM` | none | Approval emails do not send. Approving still works and the studio shows the link to send by hand, so this is a convenience, not a dependency. Both are needed; one alone does nothing. | ⚠️ unverified (the studio shows `mailConfigured` once signed in) |
-| `ADMIN_EMAIL` | `fauzymuhamad43@gmail.com` | Which verified Google account may enter `/studio`. | ⚠️ unverified (the fallback is correct, so unset is fine) |
+| `WHATSAPP_NUMBER` | none | The WA button returns **503** to an approved reader. Digits only, no `+`. | ✅ set 2026-10-02, Production and Preview (Fauzy chose the original number; see §11.1 item 2). The Access room warns if it ever goes missing |
+| `RESEND_API_KEY` + `MAIL_FROM` | none | Approval emails do not send. Approving still works and the studio shows the link to send by hand, so this is a convenience, not a dependency. Both are needed; one alone does nothing. | ✅ listed (values not checked; the Access room shows `mailConfigured`) |
+| `ADMIN_EMAIL` | `fauzymuhamad43@gmail.com` | Which verified Google account may enter `/studio`. | unset — the fallback is the right address |
 | `NOTION_DATABASE_ID` | a default id in `notionIds.ts` | The projects database. | ✅ (`notion: true`) |
-| `SUPABASE_BUCKET` | `surfing-whale` | Storage bucket name. | ⚠️ unverified (default is correct) |
-| `NEXT_PUBLIC_SITE_URL` | `https://surfing-whale.vercel.app` | The host written into approval links. **Must be changed the day a custom domain lands**, or approved readers get links to the old host. | ⚠️ unverified |
-| `SYNC_SECRET` | `""` | Guards `/api/sync-images`. Empty means the route is open — check this before relying on it. | ⚠️ unverified |
+| `SUPABASE_BUCKET` | `surfing-whale` | Storage bucket name. | unset — the default is right |
+| `NEXT_PUBLIC_SITE_URL` | `https://surfing-whale.vercel.app` | The host written into approval links. **Must be changed the day a custom domain lands**, or approved readers get links to the old host. | ✅ listed (value not checked) |
+| `SYNC_SECRET` | `""` | Guards `/api/sync-images`. Empty means the route **refuses every request** — it fails closed since `3512d72`; before that it fell back to `"dev-secret"`. | ✅ listed, Production and Preview (set 2026-10-01) |
 
 ### 10.3 Client-side (`NEXT_PUBLIC_*`) — these ship to every visitor
 
@@ -258,10 +263,8 @@ Everything known to be unfinished, in the order it costs something.
 
 ### 11.1 Blocked on Fauzy
 
-1. **`WHATSAPP_NUMBER` is not set.** An approved reader who clicks through to
-   WhatsApp gets a 503. This is the only reward of the access gate that does
-   not currently work, which makes the gate's promise partly false. One
-   variable in Vercel settings.
+1. ~~**`WHATSAPP_NUMBER` is not set.**~~ Set 2026-10-02 on Production and
+   Preview, to the original number — Fauzy's choice, made knowing item 2.
 2. **The old WhatsApp number is in public git history.** It was a client-side
    const from `d33b890` until `f8fc9c8` moved it server-side. Removing it from
    the shipped bundle does not remove it from the commits, and the repository
@@ -279,11 +282,11 @@ Everything known to be unfinished, in the order it costs something.
    opens straight into a room.
 6. **Phase 4 — Profile — not started.** The hero's tagline and bio are still
    strings in `HeroSection.tsx`.
-7. **Nothing reports WhatsApp or mail configuration to the admin.** The studio
-   reads `mailConfigured`, but a missing `WHATSAPP_NUMBER` is invisible until a
-   reader hits the 503. The cheapest fix is to add both to the
-   `/api/darkroom/session` payload, which is already admin-gated and already
-   reports `notion` and `storage`.
+7. ~~**Nothing reports WhatsApp or mail configuration to the admin.**~~ Done
+   2026-10-02: `/api/studio/access` returns `whatsappConfigured` beside
+   `mailConfigured`, and the Access room says when the number is missing. Not
+   on `/api/darkroom/session` as first suggested — that route answers anyone,
+   signed in or not, so it is the wrong place to describe the setup.
 
 ### 11.3 Verification gaps
 
@@ -294,10 +297,9 @@ Everything known to be unfinished, in the order it costs something.
    because SMIL `gradientTransform` does not animate in WebKit, and the rAF
    loop that replaced it is the thing that has never been seen on a real
    Safari.
-9. **`scripts/verify-headings.mjs` still checks `/archive`.** That route now
-   redirects home, so the check passes by reading the *home page's* `<h1>` and
-   proves nothing. It should check `/photo` and `/writing` instead, and assert
-   the redirect separately.
+9. ~~**`scripts/verify-headings.mjs` still checks `/archive`.**~~ Done
+   2026-10-02: it checks `/photo` and `/writing` and asserts the `/archive`
+   redirect on its own line.
 
 ### 11.4 Open design questions
 
@@ -309,9 +311,18 @@ Everything known to be unfinished, in the order it costs something.
 
 ### 11.5 Housekeeping
 
-12. **The repository has moved to `SurfingWhale/surfing_whale`.** GitHub says
-    so on every push. Pushes still succeed through the redirect, so the git
-    remote has deliberately been left pointing at the old owner rather than
-    risk the session's credentials mid-work. Worth updating when convenient —
-    and it helps the standing rule that the old account name never appears to
-    a visitor.
+12. ~~**The repository has moved to `SurfingWhale/surfing_whale`.**~~ The local
+    checkout on Fauzy's machine already points `origin` at
+    `https://github.com/SurfingWhale/surfing_whale.git`; only other clones (the
+    cloud session's) may still use the old owner's URL.
+
+13. **Google sign-in from the home-screen app is still off.** The site's own
+    redirect URI, `https://surfing-whale.vercel.app/__/auth/handler`, is still
+    refused (`redirect_uri_mismatch`, re-checked 2026-10-02, about fourteen
+    hours after it was said to be added) — too long for propagation, so it is
+    most likely on the wrong client or in "Authorized JavaScript origins".
+    It belongs under **Authorized redirect URIs** of the Web client whose ID
+    starts `751278619218-posj0le1`, in the Google Cloud project
+    `surfing-whale`. Once it passes, set `GOOGLE_IN_APP = true` in
+    `app/lib/firebaseConfig.ts`. Browser tabs are unaffected: they sign in
+    through `firebaseapp.com`.
