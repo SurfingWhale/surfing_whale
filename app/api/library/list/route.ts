@@ -28,17 +28,28 @@ export async function GET(): Promise<NextResponse> {
     return NextResponse.json({ error: `Could not load the library: ${reason}` }, { status: 502 });
   }
 
-  // Details are a convenience, not the listing. A database that is not set up
-  // yet should leave the frames visible and deletable, not blank the room —
-  // so this failure is swallowed and the tiles simply show no description.
+  // Details are a convenience, not the listing: a database that is not set up
+  // yet should leave the frames visible and deletable rather than blank the
+  // room. But the failure is REPORTED, not swallowed.
+  //
+  // It was swallowed, and that is how "0 on the site" came to mean two
+  // different things with no way to tell them apart — nothing published yet,
+  // or nothing CAN be published because the table was never made. Exactly the
+  // same mistake as "Could not delete it.", in this same file, written two
+  // days after fixing that one. The person reading this screen is the only
+  // person who can run the SQL; the screen has to say so.
   let meta: Awaited<ReturnType<typeof metaFor>> = {};
+  let details: { ok: boolean; reason?: string } = { ok: true };
   try {
     meta = await metaFor(photos.map((p) => p.publicId));
   } catch (err) {
-    console.error("Photo details unavailable:", err instanceof Error ? err.message : err);
+    const reason = err instanceof Error ? err.message : String(err);
+    console.error("Photo details unavailable:", reason);
+    details = { ok: false, reason };
   }
 
   return NextResponse.json({
+    details,
     photos: photos.map((p) => ({
       ...p,
       alt: meta[p.publicId]?.alt ?? "",

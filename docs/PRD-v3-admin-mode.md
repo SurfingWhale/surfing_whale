@@ -777,3 +777,39 @@ uploads of the same picture**, not the folder duplication §16 fixed — every
 upload gets four random bytes in its name, so three uploads of one file are
 three different objects and nothing can tell them apart by name. Deleting them
 works; there is just nothing to deduplicate.
+
+## 18. Why the photographs were not on the site — 2026-10-02
+
+Delete works. Fauzy's next question: the gallery still shows the five
+hardcoded photographs, not his fifteen.
+
+The answer was already on his screen: **"In the library · 15 · 0 on the
+site."** Nothing had been published. Publishing is a separate act — tap a
+frame, describe it, "Put it on the site" — and nothing in the library goes up
+on its own.
+
+But "0 on the site" could not tell him *which* of two things was true, and
+that is the real defect:
+
+1. nothing has been published yet, or
+2. nothing **can** be, because `surfingwhale_photos` was never created.
+
+`/api/library/list` read the details with a `try`, logged the failure to a
+server console nobody reads, and returned `published: false` for every frame.
+Both cases produce the same screen.
+
+**That is the same mistake as "Could not delete it." — in the same file, two
+days after fixing it.** The pattern is: a failure that is survivable gets
+swallowed so the screen still works, and the reason goes to a log the only
+person who can act on it will never see.
+
+The listing now carries `details: { ok, reason }`, the room drops "0 on the
+site" when the table cannot be read, and says instead:
+
+> Photographs cannot go on the site yet — the table they live in is not there.
+> Run `supabase/surfing-whale.sql` once in Supabase → SQL Editor. It is safe
+> to run again if it has been run before. Uploading and deleting work without
+> it.
+
+Case I in `scripts/verify-library.sh`: the failure is reported, it names the
+fix, and a healthy table reports ok. A through I: ALL PASS.

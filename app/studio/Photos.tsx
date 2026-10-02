@@ -21,7 +21,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { size } from "@/app/darkroom/downscale";
 import { sendPhoto } from "@/app/darkroom/sendPhoto";
-import { Button, DropZone, Field, PendingList, RoomHeader, inputClass, labelClass, textareaClass, type Pending } from "./ui";
+import { Button, DropZone, Field, PendingList, RoomHeader, hintClass, inputClass, labelClass, textareaClass, type Pending } from "./ui";
 
 type Category = "portraits" | "everyday" | "landscapes";
 const CATEGORIES: Category[] = ["portraits", "everyday", "landscapes"];
@@ -47,6 +47,10 @@ export function Photos() {
   const [open, setOpen] = useState<string | null>(null);
   const [draft, setDraft] = useState<{ alt: string; category: Category } | null>(null);
   const [saving, setSaving] = useState(false);
+  // Null while loading; {ok:false, reason} when the photo table cannot be
+  // read, which is the difference between "nothing is published" and "nothing
+  // can be".
+  const [details, setDetails] = useState<{ ok: boolean; reason?: string } | null>(null);
 
   const load = useCallback(() => {
     fetch("/api/library/list", { cache: "no-store" })
@@ -54,6 +58,7 @@ export function Photos() {
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error ?? "Could not load the library.");
         setFrames(d.photos ?? []);
+        setDetails(d.details ?? { ok: true });
       })
       .catch((err) => {
         setFrames([]);
@@ -194,10 +199,33 @@ export function Photos() {
       <section aria-labelledby="library-photos" className="mt-8">
         <h3 id="library-photos" className={`${labelClass} mb-3`}>
           In the library{frames ? ` · ${frames.length}` : ""}
-          {frames && frames.length > 0 && (
+          {frames && frames.length > 0 && details?.ok && (
             <span className="text-fg-muted"> · {live} on the site</span>
           )}
         </h3>
+
+        {/* Says which of the two it is. "0 on the site" on its own could mean
+            nothing has been published or that nothing can be, and only one of
+            those is something to do about. */}
+        {details && !details.ok && (
+          <div role="status" className="mb-4 rounded-xl border border-border px-4 py-3">
+            <p className="text-[13px] leading-[1.7] text-fg">
+              Photographs cannot go on the site yet — the table they live in is
+              not there.
+            </p>
+            <p className="text-[13px] leading-[1.7] text-fg-body">
+              Run <code className="font-mono">supabase/surfing-whale.sql</code>{" "}
+              once in Supabase → SQL Editor. It is safe to run again if it has
+              been run before. Uploading and deleting work without it.
+            </p>
+            {/* Only when it says something the two lines above do not. The
+                common case — the tables were never made — already IS those two
+                lines, and printing it again reads as a stutter. */}
+            {details.reason && !details.reason.includes("surfing-whale.sql") && (
+              <p className={`${hintClass} mt-1`}>{details.reason}</p>
+            )}
+          </div>
+        )}
 
         {frames === null && <p className="text-[13px] leading-[1.7] text-fg-muted">Loading…</p>}
         {frames?.length === 0 && (

@@ -112,6 +112,14 @@ else
   echo "  FAIL  the containment filter is not a jsonb array"; echo "        query: $Q"; fails=$((fails+1))
 fi
 
+echo "-- I. a missing photo table is named, not hidden behind '0 on the site' --"
+D=$(curl -s --noproxy '*' -b "sw-darkroom=$C" "http://localhost:$BAD_PORT/api/library/list" | python3 -c "import json,sys;d=json.load(sys.stdin);print(json.dumps(d.get('details')))")
+check "the listing reports the failure" '"ok": false' "$D"
+# unwrap() turns a missing table into SetupError, whose message IS the fix.
+check "  ... and names the fix" 'surfing-whale.sql' "$D"
+OK=$(curl -s --noproxy '*' -b "sw-darkroom=$C" "http://localhost:$OK_PORT/api/library/list" | python3 -c "import json,sys;print(json.dumps(json.load(sys.stdin).get('details')))")
+check "a healthy table reports ok" '"ok": true' "$OK"
+
 echo
 [ "$fails" -eq 0 ] && echo "ALL PASS" || echo "$fails FAILED"
 exit $fails
