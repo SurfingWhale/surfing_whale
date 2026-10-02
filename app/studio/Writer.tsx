@@ -415,7 +415,7 @@ export function Writer() {
         </div>
 
         <div className="mt-6">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-3 mb-1.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 mb-2">
             <span id={bodyLabel} className={labelClass}>Body</span>
             <span className={hintClass}>
               <span className="font-mono">##</span> heading · <span className="font-mono">&gt;</span> quote ·{" "}
@@ -425,7 +425,7 @@ export function Writer() {
           <div
             role="group"
             aria-labelledby={bodyLabel}
-            className="rounded-lg border border-border bg-bg px-3 py-2.5 min-h-[240px] space-y-1 focus-within:border-fg transition-colors duration-200"
+            className="rounded-lg border border-border bg-bg px-3 py-3 min-h-[240px] space-y-1 focus-within:border-fg transition-colors duration-200"
           >
             {blocks.map((block, i) => (
               <div key={i} className="group grid sm:grid-cols-[minmax(0,1fr)_auto] gap-x-3 items-start">
@@ -471,13 +471,13 @@ export function Writer() {
                 {/* Beside the block on a wide screen, shown on hover or focus.
                     On a phone there is no hover and no room beside it, so the
                     controls open under whichever block has the caret. */}
-                <div className="hidden group-focus-within:flex sm:flex sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 items-center gap-1.5 pt-1 pb-2 sm:pb-0 sm:pt-0.5 transition-opacity duration-200">
+                <div className="hidden group-focus-within:flex sm:flex sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 items-center gap-2 pt-1 pb-2 sm:pb-0 sm:pt-0.5 transition-opacity duration-200">
                   <label className="sr-only" htmlFor={`kind-${i}`}>Block type</label>
                   <select
                     id={`kind-${i}`}
                     value={block.kind}
                     onChange={(e) => setKind(i, e.target.value as BlockKind)}
-                    className="h-8 sm:h-7 bg-bg text-[16px] sm:text-[11px] text-fg-body border border-border rounded-md px-1.5 hover:border-border-strong"
+                    className="h-8 sm:h-7 bg-bg text-[16px] sm:text-[11px] text-fg-body border border-border rounded-md px-2 hover:border-border-strong"
                   >
                     {(Object.keys(KIND_LABEL) as BlockKind[])
                       .filter((k) => k !== "image" || block.kind === "image")

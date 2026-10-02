@@ -68,7 +68,7 @@ export function CaseHeader({
           {/* The facts run down the page rather than across it, so the title
               keeps the full measure and the eye still catches them. Right
               aligned because they are a margin note, not a subtitle. */}
-          <ul className="shrink-0 text-right space-y-1.5 pt-1">
+          <ul className="shrink-0 text-right space-y-2 pt-1">
             {facts.map((f) => (
               <li
                 key={f}
@@ -114,7 +114,7 @@ export function CaseHeader({
         {open && (
           <dl
             id={panelId}
-            className="mt-6 grid gap-2.5 sm:grid-cols-[7rem_1fr] sm:gap-x-6"
+            className="mt-6 grid gap-3 sm:grid-cols-[7rem_1fr] sm:gap-x-6"
           >
             {made.map((row) => (
               <div key={row.label} className="contents">

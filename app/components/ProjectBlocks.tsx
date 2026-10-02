@@ -37,7 +37,7 @@ export function BlockRenderer({ block }: { block: NotionBlock }) {
         case "code":
         return (
             <div className="my-4 rounded-lg overflow-hidden border border-border">
-            <div className="bg-bg-muted px-3 py-1.5">
+            <div className="bg-bg-muted px-3 py-2">
                 <span className="font-mono text-[11px] text-fg-muted">{block.language}</span>
             </div>
             <pre className="p-4 overflow-x-auto bg-bg-subtle">

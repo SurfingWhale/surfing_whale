@@ -81,7 +81,7 @@ export function Access() {
 
       <div className="space-y-6">
         {rows !== null && !loadError && !mailOn && (
-          <p className="text-[11px] leading-[1.8] text-fg-body rounded-lg bg-bg-subtle border border-border px-3 py-2.5">
+          <p className="text-[11px] leading-[1.8] text-fg-body rounded-lg bg-bg-subtle border border-border px-3 py-3">
             No mail provider configured — set <code className="font-mono">RESEND_API_KEY</code>{" "}
             and <code className="font-mono">MAIL_FROM</code>. Approving still works; the
             link appears here to send by hand.
@@ -89,7 +89,7 @@ export function Access() {
         )}
 
         {rows !== null && !loadError && !whatsOn && (
-          <p className="text-[11px] leading-[1.8] text-fg-body rounded-lg bg-bg-subtle border border-border px-3 py-2.5">
+          <p className="text-[11px] leading-[1.8] text-fg-body rounded-lg bg-bg-subtle border border-border px-3 py-3">
             No WhatsApp number — set <code className="font-mono">WHATSAPP_NUMBER</code> (digits
             only, country code first). Until then an approved reader who taps WhatsApp gets an
             error instead of the chat.

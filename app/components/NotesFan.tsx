@@ -137,7 +137,7 @@ export function NotesFan({ notes }: { notes: FanNote[] }) {
                   ? "transform 420ms cubic-bezier(0.2,0,0,1), opacity 420ms ease"
                   : "none",
               }}
-              className={`absolute left-1/2 top-2 -ml-[116px] w-[232px] h-[204px] px-4 py-3.5
+              className={`absolute left-1/2 top-2 -ml-[116px] w-[232px] h-[204px] px-4 py-4
                 sm:-ml-[132px] sm:w-[264px] sm:h-[216px] sm:px-5 sm:py-4
                 rounded-[14px] bg-bg border flex flex-col
                 motion-reduce:!transition-none
@@ -173,7 +173,7 @@ export function NotesFan({ notes }: { notes: FanNote[] }) {
                 </span>
               </header>
 
-              <div className="mt-2.5 border-t border-border" />
+              <div className="mt-3 border-t border-border" />
 
               {/* Centred between the two rules, so a two-line note and a
                   four-line one both sit in the middle of the card instead of
@@ -187,7 +187,7 @@ export function NotesFan({ notes }: { notes: FanNote[] }) {
                 <span className="line-clamp-4 whitespace-pre-line">{note.message}</span>
               </p>
 
-              <footer className="border-t border-border pt-2.5
+              <footer className="border-t border-border pt-3
                 flex items-baseline justify-between gap-3">
                 <span className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-body truncate">
                   {note.name}

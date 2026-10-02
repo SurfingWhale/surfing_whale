@@ -281,13 +281,24 @@ h1, h2, h3, h4 {
   .hero-stage {
     min-height: calc(100svh - 3.5rem);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    /* The same twelve columns and the same 24px gutter as every other section
+       (.frame-split). It used to be `minmax(0,1fr) auto`, with the name
+       `place-self: center` — which meant none of the hero's vertical edges was
+       chosen. They were whatever the content happened to produce: the name
+       started at x=282 and the facts column at 1252, with its own children at
+       1255, 1258 and 1262. Five edges inside eleven pixels.
+
+       That is the difference between an offset and a near-miss. An offset is a
+       column line somebody picked; a near-miss is two things that look like
+       they were meant to line up and did not. The eye reads the second as a
+       mistake, which is most of what "it feels cramped" turns out to be when
+       you measure it.
+
+       So the name is offset ON PURPOSE — it starts at column 3, not flush with
+       the margin and not centred — and everything else sits on a line. */
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
     grid-template-rows: auto 1fr auto;
-    grid-template-areas:
-      "kicker kicker"
-      "name   name"
-      "line   side";
-    column-gap: 4rem;
     padding-block: 1.5rem 2rem;
   }
 
@@ -296,26 +307,47 @@ h1, h2, h3, h4 {
   }
 
   .hero-stage > p:first-child {
-    grid-area: kicker;
+    grid-column: 1 / -1;
+    grid-row: 1;
     margin: 0;
   }
 
+  /* Column 3: the deliberate offset. */
   .hero-stage > .hero-row > h1 {
-    grid-area: name;
-    place-self: center;
+    grid-column: 3 / span 9;
+    grid-row: 2;
+    place-self: center start;
     margin: 0;
   }
 
-  .hero-stage > .hero-row > .hero-side {
-    grid-area: side;
-    align-self: end;
-    padding-bottom: 0;
-  }
-
+  /* The sentence keeps the page's main edge, column 1, and stops at 5 so it
+     never runs to a length nobody reads. */
   .hero-stage > .hero-line {
-    grid-area: line;
+    grid-column: 1 / span 5;
+    grid-row: 3;
     align-self: end;
     margin: 0;
+  }
+
+  /* Columns 8 to 10, set flush right.
+     
+     Column 10's trailing line is where every section below ends its content
+     (.frame-split runs 4 / span 7), so this is the hero sharing an edge with
+     the rest of the page rather than inventing one. Flush right is the part
+     that makes it an edge at all: left-aligned in a 330px column the text
+     stopped 180px short of the line and the column did nothing.
+     
+     Ragged on the leading side, flush on the trailing one, against a sentence
+     that is the other way round. That asymmetry is chosen; three short lines
+     of 11px caps read fine either way, and this way the page has one more
+     line it keeps to instead of one more edge it does not. */
+  .hero-stage > .hero-row > .hero-side {
+    grid-column: 8 / span 3;
+    grid-row: 3;
+    align-self: end;
+    align-items: flex-end;
+    text-align: right;
+    padding-bottom: 0;
   }
 }
 
@@ -871,4 +903,30 @@ html.intro-out .sw-intro-wave {
     animation: none;
   }
   .sw-intro { display: none; }
+}
+
+/* ---- Spacing -----------------------------------------------------------
+   Seven steps, each twice the one below it.
+
+   The source was using twenty-one: 0, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28,
+   32, 36, 40, 48, 56, 64, 72, 80 and 96 pixels. Six of those sat between 4px
+   and 14px, which is the range where GROUPING is decided — and with six
+   near-identical options nothing groups. A reader cannot tell 6px from 8px as
+   a signal; they can only tell it as untidiness.
+
+   Doubling is the rule because the eye reads ratio, not difference. The skill
+   this came from puts it as: the gap between two groups must be at least
+   twice the gap inside one, or the grouping reads as noise. Every step here
+   satisfies that against the step below it, by construction.
+
+   These are tokens rather than a Tailwind override on purpose — the utility
+   classes stay, and this is what new work and the checker measure against.
+   scripts/verify-rhythm.mjs fails on a step that is not one of these. */
+:root {
+  --space-1: 4px;    /* inside a line: an icon and its label */
+  --space-2: 8px;    /* inside a group: a label and its value */
+  --space-3: 16px;   /* between groups */
+  --space-4: 32px;   /* between blocks */
+  --space-5: 64px;   /* between sub-sections */
+  --space-6: 128px;  /* between sections */
 }

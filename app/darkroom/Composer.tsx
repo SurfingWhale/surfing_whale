@@ -361,7 +361,7 @@ export function Editor() {
 
         {/* ── the essay itself: rows, then the way more comes in ────────── */}
         <section aria-labelledby="essay-sequence" className="mt-6">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-3 mb-1.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 mb-2">
             <h3 id="essay-sequence" className={labelClass}>Frames and writing</h3>
             <span className="text-[11px] leading-[1.6] text-fg-muted tabular-nums">
               {shots} photograph{shots === 1 ? "" : "s"} · {blocks.length} row
@@ -438,7 +438,7 @@ export function Editor() {
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={shot.url} alt="" width={shot.width} height={shot.height}
                               className="w-full h-auto block max-h-[320px] object-contain object-top rounded-md border border-border bg-bg-muted" />
-                            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                            <div className="flex flex-wrap items-center gap-2 mt-2">
                               <Button variant="chip" onClick={() => nudgeShot(i, j, -1)} aria-label={`Move photograph ${j + 1} of row ${i + 1} earlier`}>◀</Button>
                               <Button variant="chip" onClick={() => nudgeShot(i, j, 1)} aria-label={`Move photograph ${j + 1} of row ${i + 1} later`}>▶</Button>
                               <Button variant="chip" onClick={() => dropShot(i, j)} className="ml-auto" aria-label={`Remove photograph ${j + 1} of row ${i + 1}`}>✕</Button>

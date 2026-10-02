@@ -111,7 +111,7 @@ export default async function ProjectPage({
               {project.date ? ` · ${project.date.slice(0, 4)}` : ""}
             </p>
           )}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             {visual?.mark && (
               /* The product's own icon, at the size of the text beside it.
                  Decorative: the title says the name, so a screen reader

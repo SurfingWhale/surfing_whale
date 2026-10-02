@@ -180,7 +180,7 @@ export default function FinanceDashboardCaseStudy() {
             ].map((tag) => (
               <span
                 key={tag}
-                className="text-[11px] px-2.5 py-1 border border-border rounded-full text-fg-secondary"
+                className="text-[11px] px-3 py-1 border border-border rounded-full text-fg-secondary"
               >
                 {tag}
               </span>

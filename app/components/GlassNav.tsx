@@ -114,7 +114,7 @@ export function GlassNav({ links }: { links: NavLink[] }) {
           }}
           onMouseEnter={() => setHover(i)}
           aria-current={active === i ? "page" : undefined}
-          className={`relative z-10 px-3 py-1.5 text-[13px] whitespace-nowrap transition-colors duration-300 ${
+          className={`relative z-10 px-3 py-2 text-[13px] whitespace-nowrap transition-colors duration-300 ${
             i === target ? "text-fg" : "text-fg-secondary hover:text-fg"
           }`}
         >

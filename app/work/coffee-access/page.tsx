@@ -85,7 +85,7 @@ function Rows({ head, rows }: { head: string[]; rows: string[][] }) {
       {rows.map((row, i) => (
         <div
           key={i}
-          className="grid grid-cols-[1fr_1.4fr] gap-4 py-2.5 border-b border-border"
+          className="grid grid-cols-[1fr_1.4fr] gap-4 py-3 border-b border-border"
         >
           {row.map((cell, k) => (
             <span

@@ -14,7 +14,7 @@ export function Row({
   children: React.ReactNode;
 }) {
   return (
-    <li className="border-b border-border py-5 grid gap-1.5 sm:grid-cols-[132px_1fr] sm:gap-6">
+    <li className="border-b border-border py-5 grid gap-2 sm:grid-cols-[132px_1fr] sm:gap-6">
       <span className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label sm:pt-[5px]">
         {label}
       </span>

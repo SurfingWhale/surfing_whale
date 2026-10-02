@@ -43,7 +43,7 @@ export function DocPreview({
         />
 
         <div className="relative bg-doc border-y sm:border border-border sm:rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(65,59,49,0.05),0_8px_24px_-8px_rgba(65,59,49,0.10)]">
-          <div className="flex items-center gap-2.5 px-5 sm:px-7 h-11 border-b border-border/70">
+          <div className="flex items-center gap-3 px-5 sm:px-7 h-11 border-b border-border/70">
             <svg
               viewBox="0 0 16 16"
               aria-hidden="true"

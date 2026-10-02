@@ -159,7 +159,7 @@ export function PhotoViewer({
         ref={exit}
         type="button"
         onClick={onClose}
-        className="absolute z-10 flex items-center gap-1.5 h-10 pl-3 pr-4 rounded-full
+        className="absolute z-10 flex items-center gap-2 h-10 pl-3 pr-4 rounded-full
           bg-bg/90 text-[13px] text-fg-secondary hover:text-fg
           shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_2px_8px_rgba(0,0,0,0.06)]
           transition-colors duration-200"

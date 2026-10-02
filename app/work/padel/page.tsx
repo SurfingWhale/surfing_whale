@@ -84,7 +84,7 @@ function Bars({
       {rows.map(([label, value]) => {
         const on = label === highlight;
         return (
-          <div key={label} className="py-2.5 border-b border-border">
+          <div key={label} className="py-3 border-b border-border">
             <div className="flex items-baseline justify-between gap-4">
               <span
                 className={`text-[13px] leading-[1.8] ${on ? "font-medium text-fg" : "text-fg"}`}
@@ -98,7 +98,7 @@ function Bars({
             </div>
             <div
               aria-hidden="true"
-              className="mt-1.5 h-[3px] rounded-full bg-border"
+              className="mt-2 h-[3px] rounded-full bg-border"
             >
               <div
                 className={`h-full rounded-full ${on ? "bg-fg" : "bg-border-strong"}`}
@@ -130,7 +130,7 @@ function Rows({ head, rows }: { head: string[]; rows: string[][] }) {
         ))}
       </div>
       {rows.map((row, i) => (
-        <div key={i} className={`${cols} py-2.5 border-b border-border`}>
+        <div key={i} className={`${cols} py-3 border-b border-border`}>
           {row.map((cell, k) => (
             <span
               key={k}

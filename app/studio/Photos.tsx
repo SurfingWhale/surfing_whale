@@ -240,7 +240,7 @@ export function Photos() {
                     without opening any of them. */}
                 {f.published && (
                   <span
-                    className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-fg text-bg text-[10px] font-medium leading-[1.5] pointer-events-none"
+                    className="absolute bottom-1 left-1 px-2 py-0.5 rounded bg-fg text-bg text-[10px] font-medium leading-[1.5] pointer-events-none"
                   >
                     On site
                   </span>

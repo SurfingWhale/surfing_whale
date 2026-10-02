@@ -149,7 +149,7 @@ export function WorkIndex({ rows, label }: { rows: WorkRow[]; label: string }) {
                             →
                           </span>
                         </div>
-                        <p className="text-[11px] leading-[1.7] text-fg-body mt-1.5">
+                        <p className="text-[11px] leading-[1.7] text-fg-body mt-2">
                           {row.method}
                         </p>
                       </Link>

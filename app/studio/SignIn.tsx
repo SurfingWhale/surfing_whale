@@ -33,7 +33,7 @@ const link =
 // 16px on a phone: iOS zooms the page into any field set smaller.
 const field =
   "w-full h-11 rounded-lg border border-border bg-bg px-3 text-[16px] sm:text-[13px] text-fg placeholder:text-fg-muted focus:border-fg transition-colors duration-200";
-const label = "block text-[11px] leading-[1.6] text-fg-label mb-1.5";
+const label = "block text-[11px] leading-[1.6] text-fg-label mb-2";
 const hint = "text-[11px] leading-[1.7] text-fg-muted";
 
 export function SignIn({
@@ -200,7 +200,7 @@ export function SignIn({
             type="button"
             onClick={google}
             disabled={!ready || busy}
-            className="w-full h-11 rounded-lg border border-border bg-bg hover:border-border-strong flex items-center justify-center gap-2.5 text-[13px] font-medium text-fg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-11 rounded-lg border border-border bg-bg hover:border-border-strong flex items-center justify-center gap-3 text-[13px] font-medium text-fg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <GoogleMark />
             Continue with Google

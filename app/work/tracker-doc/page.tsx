@@ -62,7 +62,7 @@ function Flow({ steps }: { steps: [string, string][] }) {
       {steps.map(([name, what], i) => (
         <li
           key={name}
-          className="py-3 border-b border-border grid gap-1.5 sm:grid-cols-[150px_1fr] sm:gap-6"
+          className="py-3 border-b border-border grid gap-2 sm:grid-cols-[150px_1fr] sm:gap-6"
         >
           <span className="text-[11px] uppercase tracking-[0.14em] leading-[1.5] text-fg-label sm:pt-[5px]">
             <span className="font-mono normal-case tracking-normal mr-2 text-fg-muted">

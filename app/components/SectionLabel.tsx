@@ -27,7 +27,7 @@ export function SectionLabel({
         {children}
       </Tag>
       {note && (
-        <p className="text-[13px] leading-[2] text-fg-body mt-1.5">{note}</p>
+        <p className="text-[13px] leading-[2] text-fg-body mt-2">{note}</p>
       )}
     </div>
   );

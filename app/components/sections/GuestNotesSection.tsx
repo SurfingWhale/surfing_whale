@@ -35,12 +35,12 @@ function formatDate(iso: string) {
 
 // Bottom hairline only — a ruled line to write on, not a box to fill in.
 const FIELD =
-  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-1.5 " +
+  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 " +
   "text-[13px] leading-[2] text-fg placeholder:text-fg-muted " +
   "focus:outline-none focus:border-fg transition-colors duration-200";
 
 const SOLID =
-  "w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-2.5 " +
+  "w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-3 " +
   "hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-200 " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
@@ -164,7 +164,7 @@ export function GuestNotesSection() {
             <span className="block text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">
               Thank you for visiting my website
             </span>
-            <span className="inline-flex items-center gap-1.5 mt-4 text-[13px] font-medium text-fg">
+            <span className="inline-flex items-center gap-2 mt-4 text-[13px] font-medium text-fg">
               Write in the guest book
               <svg viewBox="0 0 12 12" aria-hidden="true"
                 className="w-3 h-3 stroke-current stroke-[1.6] [stroke-linecap:round] [stroke-linejoin:round]

@@ -592,3 +592,79 @@ The two warnings left are both honest and both already explained: `/photo` and
 `/writing` have no inbound link until the first essay and post are published
 (the sitemap covers them), and two raw image files are still linked out of
 case studies.
+
+## 16. Rhythm — 2026-10-02
+
+Fauzy: *"nuance offset dan symmetrical spacing-nya tuh gabisa lo create ya …
+design mereka punya nafas, ga bertubrukan, gadipaksa berjarak … ai kerasa
+banget design yang sesek."*
+
+He is right about the mechanism, and measuring the site located it — after
+three wrong counts, which are worth recording because they are the same
+mistake each time.
+
+### 16.1 Three over-counts before one real finding
+
+| Claimed | Actual |
+| --- | --- |
+| 147 distinct left edges | 53 — the first count included `<path>` and `<g>` **inside SVGs** |
+| 121 rogue edges | 43 — then most of those were items in a horizontal row, which legitimately each have their own x |
+| 43 rogue edges | ~0 — the rest were the bounding boxes of **rotated** avatar cards |
+
+Every one of these was a metric that counted something adjacent to the thing
+it claimed to measure, which is the same failure as "23 images causing layout
+shift" in §15. The pattern: build the measurement, then check what it is
+actually counting before believing it.
+
+### 16.2 What was real
+
+**The hero's edges were emergent, not chosen.** `grid-template-columns:
+minmax(0,1fr) auto` with `place-self: center` on the name meant nothing
+decided where anything sat. At 1440 the name landed at x=282 and the facts
+column at x=1252, with its own children at 1255, 1258 and 1262 — five edges
+inside eleven pixels.
+
+That is the difference between an offset and a near-miss. An offset is a
+column line somebody picked; a near-miss is two things that look like they
+were meant to line up and did not. The eye reads the second as a mistake.
+
+The hero is now on the same twelve columns as every other section:
+
+| | before | after |
+| --- | --- | --- |
+| name | x=282, emergent | x=260 — column 3, offset on purpose |
+| facts | x=1252, emergent | flush right to x=1180 — the trailing line `.frame-split` already uses |
+| sentence | x=24 | x=24, unchanged |
+
+Ragged leading edge against a flush trailing one, opposite the sentence below
+it. That asymmetry is chosen. Below 66rem nothing changed — the grid only
+applies where there is room for it.
+
+**Twenty-one spacing steps were in use.** 0, 2, 4, 6, 8, 10, 12, 14, 16, 20,
+24, 28, 32, 36, 40, 48, 56, 64, 72, 80, 96px. Six of them sat between 4 and
+14px, which is where *grouping* is decided — and with six near-identical
+options nothing groups. A reader cannot tell 6px from 8px as a signal, only as
+untidiness.
+
+48 usages collapsed: 6→8, 10→12, 14→16, 56→64. The grouping range is now
+three steps: **4, 8, 12px**.
+
+`--space-1` to `--space-6` in globals.css are the scale new work should use,
+each twice the one below, because the eye reads ratio rather than difference —
+the rule the layout skill states as "the gap between two groups must be at
+least twice the gap inside one".
+
+### 16.3 What was not done, and why
+
+The other ~500 utility classes were left alone. Rewriting them to sit on six
+tokens is a day of changes nobody can eyeball, for a gain no one would see.
+`scripts/verify-rhythm.mjs` fails on a step used once or twice — an accident,
+since nobody decides a value and uses it once — and on more than four steps in
+the 4–14px range. That catches drift while it is still one line.
+
+### 16.4 The honest part
+
+None of this is taste. It removes the noise that makes taste hard to hear —
+near-misses, accidental steps, edges nobody chose. The judgement about whether
+the result has breath is still Fauzy's, and the loop that has worked all
+session is him saying it feels wrong and the measurement finding where.

@@ -82,7 +82,7 @@ export default async function Home() {
         </div>
       </nav>
 
-      <div className="pt-14">
+      <div className="pt-16">
         <UnlockedBanner />
         <AccessProvider>
         <ProfileModeProvider>

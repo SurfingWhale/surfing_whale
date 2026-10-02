@@ -22,7 +22,7 @@ const QUIET_DAYS = 30;
 const APPEAR_AT = 0.25;
 
 const field =
-  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-1.5 " +
+  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 " +
   "text-[13px] leading-[1.9] text-fg placeholder:text-fg-muted " +
   "focus:outline-none focus:border-fg transition-colors duration-200";
 
@@ -194,7 +194,7 @@ export function VisitorCard() {
               Thank you for visiting my website
             </p>
 
-            <div className="mt-5 space-y-2.5 text-left">
+            <div className="mt-5 space-y-3 text-left">
               <input
                 ref={nameRef}
                 value={form.name}
@@ -238,7 +238,7 @@ export function VisitorCard() {
             <button
               onClick={send}
               disabled={busy}
-              className="mt-4 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-2.5
+              className="mt-4 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-3
                 hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-200
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >

@@ -58,7 +58,7 @@ export const hintClass = "text-[11px] leading-[1.7] text-fg-muted";
 export const inputClass =
   "w-full h-11 rounded-lg border border-border bg-bg px-3 text-[16px] sm:text-[13px] text-fg placeholder:text-fg-muted focus:border-fg transition-colors duration-200";
 export const textareaClass =
-  "block w-full rounded-lg border border-border bg-bg px-3 py-2.5 text-[16px] sm:text-[13px] leading-[1.8] text-fg placeholder:text-fg-muted focus:border-fg transition-colors duration-200";
+  "block w-full rounded-lg border border-border bg-bg px-3 py-3 text-[16px] sm:text-[13px] leading-[1.8] text-fg placeholder:text-fg-muted focus:border-fg transition-colors duration-200";
 
 /**
  * A label that stays above its field. A placeholder standing in for one
@@ -79,7 +79,7 @@ export function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="flex flex-wrap items-baseline justify-between gap-x-3 mb-1.5">
+      <span className="flex flex-wrap items-baseline justify-between gap-x-3 mb-2">
         <span className={labelClass}>{label}</span>
         {hint && <span className={hintClass}>{hint}</span>}
       </span>
@@ -158,7 +158,7 @@ function Chevron({ open }: { open: boolean }) {
 export function Badge({ live, children }: { live: boolean; children: ReactNode }) {
   return (
     <span
-      className={`inline-flex items-center shrink-0 px-1.5 py-0.5 rounded-md text-[11px] leading-[1.6] ${
+      className={`inline-flex items-center shrink-0 px-2 py-0.5 rounded-md text-[11px] leading-[1.6] ${
         live
           ? "bg-[var(--accent-soft)] text-[var(--sel-fg)]"
           : "border border-border-strong text-fg-body"
@@ -334,7 +334,7 @@ export function ItemList({
   const count = items && !error ? ` · ${items.length}` : "";
 
   const row = (active: boolean) =>
-    `block w-full text-left rounded-lg px-3 py-2.5 transition-colors duration-200 ${
+    `block w-full text-left rounded-lg px-3 py-3 transition-colors duration-200 ${
       active ? "bg-bg-muted" : "hover:bg-bg-subtle"
     }`;
 
@@ -505,7 +505,7 @@ export function DropZone({
 export function PendingList({ pending }: { pending: Pending[] }) {
   if (!pending.length) return null;
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-2">
       {pending.map((p, i) => (
         <li key={`${p.name}-${i}`} className="flex flex-wrap gap-x-3 text-[11px] leading-[1.7] text-fg-body">
           <span className="truncate max-w-[240px]">{p.name}</span>

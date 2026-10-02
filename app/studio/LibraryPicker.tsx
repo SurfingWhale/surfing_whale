@@ -121,7 +121,7 @@ export function LibraryPicker({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={p.url} alt="" loading="lazy" className="w-full aspect-square object-cover" />
                       {on && (
-                        <span className="absolute top-1.5 right-1.5 min-w-6 h-6 px-1.5 rounded-full bg-fg text-bg text-[11px] font-medium grid place-items-center tabular-nums">
+                        <span className="absolute top-1.5 right-1.5 min-w-6 h-6 px-2 rounded-full bg-fg text-bg text-[11px] font-medium grid place-items-center tabular-nums">
                           {multiple ? at + 1 : "✓"}
                         </span>
                       )}

@@ -113,7 +113,7 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
                   href={row.href}
                   onMouseEnter={() => setActive(i)}
                   onFocus={() => setActive(i)}
-                  className="stage-row group block py-1.5 sm:py-2"
+                  className="stage-row group block py-2 sm:py-2"
                   style={
                     { "--row-dim": live ? 1 : Math.max(0.52, 0.78 - Math.abs(i - active) * 0.09) } as React.CSSProperties
                   }

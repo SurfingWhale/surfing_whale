@@ -286,7 +286,7 @@ function GateDialog({
             </p>
             <button
               onClick={onDismiss}
-              className="mt-4 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-2.5
+              className="mt-4 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-3
                 hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-200"
             >
               Back to the work
@@ -299,7 +299,7 @@ function GateDialog({
             </h2>
             <p className="text-[12.5px] leading-[1.65] text-fg-muted mt-2 max-w-[30ch] mx-auto">{copy.blurb}</p>
 
-            <div className="mt-4 space-y-2.5 text-left">
+            <div className="mt-4 space-y-3 text-left">
             <input
               ref={inputRef}
               type="email"
@@ -366,7 +366,7 @@ function GateDialog({
             <button
               onClick={submit}
               disabled={!email || sending}
-              className="mt-3 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-2.5
+              className="mt-3 w-full rounded-[11px] bg-fg text-bg text-[13px] font-medium py-3
                 hover:opacity-90 active:scale-[0.99] transition-[opacity,transform] duration-200
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >

@@ -121,7 +121,7 @@ export function HeroSection() {
       {/* The first screen: kicker, name, the one sentence, the switch. On a
           wide screen it fills the viewport (globals.css, .hero-stage); on a
           phone it is the same column it always was. */}
-      <div data-reveal className="frame hero-stage pt-14 sm:pt-20">
+      <div data-reveal className="frame hero-stage pt-16 sm:pt-20">
         {/* What this is, before who it is. A stranger deciding whether to keep
             reading wants the second question answered first, and the toggle
             above already knows the answer — it was just saying it to screen
@@ -150,7 +150,7 @@ export function HeroSection() {
             flash={FLASH}
           />
 
-          <div className="hero-side shrink-0 md:max-w-[176px] md:pb-[0.9em] flex flex-col gap-3">
+          <div className="hero-side shrink-0 md:pb-[0.9em] flex flex-col gap-3">
             {/* The switch changes the face inside the name, so it belongs
                 within reach of it rather than a paragraph below. */}
             <AvatarPicker />
