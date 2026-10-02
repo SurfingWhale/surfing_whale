@@ -128,8 +128,10 @@ refactor:
 - Every write route checks the session before it reads the body.
 - Sign-in is a Google-signed token for this Firebase project with the admin's
   verified email; nothing else is accepted, so there is nothing to guess.
-- A missing `ADMIN_SECRET` signs with a per-boot random value, so a
+- A missing `DARKROOM_SECRET` signs with a per-boot random value, so a
   misconfigured deployment fails closed instead of using a guessable key.
+  (This said `ADMIN_SECRET` until 2026-10-02; the code has always read
+  `DARKROOM_SECRET` — see §10.)
 - Everything from the browser is re-validated on the server before it reaches
   Notion, including that image URLs point at our own bucket.
 - `/studio` is `noindex`, and admin routes never appear in the sitemap.
@@ -188,3 +190,128 @@ a post or an archive frame revalidates its public pages and the home page.
 2. Do guest notes need an email reply from inside the studio, or is knowing
    the address enough?
 3. ~~Is one password enough?~~ Answered 2026-10-01: Google sign-in.
+
+## 10. Environment variables
+
+Every `process.env` the app reads, what happens without it, and whether it is
+actually set on the production deployment. **Values live in Vercel and
+nowhere else** — this table carries names and states only, because the
+repository is public.
+
+"Set on prod" was read from the live deployment's own health endpoints on
+2026-10-02, not assumed: `/api/access` reports `notionConfigured`, `gate` and
+`gateBlockedBy`; `/api/darkroom/session` reports `configured`, `notion` and
+`storage`. The MCP token this session has cannot list project env vars (403),
+so anything those endpoints do not cover is marked **unverified** rather than
+guessed at.
+
+### 10.1 Required — the gate and the studio stop working without these
+
+| Variable | Without it | Set on prod |
+| --- | --- | --- |
+| `DARKROOM_SECRET` | Cookies are signed with a per-boot random value, so every session dies on the next request. The access gate refuses to switch on (`gateBlockers`). | ✅ (`gateBlockedBy: []`) |
+| `NOTION_API_KEY` | No projects, no guest notes, no access requests. | ✅ |
+| `NOTION_ACCESS_DATABASE_ID` | Access requests are not recorded; the gate refuses to switch on. | ✅ |
+| `NOTION_GUESTBOOK_DATABASE_ID` | Guest notes return `{notes: [], configured: false}` — an empty guest book, not an error. | ✅ (3 approved notes live) |
+| `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`) | No essays, posts, or photo library. | ✅ (`storage: true`) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Same. This is the only key that reaches rows behind RLS — server only, never `NEXT_PUBLIC_`. | ✅ |
+
+### 10.2 Switches and optional
+
+| Variable | Default | Effect | Set on prod |
+| --- | --- | --- | --- |
+| `ACCESS_GATE` | unset → open | Must be the literal string `on`. Anything else — including `approval` or `true` — leaves the gate open and everything readable. | ✅ `on` (live reports `gate: "approval"`, which is the *reported* state, not the variable's value) |
+| `WHATSAPP_NUMBER` | none | The WA button returns **503** to an approved reader. Digits only, no `+`. | ❌ **unverified — probably still missing** |
+| `RESEND_API_KEY` + `MAIL_FROM` | none | Approval emails do not send. Approving still works and the studio shows the link to send by hand, so this is a convenience, not a dependency. Both are needed; one alone does nothing. | ⚠️ unverified (the studio shows `mailConfigured` once signed in) |
+| `ADMIN_EMAIL` | `fauzymuhamad43@gmail.com` | Which verified Google account may enter `/studio`. | ⚠️ unverified (the fallback is correct, so unset is fine) |
+| `NOTION_DATABASE_ID` | a default id in `notionIds.ts` | The projects database. | ✅ (`notion: true`) |
+| `SUPABASE_BUCKET` | `surfing-whale` | Storage bucket name. | ⚠️ unverified (default is correct) |
+| `NEXT_PUBLIC_SITE_URL` | `https://surfing-whale.vercel.app` | The host written into approval links. **Must be changed the day a custom domain lands**, or approved readers get links to the old host. | ⚠️ unverified |
+| `SYNC_SECRET` | `""` | Guards `/api/sync-images`. Empty means the route is open — check this before relying on it. | ⚠️ unverified |
+
+### 10.3 Client-side (`NEXT_PUBLIC_*`) — these ship to every visitor
+
+`NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_APP_ID`,
+`NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_SIGN_IN_HOST`.
+
+All four have hardcoded fallbacks in `app/lib/firebaseConfig.ts`, so the
+sign-in works whether or not they are set. That is deliberate and safe: a
+Firebase web API key is a public project identifier, not a credential — what
+actually protects `/studio` is the server verifying a Google-signed ID token
+against this project *and* checking the verified email (`app/lib/adminAuth.ts`).
+Nothing is gained by hiding them and a broken sign-in is lost by getting them
+wrong.
+
+`NEXT_PUBLIC_SIGN_IN_HOST` is the one to watch: it names the host Google
+redirects back to. A custom domain means changing it here *and* in the
+Firebase console's authorised domains.
+
+### 10.4 Build and tooling only
+
+`SW_FONT` (`scripts/generate-brand-assets.mjs`), `NEXT_PUBLIC_BASE_URL`
+(`scripts/syncs-images.ts`), `NODE_ENV`. Nothing on the site reads these at
+runtime.
+
+## 11. Pending
+
+Everything known to be unfinished, in the order it costs something.
+
+### 11.1 Blocked on Fauzy
+
+1. **`WHATSAPP_NUMBER` is not set.** An approved reader who clicks through to
+   WhatsApp gets a 503. This is the only reward of the access gate that does
+   not currently work, which makes the gate's promise partly false. One
+   variable in Vercel settings.
+2. **The old WhatsApp number is in public git history.** It was a client-side
+   const from `d33b890` until `f8fc9c8` moved it server-side. Removing it from
+   the shipped bundle does not remove it from the commits, and the repository
+   is public. The only real fix is a different number; rewriting history on a
+   public repo is worse than the problem.
+3. **`public/work/maps/indonesia-nik-provinsi.html` is an orphan** — 102KB,
+   referenced by no page. Delete, or give it a page. (The poster next to it,
+   `isochrone-tomoro-poster.jpg`, *is* used, by the hero.)
+4. **The epub → Indonesian → PDF job for ElevenLabs** has never had its file.
+
+### 11.2 Decided but not built
+
+5. **Phase 3 is shipped in part.** `/studio` still has no landing view saying
+   what needs attention — pending notes, drafts, pending access requests. It
+   opens straight into a room.
+6. **Phase 4 — Profile — not started.** The hero's tagline and bio are still
+   strings in `HeroSection.tsx`.
+7. **Nothing reports WhatsApp or mail configuration to the admin.** The studio
+   reads `mailConfigured`, but a missing `WHATSAPP_NUMBER` is invisible until a
+   reader hits the 503. The cheapest fix is to add both to the
+   `/api/darkroom/session` payload, which is already admin-gated and already
+   reports `notion` and `storage`.
+
+### 11.3 Verification gaps
+
+8. **Safari/WebKit has never been tested.** Every measurement in this repo —
+   contrast, the chrome effect, overflow, headings — was taken in Chromium.
+   The session's proxy blocks the WebKit download, so this cannot be closed
+   from here. The chrome effect is the live risk: it was already rebuilt once
+   because SMIL `gradientTransform` does not animate in WebKit, and the rAF
+   loop that replaced it is the thing that has never been seen on a real
+   Safari.
+9. **`scripts/verify-headings.mjs` still checks `/archive`.** That route now
+   redirects home, so the check passes by reading the *home page's* `<h1>` and
+   proves nothing. It should check `/photo` and `/writing` instead, and assert
+   the redirect separately.
+
+### 11.4 Open design questions
+
+10. **The hero typeface was never resolved.** It is Oswald — condensed — where
+    the reference Fauzy sent uses a wide grotesque. Candidates offered and
+    never chosen: Archivo Black, Inter Black, Figtree 900.
+11. Items 1 and 2 of §9 are still open: whether `/writing` belongs in the main
+    navigation, and whether guest notes need a reply from inside the studio.
+
+### 11.5 Housekeeping
+
+12. **The repository has moved to `SurfingWhale/surfing_whale`.** GitHub says
+    so on every push. Pushes still succeed through the redirect, so the git
+    remote has deliberately been left pointing at the old owner rather than
+    risk the session's credentials mid-work. Worth updating when convenient —
+    and it helps the standing rule that the old account name never appears to
+    a visitor.
