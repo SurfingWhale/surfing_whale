@@ -14,6 +14,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
+import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 
 const TITLE = "Reading Los Angeles by its crime reports";
 const DESCRIPTION =
@@ -61,13 +63,35 @@ function Section({
   );
 }
 
+// Every chart carries its real pixel size. The browser turns width and height
+// into an aspect-ratio and reserves the box before the bytes arrive, so the
+// caption under it does not jump when the image lands.
+//
+// These four were the only measured layout shift on the whole site — 0.0685 on
+// a throttled phone, against a 0.1 budget. Everywhere else an image already
+// sits in a box CSS has sized, so the twenty-three "missing width/height" the
+// crawler reported elsewhere cost nothing; measuring found one real case out
+// of thirty-eight.
+//
+// The ratios differ per chart (2:1, 4:3, 5:3), so there is no one aspect class
+// to apply — the numbers have to come from the files.
+const CHART_SIZE: Record<string, [number, number]> = {
+  "counts-by-area": [1200, 600],
+  "code-by-area": [1200, 600],
+  "crime-location": [1000, 600],
+  "victim-ages": [640, 480],
+};
+
 function Chart({ src, alt, caption }: { src: string; alt: string; caption: string }) {
+  const [w, h] = CHART_SIZE[src] ?? [1200, 600];
   return (
     <figure className="my-6 -mx-6 sm:mx-0">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={`/work/crime/${src}.jpg`}
         alt={alt}
+        width={w}
+        height={h}
         loading="lazy"
         className="w-full h-auto block bg-white border-y sm:border border-border sm:rounded-lg"
       />
@@ -81,6 +105,8 @@ function Chart({ src, alt, caption }: { src: string; alt: string; caption: strin
 export default function CrimeLAPage() {
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/crime-la` })} />
+      <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Reading Los Angeles by its crime reports", path: "/work/crime-la" }])} />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className={`${column} h-14 flex items-center`}>
           <Link

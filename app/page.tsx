@@ -20,6 +20,7 @@ import { Reveal } from "./components/Reveal";
 import { listPosts } from "./lib/writing";
 import { listEssays } from "./lib/darkroom";
 import { listPublishedPhotos } from "./lib/photos";
+import { JsonLd, homeGraph } from "./lib/schema";
 
 const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
@@ -57,6 +58,7 @@ export default async function Home() {
 
   return (
     <main className="relative min-h-screen bg-bg text-fg">
+      <JsonLd data={homeGraph()} />
       <a href="#project" className="skip-link text-[13px] font-medium">
         Skip to content
       </a>

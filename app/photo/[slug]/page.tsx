@@ -5,6 +5,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd, articleGraph } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 import { getEssay, listEssays } from "@/app/lib/darkroom";
 
 export const revalidate = 60;
@@ -40,6 +42,18 @@ export default async function EssayPage({ params }: Params) {
 
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd
+        data={articleGraph({
+          headline: essay.title,
+          description: essay.subtitle || undefined,
+          url: `${SITE}/photo/${slug}`,
+          image: essay.cover || undefined,
+          datePublished: essay.date || undefined,
+          // A photo essay is a gallery with words, and saying so is more use
+          // to a search engine than calling it an Article.
+          type: "ImageGallery",
+        })}
+      />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="container mx-auto px-6 h-14 flex items-center max-w-[680px]">
           <Link href="/photo" className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300">

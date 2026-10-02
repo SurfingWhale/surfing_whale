@@ -6,6 +6,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd, articleGraph } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 import { type Block, getPost, listPosts, readingMinutes } from "@/app/lib/writing";
 
 export const revalidate = 60;
@@ -126,6 +128,15 @@ export default async function PostPage({ params }: Params) {
 
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd
+        data={articleGraph({
+          headline: post.title,
+          description: post.standfirst || undefined,
+          url: `${SITE}/writing/${slug}`,
+          image: post.cover || undefined,
+          datePublished: post.date || undefined,
+        })}
+      />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className={`${column} h-14 flex items-center`}>
           <Link href="/writing" className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300">

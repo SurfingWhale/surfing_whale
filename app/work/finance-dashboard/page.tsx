@@ -10,6 +10,8 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 
 const TITLE = "A ledger that behaves like a product";
 const DESCRIPTION =
@@ -137,6 +139,8 @@ function Finding({
 export default function FinanceDashboardCaseStudy() {
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/finance-dashboard` })} />
+      <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "A ledger that behaves like a product", path: "/work/finance-dashboard" }])} />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="container mx-auto px-6 h-14 flex items-center max-w-[680px]">
           <Link

@@ -421,7 +421,7 @@ an oversight, which is how it survived two sessions.
 | ~~`/photo` and `/writing`~~ | **Fixed 2026-10-02.** Both are in the sitemap whatever the nav decides, the darkroom has a nav entry it never had, and robots.txt exists. They still carry no inbound link until the first essay and post are published — by design, so neither lands a reader on "Nothing published yet" — which is exactly the gap a sitemap is for. |
 | `app/components/ScrollVelocity` | Imported by no file. |
 | `app/components/RotatingText` | Imported by no file. |
-| `/api/sync-images` | Called from no file in the app. `SYNC_SECRET` defaults to `""`, which leaves the route open — see §10.2. Now excluded in robots.txt along with the rest of `/api/`, which hides it but does not close it. |
+| `/api/sync-images` | Called from no file in the app — it is a tool run by hand. **Not** open: `authorised()` refuses an empty `SYNC_SECRET`, so an unset secret locks everyone out rather than letting everyone in. §13.2 claimed otherwise until 2026-10-02; that was a misreading, not a bug. |
 | `public/work/maps/indonesia-nik-provinsi.html` | 102KB, linked from nothing (§11.1). |
 | WhatsApp, for an approved reader | 503 until `WHATSAPP_NUMBER` is set (§10.2). The gate's promise is partly false until then. |
 
@@ -519,3 +519,57 @@ For one visit per session the overlay is the largest thing painted, so it is
 what LCP measures: about 2.2s of ink. That is the price of the thing asked
 for. A second page in the same session, and anyone with reduced motion, pay
 nothing — no overlay is rendered at all.
+
+## 15. What measuring changed — 2026-10-02
+
+Three entries in this document were wrong, and one piece of work was nearly
+done for nothing. All three were caught by measuring the thing rather than a
+proxy for it.
+
+**`/api/sync-images` is not open.** §13.2 called it a security hole on the
+strength of `const SYNC_SECRET = process.env.SYNC_SECRET ?? ""`. Five lines
+below, `authorised()` returns false whenever the secret is empty — it fails
+closed, and a comment in the file says so. Corrected in §10.2 and §13.2. The
+mistake was stopping at the first line that looked like an answer.
+
+**Twenty-three images "causing layout shift" caused none.** The crawler
+counted images with no `width`/`height` attribute and called the count layout
+shift. Measured with a `layout-shift` PerformanceObserver on a throttled
+phone, the whole site came to:
+
+```
+/                                 CLS 0.0005   good
+/work/crime-la                    CLS 0.0690   good   <- the only real one
+/work/finance-dashboard/research  CLS 0.0005   good
+/work/coffee-access               CLS 0.0005   good
+```
+
+An image inside a box CSS has already sized shifts nothing. One of thirty-eight
+was real — four charts on `/work/crime-la` at three different aspect ratios,
+pushing their captions. Those four now carry their pixel size: **0.0690 →
+0.0005**. The other fifteen files were not touched, and `seo-crawl` now
+measures CLS instead of counting attributes.
+
+**Structured data went from 0 pages to every page.** A `Person`, the `WebSite`,
+an `Article` or `ImageGallery` per piece, and a `BreadcrumbList` on the case
+studies — `app/lib/schema.tsx`. Everything in it comes from something already
+on the page: no ratings, no awards, no claimed employers. A schema is the one
+part of a page a search engine reads as a statement of fact, so inventing
+anything there is worse than leaving it empty.
+
+The crawler reported all of it as `?` at first — it read `@type` off the top
+level, and a `@graph` has none. Fixed in the skill.
+
+`ScrollVelocity` and `RotatingText` are deleted: 20KB imported by nothing.
+
+| | before | after |
+| --- | --- | --- |
+| crawler warnings | 7 | **2** |
+| blocking | 0 | 0 |
+| structured data | 0 of 7 pages | 7 of 7 |
+| worst CLS | 0.0690 | 0.0005 |
+
+The two warnings left are both honest and both already explained: `/photo` and
+`/writing` have no inbound link until the first essay and post are published
+(the sitemap covers them), and two raw image files are still linked out of
+case studies.

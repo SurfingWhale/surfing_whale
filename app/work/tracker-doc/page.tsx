@@ -7,6 +7,8 @@
 // other people had to use.
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 
 const TITLE = "TrackerDoc";
 const DESCRIPTION =
@@ -78,6 +80,8 @@ function Flow({ steps }: { steps: [string, string][] }) {
 export default function TrackerDocPage() {
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/tracker-doc` })} />
+      <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "TrackerDoc", path: "/work/tracker-doc" }])} />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className={`${column} h-14 flex items-center`}>
           <Link

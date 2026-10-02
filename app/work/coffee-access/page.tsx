@@ -21,6 +21,8 @@ import Link from "next/link";
 import { DocPreview } from "@/app/components/DocPreview";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { FieldNote } from "./FieldNote";
+import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 
 const TITLE = "15 minutes to coffee";
 const DESCRIPTION =
@@ -106,6 +108,8 @@ function Rows({ head, rows }: { head: string[]; rows: string[][] }) {
 export default function CoffeeAccessPage() {
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/coffee-access` })} />
+      <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "15 minutes to coffee", path: "/work/coffee-access" }])} />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className={`${column} h-14 flex items-center`}>
           <Link

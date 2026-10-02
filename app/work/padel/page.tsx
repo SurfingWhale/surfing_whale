@@ -18,6 +18,8 @@ import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { DocPreview } from "@/app/components/DocPreview";
 import { ExecutiveSummary } from "./ExecutiveSummary";
 import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
+import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 
 const TITLE = "Padel, and the moat nobody has dug";
 const DESCRIPTION =
@@ -156,6 +158,8 @@ const BOTTOM_PC = BY_PC.slice(-4);
 export default function PadelPage() {
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/padel` })} />
+      <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Padel, and the moat nobody has dug", path: "/work/padel" }])} />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className={`${column} h-14 flex items-center`}>
           <Link

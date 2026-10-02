@@ -12,6 +12,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DocPreview } from "@/app/components/DocPreview";
 import { ExecutiveSummary } from "./ExecutiveSummary";
+import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
+import { SITE } from "@/app/lib/site";
 
 const TITLE = "Market research — validating two user segments";
 const DESCRIPTION =
@@ -62,6 +64,8 @@ function Section({
 export default function ResearchPage() {
   return (
     <main className="min-h-screen bg-bg text-fg">
+      <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/finance-dashboard/research` })} />
+      <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Market research", path: "/work/finance-dashboard/research" }])} />
       <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className={`${column} h-14 flex items-center`}>
           <Link
