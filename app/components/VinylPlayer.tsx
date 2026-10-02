@@ -7,16 +7,23 @@
 //
 // It starts on its own, because it only ever mounts in answer to a click — the
 // switch to Photographs — and a browser lets a page play sound in answer to
-// one. If the browser still says no, it waits, arm up, for a tap. It plays the
-// thirty-second preview once and lifts the arm at the end rather than looping
-// the same half-minute. Switching back to Data unmounts it, which stops it.
+// one. If the browser still says no, it waits, arm up, for a tap. Switching
+// back to Data unmounts it, which stops it.
+//
+// The preview is thirty seconds, and it plays for as long as the gallery is
+// open: each pass rises out of the one before and falls into the next, two
+// and a half seconds of overlap, so the seam is a crossfade rather than a cut.
+// That needs a gain that can move, and iOS ignores writes to
+// HTMLMediaElement.volume — so the record is played through Web Audio, from a
+// buffer decoded once, with every pass and its fades scheduled on the audio
+// clock. If Web Audio cannot have it, a plain looping <audio> plays instead.
 //
 // The audio and the sleeve are Apple's preview assets, used the way Apple
 // provides them: to play a sample and point at the full track, which the
-// "Apple Music" link does.
+// "Apple Music" link does. The full song is not hosted here; it is not ours to.
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const TRACK = {
   title: "California Dreamin'",
@@ -30,81 +37,196 @@ const TRACK = {
 };
 
 const VOLUME = 0.7;
+/** Seconds each pass overlaps the next. */
+const XFADE = 2.5;
+/** The single runs 2:42; the arm crosses the record in that time, then returns. */
+const SIDE = 162;
+
+type Position = { pass: number; side: number };
+
+/** The record player behind the picture: one AudioContext, one decoded buffer. */
+class Turntable {
+  kind: "web audio" | "element" = "web audio";
+  closed = false;
+  private ctx: AudioContext | null = null;
+  private master: GainNode | null = null;
+  private buffer: AudioBuffer | null = null;
+  private loading: Promise<AudioBuffer> | null = null;
+  private first = 0;
+  private next = 0;
+  private pump = 0;
+  private element: HTMLAudioElement | null = null;
+
+  constructor(private url: string) {
+    // Web Audio follows the ring/silent switch on iOS unless told this is
+    // playback, like music, rather than a sound effect.
+    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+    if (session) session.type = "playback";
+    const Ctx =
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctx) {
+      this.kind = "element";
+      return;
+    }
+    this.ctx = new Ctx();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0;
+    this.master.connect(this.ctx.destination);
+  }
+
+  private async load(): Promise<AudioBuffer> {
+    const res = await fetch(this.url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.arrayBuffer();
+    // The callback form, which every Safari that has Web Audio understands.
+    return new Promise((ok, no) => this.ctx!.decodeAudioData(data, ok, no));
+  }
+
+  /** True once sound is actually coming out. */
+  async play(): Promise<boolean> {
+    if (this.kind === "element") return this.playElement();
+    const ctx = this.ctx!;
+    // Asked for first, while this is still the tap's (or the click's) call
+    // stack — Safari only lets a context start from inside one.
+    const resumed = ctx.resume().catch(() => {});
+    try {
+      this.buffer ??= await (this.loading ??= this.load());
+    } catch {
+      this.kind = "element";
+      void ctx.close().catch(() => {});
+      return this.playElement();
+    }
+    await resumed;
+    if (this.closed || ctx.state !== "running") return false;
+    if (!this.first) {
+      this.first = this.next = ctx.currentTime + 0.05;
+      this.schedule();
+      this.pump = window.setInterval(() => this.schedule(), 500);
+    }
+    this.fade(VOLUME, 0.9);
+    return true;
+  }
+
+  async pause(): Promise<void> {
+    if (this.kind === "element") {
+      this.element?.pause();
+      return;
+    }
+    this.fade(0, 0.25);
+    await new Promise((r) => setTimeout(r, 260));
+    if (!this.closed) await this.ctx!.suspend().catch(() => {});
+  }
+
+  /** Where the arm and the bar are: through this pass, and across the side. */
+  position(): Position {
+    if (this.kind === "element") {
+      const a = this.element;
+      const pass = a && a.duration ? a.currentTime / a.duration : 0;
+      return { pass, side: pass };
+    }
+    if (!this.first || !this.buffer) return { pass: 0, side: 0 };
+    const t = Math.max(0, this.ctx!.currentTime - this.first);
+    const lap = this.buffer.duration - XFADE;
+    return { pass: (t % lap) / lap, side: (t % SIDE) / SIDE };
+  }
+
+  close() {
+    this.closed = true;
+    window.clearInterval(this.pump);
+    this.element?.pause();
+    void this.ctx?.close().catch(() => {});
+  }
+
+  // Keeps a few seconds of passes queued on the audio clock. A suspended
+  // context's clock stands still, so pausing never lets the queue run ahead.
+  private schedule() {
+    const ctx = this.ctx!;
+    const b = this.buffer;
+    if (!b || this.closed) return;
+    while (this.next < ctx.currentTime + 4) {
+      const at = this.next;
+      const src = ctx.createBufferSource();
+      src.buffer = b;
+      const g = ctx.createGain();
+      const opening = at === this.first;
+      g.gain.setValueAtTime(opening ? 1 : 0, at);
+      if (!opening) g.gain.linearRampToValueAtTime(1, at + XFADE);
+      g.gain.setValueAtTime(1, at + b.duration - XFADE);
+      g.gain.linearRampToValueAtTime(0, at + b.duration);
+      src.connect(g).connect(this.master!);
+      src.onended = () => {
+        src.disconnect();
+        g.disconnect();
+      };
+      src.start(at);
+      this.next = at + b.duration - XFADE;
+    }
+  }
+
+  private fade(to: number, secs: number) {
+    const g = this.master!.gain;
+    const now = this.ctx!.currentTime;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(to, now + secs);
+  }
+
+  private async playElement(): Promise<boolean> {
+    if (!this.element) {
+      this.element = new Audio(this.url);
+      this.element.loop = true;
+      this.element.volume = VOLUME;
+    }
+    try {
+      await this.element.play();
+      return !this.closed;
+    } catch {
+      return false;
+    }
+  }
+}
 
 export function VinylPlayer() {
-  const audio = useRef<HTMLAudioElement>(null);
-  const fade = useRef(0);
+  const deck = useRef<Turntable | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [ended, setEnded] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  // Volume eased rather than switched: a needle dropping, not a door opening.
-  //
-  // On a timer, not requestAnimationFrame, so it finishes even when frames are
-  // not being drawn — and what comes after it (a pause) never waits on one.
-  // iOS ignores writes to volume entirely; there the ramp simply runs its
-  // course in silence and the pause still lands on time.
-  const ramp = useCallback((to: number, ms: number, then?: () => void) => {
-    const a = audio.current;
-    if (!a) return;
-    window.clearInterval(fade.current);
-    const from = a.volume;
-    const start = performance.now();
-    fade.current = window.setInterval(() => {
-      const k = Math.min(1, (performance.now() - start) / ms);
-      a.volume = from + (to - from) * k;
-      if (k >= 1) {
-        window.clearInterval(fade.current);
-        then?.();
-      }
-    }, 30);
-  }, []);
-
-  const play = useCallback(() => {
-    const a = audio.current;
-    if (!a) return;
-    if (a.ended) a.currentTime = 0;
-    a.volume = 0;
-    a.play()
-      .then(() => ramp(VOLUME, 900))
-      // Refused without a gesture: stay arm-up until someone taps play.
-      .catch(() => setPlaying(false));
-  }, [ramp]);
-
-  const pause = () => ramp(0, 250, () => audio.current?.pause());
+  const [kind, setKind] = useState<Turntable["kind"]>("web audio");
+  const [{ pass, side }, setPosition] = useState<Position>({ pass: 0, side: 0 });
 
   useEffect(() => {
-    play();
-    const a = audio.current;
+    const t = new Turntable(TRACK.preview);
+    deck.current = t;
+    void t.play().then((on) => {
+      if (t.closed) return;
+      setPlaying(on);
+      setKind(t.kind);
+    });
+    const tick = window.setInterval(() => setPosition(t.position()), 250);
     return () => {
-      window.clearInterval(fade.current);
-      a?.pause();
+      window.clearInterval(tick);
+      t.close();
+      deck.current = null;
     };
-  }, [play]);
+  }, []);
 
-  const label = ended ? "Played" : playing ? "Now playing" : "Paused";
+  // Called straight from the tap, so play() can still start the context.
+  const toggle = () => {
+    const t = deck.current;
+    if (!t) return;
+    if (playing) {
+      setPlaying(false);
+      void t.pause();
+    } else {
+      void t.play().then((on) => {
+        if (t.closed) return;
+        setPlaying(on);
+        setKind(t.kind);
+      });
+    }
+  };
 
   return (
-    <div className="flex items-center gap-5">
-      <audio
-        ref={audio}
-        src={TRACK.preview}
-        preload="auto"
-        onPlay={() => {
-          setPlaying(true);
-          setEnded(false);
-        }}
-        onPause={() => setPlaying(false)}
-        onEnded={() => {
-          setPlaying(false);
-          setEnded(true);
-        }}
-        onTimeUpdate={(e) => {
-          const a = e.currentTarget;
-          setProgress(a.duration ? a.currentTime / a.duration : 0);
-        }}
-      />
-
+    <div className="flex items-center gap-5" data-deck={kind}>
       {/* The turntable: disc, label, spindle and arm. Decoration only — the
           button beside it is the control. */}
       <div aria-hidden="true" className="relative shrink-0 w-[128px] h-[128px]">
@@ -143,7 +265,7 @@ export function VinylPlayer() {
         <span className="absolute -right-2 -top-2 w-[14px] h-[14px] rounded-full bg-bg shadow-[0_0_0_1px_var(--border-strong),0_2px_4px_rgba(0,0,0,0.15)] z-10" />
         <span
           className="absolute -top-[2px] right-[-1.5px] w-[3px] h-[60px] origin-top rounded-full bg-fg-muted transition-transform duration-700 ease-[var(--ease-out)] motion-reduce:transition-none"
-          style={{ transform: `rotate(${playing ? 9 + progress * 24 : -10}deg)` }}
+          style={{ transform: `rotate(${playing ? 9 + side * 24 : -10}deg)` }}
         >
           {/* The headshell. */}
           <span className="absolute -left-[2px] bottom-0 w-[7px] h-[9px] rounded-[2px] bg-fg-muted" />
@@ -151,14 +273,16 @@ export function VinylPlayer() {
       </div>
 
       <div className="min-w-0">
-        <p className="text-[11px] leading-[1.6] uppercase tracking-[0.14em] text-fg-label">{label}</p>
+        <p className="text-[11px] leading-[1.6] uppercase tracking-[0.14em] text-fg-label">
+          {playing ? "Now playing" : "Paused"}
+        </p>
         <p className="text-[15px] leading-[1.35] font-medium tracking-[-0.02em] text-fg mt-1">{TRACK.title}</p>
         <p className="text-[11px] leading-[1.6] text-fg-muted">{TRACK.artist}</p>
 
         <div className="flex items-center gap-3 mt-3">
           <button
             type="button"
-            onClick={() => (playing ? pause() : play())}
+            onClick={toggle}
             aria-label={playing ? `Pause ${TRACK.title}` : `Play ${TRACK.title}`}
             className="relative w-9 h-9 shrink-0 rounded-full bg-fg text-bg grid place-items-center hover:opacity-90 transition-opacity duration-200 after:absolute after:-inset-1 after:content-['']"
           >
@@ -174,7 +298,7 @@ export function VinylPlayer() {
             )}
           </button>
           <div className="w-[96px] h-[2px] rounded-full bg-border overflow-hidden" aria-hidden="true">
-            <div className="h-full bg-fg origin-left" style={{ transform: `scaleX(${progress})` }} />
+            <div className="h-full bg-fg origin-left" style={{ transform: `scaleX(${pass})` }} />
           </div>
         </div>
 
@@ -184,7 +308,7 @@ export function VinylPlayer() {
           rel="noopener noreferrer"
           className="inline-block mt-2 text-[11px] leading-[1.6] text-fg-muted hover:text-fg underline decoration-border-strong underline-offset-[3px] transition-colors duration-200"
         >
-          {ended ? "Hear the rest on Apple Music ↗" : "Apple Music ↗"}
+          Full song on Apple Music ↗
         </a>
       </div>
     </div>
