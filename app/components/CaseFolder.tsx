@@ -159,7 +159,7 @@ export function CaseFolder({
             transition-transform duration-500 ease-[cubic-bezier(0.2,0,0,1)]
             dark:from-[#2d2d2d]/90 dark:to-[#1d1d1d]/84"
         >
-          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-[18px]">
+          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4">
             <div className="min-w-0">
               <strong className="block line-clamp-2 text-[13px] font-medium leading-[1.6] tracking-[-0.02em] text-fg">
                 {title}

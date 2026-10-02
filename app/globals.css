@@ -930,3 +930,32 @@ html.intro-out .sw-intro-wave {
   --space-5: 64px;   /* between sub-sections */
   --space-6: 128px;  /* between sections */
 }
+
+/* ---- Section weight ----------------------------------------------------
+   Every section carried the same 96px of padding top and bottom, so a section
+   with five projects in it and a section with one line in it were separated
+   by the same 192px. That reads as both being equally important, which they
+   are not, and it is what "spaced by force" looks like at page scale: the gap
+   is uniform regardless of what is being spaced.
+
+   Activity (one row) and About (one paragraph) are both short and both about
+   the person rather than the work, so they are one group. Consecutive minor
+   sections halve the gap between them while keeping the full gap to the
+   sections either side — the layout skill's first rule, group with space,
+   applied to the page rather than to a component.
+
+   128px to the neighbours, 64px between the pair. Two to one, which is the
+   ratio below which grouping stops reading as grouping. */
+section[data-weight="minor"] + section[data-weight="minor"] {
+  padding-top: var(--space-4);
+}
+
+section[data-weight="minor"]:has(+ section[data-weight="minor"]) {
+  padding-bottom: var(--space-4);
+}
+
+/* The hairline between two sections of the same group would fence them apart
+   again, which is the thing the smaller gap is there to undo. */
+section[data-weight="minor"] + section[data-weight="minor"] {
+  border-top-width: 0;
+}

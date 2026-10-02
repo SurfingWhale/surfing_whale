@@ -668,3 +668,52 @@ None of this is taste. It removes the noise that makes taste hard to hear —
 near-misses, accidental steps, edges nobody chose. The judgement about whether
 the result has breath is still Fauzy's, and the loop that has worked all
 session is him saying it feels wrong and the measurement finding where.
+
+### 16.5 The rest of the page, and where measuring stopped helping
+
+The other six sections were measured against the same twelve column lines.
+Almost every edge that came back "off grid" was legitimate once looked at one
+at a time:
+
+| Looked wrong | Actually |
+| --- | --- |
+| tilted photographs at x=448, 479, 865, 896, 913 | contents of a card, positioned against the card |
+| cards at x=795 | cells of a two-column sub-grid inside the content column |
+| x=534 in Activity, x=550 in Contact | the second item in a row |
+| x=399, 461 in Guest notes | centred text inside a card |
+
+One was real: `p-[18px]` on the project card's caption — the only arbitrary
+pixel padding in the codebase that was off any scale. Now `p-4`.
+
+**That is the fourth over-count** (§16.1 has the first three). A fifth followed:
+a checker for the layout skill's grouping ratio — *the gap between groups must
+be twice the gap inside one* — matched three containers out of a page, because
+most of this layout uses CSS `gap` rather than stacked margins, and reported
+the hero's deliberate 696px of air as a failure.
+
+So the metric-building stopped there. Five measurements, four of which
+measured something next to the thing they claimed to. The remaining finding
+came from looking at a screenshot.
+
+### 16.6 Sections spaced by force
+
+Every section carried the same 96px of padding, so **Activity (one row) and
+About (one paragraph) were separated by the same 192px as the work section
+with five projects in it.** The gap was uniform regardless of what was being
+spaced, which is what "dipaksa berjarak" looks like at page scale, and it
+reads as both being equally important.
+
+Both are short and both are about the person rather than the work, so they are
+one group. Consecutive `data-weight="minor"` sections now halve the gap
+between them and drop the hairline that would fence them apart again:
+
+```
+work  -> activity   192px
+activity -> about    64px     <- one group
+about -> notes      192px
+notes -> contact    192px
+```
+
+Three to one, against a rule that asks for two. The air around the pair did
+not change; what changed is that it is now around the pair rather than
+through it.
