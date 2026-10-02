@@ -137,7 +137,7 @@ export async function essaysUsing(publicId: string): Promise<string[]> {
   const rows = unwrap(
     await table("surfingwhale_essays")
       .select("title")
-      .contains("blocks", [{ type: "images", items: [{ publicId }] }]),
+      .contains("blocks", JSON.stringify([{ type: "images", items: [{ publicId }] }])),
     "Find essays using a photo"
   ) as { title: string }[];
   return rows.map((r) => r.title || "Untitled");

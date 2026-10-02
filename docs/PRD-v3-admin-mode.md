@@ -717,3 +717,63 @@ notes -> contact    192px
 Three to one, against a rule that asks for two. The air around the pair did
 not change; what changed is that it is now around the pair rather than
 through it.
+
+## 17. Why Delete really failed — 2026-10-02
+
+The message that §11-era work put in front of the error turned out to be the
+whole point of putting it there. With "Could not delete it." replaced by the
+reason, the studio said:
+
+> Find essays using a photo: **invalid input syntax for type json**
+
+`essaysUsing()` and `postsUsing()` ask Postgres whether any published piece
+still shows a photograph, with jsonb containment:
+
+```ts
+.contains("blocks", [{ type: "images", items: [{ publicId }] }])
+```
+
+supabase-js branches on the **type** of that value. A string is passed through;
+an object is `JSON.stringify`d; **an array becomes a Postgres ARRAY literal**,
+built with `value.join(",")`:
+
+```js
+} else if (Array.isArray(value)) {
+  this.url.searchParams.append(column, `cs.{${value.join(',')}}`)
+}
+```
+
+An array of objects therefore went out as, verbatim:
+
+```
+blocks=cs.%7B%5Bobject+Object%5D%7D      ->      blocks=cs.{[object Object]}
+```
+
+Postgres parsed that as jsonb and answered "invalid input syntax for type
+json" — on every delete, from the day it was written.
+
+It shipped looking correct because `.contains(column, [...])` is exactly what
+the documentation shows. That form is for an array **column**. For a jsonb
+column the value has to be JSON, which means handing over the string:
+`.contains("blocks", JSON.stringify([...]))`.
+
+### 17.1 The check, and proving it is one
+
+`scripts/verify-library.sh` case H reads the query the fake Supabase actually
+received and fails on `{[object Object]}`.
+
+A test that passes before and after a fix proves nothing, so it was run both
+ways: **FAIL on the old code, PASS on the new.** The first version of the
+assertion passed on the broken code — it looked for `object%20Object` and the
+space is encoded as `+`. Caught by running it against the bug rather than
+trusting it.
+
+A, B, C, D, E, F, G, H: ALL PASS.
+
+### 17.2 Still open
+
+The library shows 22 photographs with visible repeats. Those are **separate
+uploads of the same picture**, not the folder duplication §16 fixed — every
+upload gets four random bytes in its name, so three uploads of one file are
+three different objects and nothing can tell them apart by name. Deleting them
+works; there is just nothing to deduplicate.

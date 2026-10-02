@@ -93,6 +93,25 @@ echo "-- G. a missing table leaves the gallery standing --"
 F=$(curl -s --noproxy '*' "http://localhost:$BAD_PORT/" | grep -c 'from the photography archive')
 check "home page falls back to the manifest, does not 500" "1" "$F"
 
+echo "-- H. the in-use query is valid jsonb, not a Postgres array literal --"
+: > "$LOG.q"
+curl -s --noproxy '*' -b "sw-darkroom=$C" -H 'content-type: application/json' -X POST \
+  "http://localhost:$OK_PORT/api/library/delete" -d '{"publicId":"library/2026-09-03-mountain-aabbccdd-1200x800.webp"}' > /dev/null
+Q=$(grep -o 'GET /rest/v1/[^ ]*' "$LOG" | tail -2 | tr '\n' ' ')
+# URL-encoded, the broken form is cs.%7B%5Bobject+Object%5D%7D — the space
+# is a plus, not %20, which is how the first version of this check passed on
+# code it was written to catch.
+if printf '%s' "$Q" | grep -qiE 'object(\+|%20)Object'; then
+  echo "  FAIL  the query still sends {[object Object]} — Postgres answers 'invalid input syntax for type json'"; fails=$((fails+1))
+else
+  echo "  PASS  no [object Object] in the containment filter"
+fi
+if printf '%s' "$Q" | grep -q 'blocks=cs.%5B%7B'; then
+  echo "  PASS  it sends a jsonb array: blocks=cs.[{...}]"
+else
+  echo "  FAIL  the containment filter is not a jsonb array"; echo "        query: $Q"; fails=$((fails+1))
+fi
+
 echo
 [ "$fails" -eq 0 ] && echo "ALL PASS" || echo "$fails FAILED"
 exit $fails

@@ -139,10 +139,13 @@ export async function savePost(post: Omit<Post, "id"> & { id?: string }): Promis
 }
 
 /** Titles of the posts a library photograph sits in, drafts included. */
+/** Same jsonb-containment trap as essaysUsing in darkroom.ts — see there. */
 export async function postsUsing(url: string): Promise<string[]> {
   if (!configured()) return [];
   const rows = unwrap(
-    await table("surfingwhale_posts").select("title").contains("blocks", [{ kind: "image", url }]),
+    await table("surfingwhale_posts")
+      .select("title")
+      .contains("blocks", JSON.stringify([{ kind: "image", url }])),
     "Find posts using a photo"
   ) as { title: string }[];
   return rows.map((r) => r.title || "Untitled");
