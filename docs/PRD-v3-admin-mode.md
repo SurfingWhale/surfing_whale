@@ -364,7 +364,7 @@ Three findings, and the first two are the reason the rest barely matter.
 | One `<h1>` per page | 4 of 9. `/work/coffee-access`, `/work/padel` and the research page each carry **two**. |
 | Heading skips | None. |
 | Breadcrumbs | None anywhere. |
-| Image dimensions | The research page serves **10 images with no width/height** — layout shift, which is a Core Web Vitals cost. |
+| Image dimensions | **Far worse than first reported.** The home page serves 23 images with no `width`/`height` attribute, the research page 10, `/work/crime-la` 4, `/work/coffee-access` 1 — every image on the site, in effect. The first pass said "10, on the research page only" because it read `img.width`, which returns the *rendered* width and is non-zero for anything that has loaded. The attributes are what reserve the box, and what layout shift depends on. Corrected 2026-10-02 by `seo-crawl`. |
 
 ### 12.3 Alt text is wrong where it matters
 
