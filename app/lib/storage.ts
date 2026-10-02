@@ -115,8 +115,22 @@ export async function listLibrary(limit = 500): Promise<LibraryPhoto[]> {
       return photos;
     })
   );
-  return all
-    .flat()
+  // One photograph, one tile. Folding the archive and the darkroom into one
+  // library left the same object sitting in more than one folder, so a listing
+  // that just concatenates the folders shows every one of those twice — which
+  // is what the studio was doing.
+  //
+  // Two entries with the same name ARE the same upload: objectName() puts four
+  // random bytes in every name, so a collision between genuinely different
+  // photographs is not something that happens. The copy kept is whichever
+  // folder comes first in LIBRARY_FOLDERS, which is why `library` is listed
+  // first — the one place new uploads go.
+  const byName = new Map<string, LibraryPhoto>();
+  for (const photo of all.flat()) {
+    const name = photo.publicId.slice(photo.publicId.indexOf("/") + 1);
+    if (!byName.has(name)) byName.set(name, photo);
+  }
+  return [...byName.values()]
     .sort((a, b) => b.takenAt.localeCompare(a.takenAt))
     .slice(0, limit);
 }
@@ -129,8 +143,22 @@ export const isLibraryPath = (p: unknown): p is string =>
   !p.includes("..") &&
   LIBRARY_FOLDERS.some((f) => new RegExp(`^${f}/[^/]+$`).test(p));
 
+/**
+ * Removes the photograph, including the copies of it in the other library
+ * folders.
+ *
+ * Deleting only the path that was listed looked like it worked and then the
+ * photograph came back on the next load, because the listing had hidden a
+ * second copy in another folder behind the de-duplication above. Somebody
+ * deleting a photograph means the photograph, not one folder's copy of it.
+ *
+ * Supabase's remove() does not fail on a path that is not there, so naming all
+ * three costs one round trip and no error handling.
+ */
 export async function deletePhoto(publicId: string): Promise<void> {
-  const { error } = await bucket().remove([publicId]);
+  const name = publicId.slice(publicId.indexOf("/") + 1);
+  const everywhere = LIBRARY_FOLDERS.map((f) => `${f}/${name}`);
+  const { error } = await bucket().remove(everywhere);
   if (error) throw new Error(error.message);
 }
 
