@@ -39,13 +39,14 @@ const PIVOT_PX = 330;
 // read out.
 const VISIBLE = 2.6;
 
+// `12 Mar ’26`, not `12 Mar 2026`. The work index writes its years the same
+// way, and two digits buy back the width the visitor's name needs beside it.
 function formatDate(iso: string) {
   if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const dm = d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  return `${dm} \u2019${String(d.getFullYear()).slice(-2)}`;
 }
 
 export function NotesFan({ notes }: { notes: FanNote[] }) {
@@ -136,21 +137,62 @@ export function NotesFan({ notes }: { notes: FanNote[] }) {
                   ? "transform 420ms cubic-bezier(0.2,0,0,1), opacity 420ms ease"
                   : "none",
               }}
-              className={`absolute left-1/2 top-2 -ml-[116px] w-[232px] h-[204px] p-4
-                sm:-ml-[132px] sm:w-[264px] sm:h-[216px] sm:p-5
-                rounded-[16px] bg-bg border border-border
-                shadow-[0_1px_2px_rgba(24,24,24,.06),0_14px_34px_rgba(24,24,24,.10)]
+              className={`absolute left-1/2 top-2 -ml-[116px] w-[232px] h-[204px] px-4 py-3.5
+                sm:-ml-[132px] sm:w-[264px] sm:h-[216px] sm:px-5 sm:py-4
+                rounded-[14px] bg-bg border flex flex-col
                 motion-reduce:!transition-none
-                ${front ? "" : "cursor-pointer"}`}
+                ${front
+                  ? "border-border-strong shadow-[0_1px_2px_rgba(24,24,24,.05),0_16px_36px_rgba(24,24,24,.11)]"
+                  : "border-border shadow-[0_1px_2px_rgba(24,24,24,.04),0_10px_24px_rgba(24,24,24,.07)] cursor-pointer"}`}
             >
-              <p className="text-[13px] leading-[1.75] text-fg-body line-clamp-5 whitespace-pre-line">
-                {note.message}
+              {/* The card is the site's index row, folded into a box: a label
+                  and a counter over a hairline, the content, a hairline, and
+                  the attribution. Same 11px uppercase at 0.14em for the
+                  labels, same mono tabular for anything numeric, same
+                  `'26` for a year — the WorkIndex rows are written in exactly
+                  this alphabet, so the fan reads as part of the page instead
+                  of a testimonial widget dropped onto it.
+
+                  The message gets the serif, because every other place a
+                  person speaks on this site is set in the serif.
+
+                  The front card is the only one that varies, and it varies at
+                  the EDGE: a stronger border and a deeper shadow. Two earlier
+                  tries alternated the FILL (`bg-bg-muted` on every other
+                  card). It looked right and measured wrong — the metadata came
+                  out at 4.14:1 on the tinted surface against the 4.5 WCAG AA
+                  asks, nine failures in light mode. Tying the weight to which
+                  card is in focus also says something true, which `i % 2`
+                  never did. */}
+              <header className="flex items-baseline justify-between gap-3">
+                <span className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label">
+                  Note
+                </span>
+                <span className="text-[11px] font-mono tabular-nums text-fg-muted shrink-0">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </header>
+
+              <div className="mt-2.5 border-t border-border" />
+
+              {/* Centred between the two rules, so a two-line note and a
+                  four-line one both sit in the middle of the card instead of
+                  hanging off the top rule with a hole under them. */}
+              <p
+                className="flex-1 min-h-0 flex items-center
+                  font-[family-name:var(--font-serif)] font-normal
+                  text-[16px] sm:text-[17px] leading-[1.34] tracking-[-0.012em]
+                  text-fg"
+              >
+                <span className="line-clamp-4 whitespace-pre-line">{note.message}</span>
               </p>
-              <footer className="absolute left-5 right-5 bottom-5 flex items-baseline justify-between gap-3">
-                <span className="text-[13px] font-medium text-fg truncate">
+
+              <footer className="border-t border-border pt-2.5
+                flex items-baseline justify-between gap-3">
+                <span className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-body truncate">
                   {note.name}
                 </span>
-                <span className="text-[11px] text-fg-muted shrink-0 tabular-nums">
+                <span className="text-[11px] font-mono tabular-nums text-fg-muted shrink-0">
                   {formatDate(note.date)}
                 </span>
               </footer>
