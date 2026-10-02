@@ -456,3 +456,66 @@ page, images without `width`/`height` attributes (23 on the home page alone —
 §12.2), and three raw files still linked out of case studies as if they were
 pages. The last are excluded in robots.txt now, which stops them being indexed
 but does not stop them being linked.
+
+## 14. The opening — 2026-10-02
+
+Asked for from a recording of [carterogunsola.com](https://carterogunsola.com):
+a count to 100 climbing the right edge of a black screen, a monogram pinned
+bottom left, and a soft-edged wipe at the end.
+
+Built as `app/components/Intro.tsx` with the wipe changed to the thing this
+site is named after: the edge is ChromeWord's `SWELL`, the same cubic the
+chrome type rides along, so the curtain is a wave rather than a straight line
+and it is one idea used twice rather than two.
+
+### 14.1 The rules it is built to
+
+An intro is the only component that can lock somebody out of a site they have
+not seen yet. Three rules, all checked by `scripts/verify-intro.mjs`:
+
+1. **It never gates the content.** The page is server-rendered underneath and
+   complete before this mounts. With JavaScript off, the pre-paint script
+   never adds the class, nothing is painted, and the site is simply there.
+2. **It cannot get stuck.** Everything that takes the overlay away is a CSS
+   animation with `forwards`, not React state. Blocked JS chunks — hydration
+   never happening — still leaves a usable page. React only drives the number.
+3. **Once a session, and never under `prefers-reduced-motion`.** Replaying on
+   every internal navigation is how a nice intro becomes the reason somebody
+   leaves.
+
+### 14.2 Two things found by capturing frames, not by reading code
+
+**A flash of the whole site, then black, then the site again.** The overlay was
+a React component, so it arrived a hydration late — measured at 149ms on a
+production build. The ink is now painted by `html.intro::before`, set by the
+pre-paint script, so it is there in the first frame.
+
+**The wave was invisible.** Two versions of it. First the curtain was one tall
+path whose top 30% was the swell: on a 390×844 phone the solid part came to
+709px, less than the viewport, so the crest had to travel off the top before
+the screen was covered. Then, with the crest riding on its own body, the ink
+panel was *also* sliding up — and a straight bottom edge moving at the same
+speed is all anyone saw. Nothing lifts now. The ink sits still and is covered,
+which is what the reference does.
+
+### 14.3 NumberFlow
+
+Looked at per the ask. `@number-flow/react` 0.6.2, MIT, ~36KB unpacked plus a
+~60KB core, custom-element based, and it ships `usePrefersReducedMotion` and
+`useCanAnimate` — it is a good library.
+
+**Not used for the opening.** A loading screen that waits for a library to
+download before it can count is backwards, and this is on the critical path of
+a first visit. The rolling digits here are a 10-high column translated by
+`-digit × 10%`, which is about fifteen lines and no bytes.
+
+**Worth it where numbers change after hydration** — the guest-note fan's
+`{n} / {total}` as it is swiped is the honest case. Left as a decision rather
+than taken.
+
+### 14.4 The cost, stated
+
+For one visit per session the overlay is the largest thing painted, so it is
+what LCP measures: about 2.2s of ink. That is the price of the thing asked
+for. A second page in the same session, and anyone with reduced motion, pay
+nothing — no overlay is rendered at all.

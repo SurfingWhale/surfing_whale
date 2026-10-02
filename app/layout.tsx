@@ -5,6 +5,7 @@ import "./globals.css";
 import { SITE } from "./lib/site";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
 import { REVEAL_INIT_SCRIPT } from "./components/Reveal";
+import { Intro, INTRO_INIT_SCRIPT } from "./components/Intro";
 
 // Matches the reference site, which loads Plus Jakarta Sans at 400/500/600 —
 // confirmed from its stylesheet link and from the font names embedded in a
@@ -143,8 +144,15 @@ export default function RootLayout({
             straight back out on load. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
+        {/* Decides, before anything is painted, whether this visit gets the
+            opening — once a session, and never for anyone who has asked for
+            less motion. */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_INIT_SCRIPT }} />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Intro />
+        {children}
+      </body>
     </html>
   );
 }
