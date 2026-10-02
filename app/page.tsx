@@ -25,26 +25,35 @@ const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "#" },
   { label: "Projects", href: "#project" },
   { label: "Writing", href: "/writing" },
+  { label: "Darkroom", href: "/photo" },
   { label: "Activity", href: "#activity" },
   { label: "About", href: "#CV" },
   { label: "Notes", href: "#guest-notes" },
   { label: "Contact", href: "#contact" },
 ];
 
-// Writing and the darkroom are both Notion-backed and both start empty. A nav
-// item that lands on "Nothing published yet" reads as an unfinished site, so
-// each is advertised only once it has something behind it. Both listers return
-// [] when their database is unconfigured, so this needs no extra guard and the
-// links reappear on their own once posts exist.
+// Writing and the darkroom both start empty. A nav item that lands on
+// "Nothing published yet" reads as an unfinished site, so each is advertised
+// only once it has something behind it. Both listers return [] when their
+// database is unconfigured, so this needs no extra guard and the links appear
+// on their own once something is published.
+//
+// The darkroom had no nav entry at all, which meant /photo was reachable from
+// nowhere — good title, good description, and no path to it from the home
+// page in any state. Both are in the sitemap whatever this filter decides,
+// which is the half of discoverability that does not depend on having
+// published yet.
 export default async function Home() {
   const [posts, essays, photos] = await Promise.all([
     listPosts(),
     listEssays(),
     listPublishedPhotos(),
   ]);
-  const navLinks = NAV_LINKS.filter(
-    (l) => l.href !== "/writing" || posts.length > 0
-  );
+  const navLinks = NAV_LINKS.filter((l) => {
+    if (l.href === "/writing") return posts.length > 0;
+    if (l.href === "/photo") return essays.length > 0;
+    return true;
+  });
 
   return (
     <main className="relative min-h-screen bg-bg text-fg">

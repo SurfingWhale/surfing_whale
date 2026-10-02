@@ -17,6 +17,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const post = await getPost(slug);
   if (!post || !post.published) return { title: "Not found" };
   return {
+    alternates: { canonical: `/writing/${slug}` },
     title: `${post.title} — Surfing Whale`,
     description: post.standfirst || undefined,
     openGraph: {

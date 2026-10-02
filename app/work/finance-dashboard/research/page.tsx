@@ -18,6 +18,7 @@ const DESCRIPTION =
   "1,050 Google Play reviews across nine budgeting apps in Indonesia and the US, read to validate two user segments before a line of the product was written.";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work/finance-dashboard/research" },
   title: `${TITLE} — Surfing Whale`,
   description: DESCRIPTION,
   openGraph: {

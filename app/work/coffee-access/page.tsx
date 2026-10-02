@@ -27,6 +27,7 @@ const DESCRIPTION =
   "Mapping how far a Tomoro branch actually reaches around Bintaro, and which housing falls outside it. An isochrone read of access, class and the cost of time.";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work/coffee-access" },
   title: `${TITLE} — Surfing Whale`,
   description: DESCRIPTION,
   openGraph: {

@@ -16,6 +16,7 @@ const DESCRIPTION =
   "A personal finance dashboard on double-entry accounting: a 112-account general ledger, prorate budgeting against working days, PDF statement import, and a security audit run as its own pass.";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work/finance-dashboard" },
   title: `${TITLE} — Surfing Whale`,
   description: DESCRIPTION,
   openGraph: {

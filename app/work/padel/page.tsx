@@ -24,6 +24,7 @@ const DESCRIPTION =
   "Two spatial studies of padel around south Jakarta: where the supply gap is in Bintaro, and why a court in Pondok Labu competes with 140 others inside twenty minutes.";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work/padel" },
   title: `${TITLE} — Surfing Whale`,
   description: DESCRIPTION,
   openGraph: {

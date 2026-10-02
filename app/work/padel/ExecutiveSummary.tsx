@@ -71,7 +71,7 @@ function MissingFigure({ label }: { label: string }) {
 export function ExecutiveSummary() {
   return (
     <>
-      <h1>Strategic Snapshot: Sense Padel Pondok Labu</h1>
+      <h2>Strategic Snapshot: Sense Padel Pondok Labu</h2>
       <p>
         <strong>Community Moat & Survival Intelligence Analysis</strong>
         <br />
@@ -89,7 +89,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>Ekologi Kompetisi: Hukum Kepadatan</h2>
+      <h3>Ekologi Kompetisi: Hukum Kepadatan</h3>
       <p>
         Dalam <em>Organizational Ecology</em> (1989), buku yang menjadi fondasi
         bidang ini, Hannan dan Freeman menjelaskan bahwa pertumbuhan suatu
@@ -119,9 +119,9 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>Yang Datanya Ngomong</h2>
+      <h3>Yang Datanya Ngomong</h3>
 
-      <h3>Kepadatan Kompetitor</h3>
+      <h4>Kepadatan Kompetitor</h4>
       <Table
         head={["Radius", "Jumlah Lapangan", "Status"]}
         align={["l", "r", "l"]}
@@ -137,7 +137,7 @@ export function ExecutiveSummary() {
         olahraga <em>hype cycle</em> sebelumnya.
       </p>
 
-      <h3>Apa yang Customer Tulis di Review</h3>
+      <h4>Apa yang Customer Tulis di Review</h4>
       <Table
         head={["Dimensi", "Sense Padel", "Rata-rata Kompetitor"]}
         align={["l", "r", "r"]}
@@ -155,7 +155,7 @@ export function ExecutiveSummary() {
         media sosial lain yang tidak tercatat di Google Maps.
       </p>
 
-      <h3>Community Moat Score</h3>
+      <h4>Community Moat Score</h4>
       <MissingFigure label="Strategic dashboard" />
       <p>
         <strong>Apa itu Community Moat?</strong> Dalam bisnis, <em>Moat</em>{" "}
@@ -183,7 +183,7 @@ export function ExecutiveSummary() {
         di atas 60. Ini adalah jendela peluang yang masih terbuka.
       </p>
 
-      <h3>Gap Niche</h3>
+      <h4>Gap Niche</h4>
       <Table
         head={["Niche", "Demand", "Coverage", "Gap"]}
         align={["l", "r", "r", "r"]}
@@ -197,9 +197,9 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>
+      <h3>
         Yang Datanya Nggak Bisa Ngomong (<em>Blind Spots</em>)
-      </h2>
+      </h3>
       <p>
         Data Google Review memiliki batasan sistemik yang harus didiskusikan
         sebelum keputusan besar diambil:
@@ -229,7 +229,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>Pertanyaan yang Lebih Berguna dari Kesimpulan</h2>
+      <h3>Pertanyaan yang Lebih Berguna dari Kesimpulan</h3>
       <ol>
         <li>
           <strong>
@@ -253,7 +253,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>Kalau Dipaksa Milih Satu Arah</h2>
+      <h3>Kalau Dipaksa Milih Satu Arah</h3>
       <p>
         <strong>
           Jadikan <em>regular players</em> yang ada sebagai basis — bukan
@@ -266,7 +266,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h3>Referensi & Catatan Kaki</h3>
+      <h4>Referensi & Catatan Kaki</h4>
       <p>
         Analisis ini berpijak pada kerangka kerja sosiologi industri dan
         manajemen strategis berikut:

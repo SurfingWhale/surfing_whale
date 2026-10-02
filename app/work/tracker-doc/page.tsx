@@ -13,6 +13,7 @@ const DESCRIPTION =
   "A document approval tracker built on the spreadsheet the office already used, because migrating them off it would have killed the project.";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work/tracker-doc" },
   title: `${TITLE} — Surfing Whale`,
   description: DESCRIPTION,
   openGraph: {

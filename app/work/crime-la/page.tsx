@@ -20,6 +20,7 @@ const DESCRIPTION =
   "An early pass at a public dataset: cleaning LAPD crime records, plotting where and against whom, and putting the Harbor area's worst thirty blocks on a map.";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work/crime-la" },
   title: `${TITLE} — Surfing Whale`,
   description: DESCRIPTION,
   openGraph: {

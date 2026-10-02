@@ -58,7 +58,7 @@ function Table({ head, rows }: { head: string[]; rows: React.ReactNode[][] }) {
 export function ExecutiveSummary() {
   return (
     <>
-      <h1>Executive Summary</h1>
+      <h2>Executive Summary</h2>
       <p>
         <strong>Riset Pasar Aplikasi Finance — Validasi Segmen Pengguna</strong>
       </p>
@@ -74,7 +74,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>1. Latar Belakang</h2>
+      <h3>1. Latar Belakang</h3>
       <p>
         Dokumen ini lahir dari sebuah proyek sederhana: saya ingin membangun
         aplikasi pencatatan keuangan, dibantu AI sebagai alat leveragenya.
@@ -129,7 +129,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>2. Metodologi</h2>
+      <h3>2. Metodologi</h3>
       <ul>
         <li>
           <strong>Sumber data:</strong> Google Play Store (scraping via
@@ -158,7 +158,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>3. Gambaran Pasar: US vs Indonesia</h2>
+      <h3>3. Gambaran Pasar: US vs Indonesia</h3>
       <p>
         Kedua pasar menunjukkan pola yang <strong>berbeda signifikan</strong>{" "}
         dalam distribusi rating.
@@ -188,8 +188,8 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>4. Performa Kompetitor</h2>
-      <h3>4.1 Rating per Aplikasi</h3>
+      <h3>4. Performa Kompetitor</h3>
+      <h4>4.1 Rating per Aplikasi</h4>
       <Fig
         src="rating-by-app"
         alt="Average rating per application in each market."
@@ -229,7 +229,7 @@ export function ExecutiveSummary() {
         </li>
       </ol>
 
-      <h3>4.2 Sentimen per Aplikasi</h3>
+      <h4>4.2 Sentimen per Aplikasi</h4>
       <Fig src="sentiment-by-app" alt="Sentiment scores per application." />
       <Fig
         src="sentiment-share"
@@ -244,8 +244,8 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>5. Validasi Segmentasi VPD</h2>
-      <h3>5.1 Distribusi Sinyal Segmen</h3>
+      <h3>5. Validasi Segmentasi VPD</h3>
+      <h4>5.1 Distribusi Sinyal Segmen</h4>
       <Fig
         src="segment-signal"
         alt="Proportion of reviews carrying signals for each segment, split by market."
@@ -267,7 +267,7 @@ export function ExecutiveSummary() {
         </li>
       </ul>
 
-      <h3>5.2 Perbedaan Pain Level antar Segmen</h3>
+      <h4>5.2 Perbedaan Pain Level antar Segmen</h4>
       <Fig
         src="rating-by-segment"
         alt="Average rating given by each segment in each market; segment A rates consistently lower."
@@ -291,8 +291,8 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>6. Pain Points Utama</h2>
-      <h3>6.1 Apa yang Paling Dikeluhkan</h3>
+      <h3>6. Pain Points Utama</h3>
+      <h4>6.1 Apa yang Paling Dikeluhkan</h4>
       <Fig src="complaints" alt="Most frequent complaints across reviews." />
       <Table
         head={["Keluhan", "US", "ID"]}
@@ -306,7 +306,7 @@ export function ExecutiveSummary() {
         ]}
       />
 
-      <h3>6.2 Apa yang Paling Diapresiasi</h3>
+      <h4>6.2 Apa yang Paling Diapresiasi</h4>
       <Fig src="praise" alt="Most frequent words in positive reviews." />
       <p>
         Kata yang paling konsisten muncul di review positif lintas pasar:{" "}
@@ -317,7 +317,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>7. Competitive Gap Analysis</h2>
+      <h3>7. Competitive Gap Analysis</h3>
       <Fig
         src="competitive-gap"
         alt="Matrix of how often each competitor fails in each problem category."
@@ -353,7 +353,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>8. Opportunity Matrix</h2>
+      <h3>8. Opportunity Matrix</h3>
       <Fig
         src="opportunity-matrix"
         alt="Urgency of each feature for each segment, scored one to five."
@@ -377,8 +377,8 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>9. Rekomendasi Strategis</h2>
-      <h3>Untuk Segmen A — Si Pencari Efisiensi</h3>
+      <h3>9. Rekomendasi Strategis</h3>
+      <h4>Untuk Segmen A — Si Pencari Efisiensi</h4>
       <p>
         <strong>Problem nyata:</strong> Tidak ada yang mengajarkan{" "}
         <em>cara berpikir keuangan</em> sebelum meminta input data.
@@ -405,7 +405,7 @@ export function ExecutiveSummary() {
         </li>
       </ul>
 
-      <h3>Untuk Segmen B — Si Pengendali Ketat</h3>
+      <h4>Untuk Segmen B — Si Pengendali Ketat</h4>
       <p>
         <strong>Problem nyata:</strong> Tidak percaya data aman, dan transisi
         dari buku manual terasa ribet.
@@ -432,7 +432,7 @@ export function ExecutiveSummary() {
         </li>
       </ul>
 
-      <h3>Must-have Cross-Segment (Hygiene Factors)</h3>
+      <h4>Must-have Cross-Segment (Hygiene Factors)</h4>
       <ul>
         <li>
           Full <strong>Bahasa Indonesia</strong> dari hari pertama (langsung
@@ -454,7 +454,7 @@ export function ExecutiveSummary() {
 
       <hr />
 
-      <h2>10. Kesimpulan</h2>
+      <h3>10. Kesimpulan</h3>
       <p>
         Pasar aplikasi keuangan Indonesia{" "}
         <strong>belum punya pemimpin yang kuat</strong> di segmen budgeting

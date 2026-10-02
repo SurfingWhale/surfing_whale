@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const essay = await getEssay(slug);
   if (!essay) return { title: "Not found" };
   return {
+    alternates: { canonical: `/photo/${slug}` },
     title: `${essay.title} — Surfing Whale`,
     description: essay.subtitle || undefined,
     openGraph: {

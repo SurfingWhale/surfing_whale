@@ -11,7 +11,11 @@
 export function FieldNote() {
   return (
     <>
-      <h1>☕ 15 Minutes to Coffee</h1>
+      {/* Starts at h2, not h1. This is a document embedded in a case study,
+          and the page's own h1 is in CaseHeader — two h1 elements means
+          nothing on the page claims to be its subject. Every level inside was
+          demoted with it so the outline still steps one at a time. */}
+      <h2>☕ 15 Minutes to Coffee</h2>
       <p>
         <strong>Membaca Pola Ruang dan Kelas Sosial di Bintaro</strong>
       </p>
@@ -25,7 +29,7 @@ export function FieldNote() {
 
       <hr />
 
-      <h2>🧭 Latar Belakang</h2>
+      <h3>🧭 Latar Belakang</h3>
       <p>Kota selalu berkembang lewat dua hal: mobilitas dan kebiasaan.</p>
       <p>
         Beberapa tahun terakhir, muncul pola menarik di kawasan penyangga
@@ -43,7 +47,7 @@ export function FieldNote() {
         </strong>
       </p>
 
-      <h2>🗺️ Tujuan</h2>
+      <h3>🗺️ Tujuan</h3>
       <p>
         Penelitian ringan ini mencoba memetakan hubungan antara jangkauan waktu
         tempuh (isochrone) Tomoro Coffee dengan sebaran perumahan menengah di
@@ -54,8 +58,8 @@ export function FieldNote() {
         bisa jadi indikator kelas sosial dan konektivitas urban.
       </p>
 
-      <h2>🧩 Metodologi</h2>
-      <h3>1. Data & Sumber</h3>
+      <h3>🧩 Metodologi</h3>
+      <h4>1. Data & Sumber</h4>
       <ul>
         <li>
           Lokasi cabang Tomoro Coffee: hasil scraping lokasi dari Google Maps
@@ -70,7 +74,7 @@ export function FieldNote() {
           OpenStreetMap (untuk non-subsidi).
         </li>
       </ul>
-      <h3>2. Analisis</h3>
+      <h4>2. Analisis</h4>
       <ul>
         <li>
           Layer isochrone Tomoro di-overlay dengan titik perumahan untuk
@@ -86,7 +90,7 @@ export function FieldNote() {
         </li>
       </ul>
 
-      <h2>☕ Temuan Awal</h2>
+      <h3>☕ Temuan Awal</h3>
       <ol>
         <li>
           <strong>
@@ -112,7 +116,7 @@ export function FieldNote() {
         </li>
       </ol>
 
-      <h2>💡 Diskusi</h2>
+      <h3>💡 Diskusi</h3>
       <blockquote>
         <p>
           Isochrone bukan cuma tentang jarak — tapi tentang waktu, dan waktu
@@ -135,7 +139,7 @@ export function FieldNote() {
         kehilangan waktu berharga.
       </p>
 
-      <h2>📍 Kesimpulan</h2>
+      <h3>📍 Kesimpulan</h3>
       <ul>
         <li>
           Pola sebaran Tomoro Coffee menunjukkan adanya clustering spasial di
@@ -152,7 +156,7 @@ export function FieldNote() {
         </li>
       </ul>
 
-      <h2>🧠 Arah Pengembangan Lanjutan</h2>
+      <h3>🧠 Arah Pengembangan Lanjutan</h3>
       <ul>
         <li>
           Menambahkan data UMKM / GrabFood hotspots untuk menilai dinamika
@@ -168,7 +172,7 @@ export function FieldNote() {
         </li>
       </ul>
 
-      <h2>✍️ Catatan Penutup</h2>
+      <h3>✍️ Catatan Penutup</h3>
       <blockquote>
         <p>
           Di Bintaro, kopi bukan cuma urusan kafein. Ia adalah peta waktu —

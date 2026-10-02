@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono, Oswald, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+// The one place the host is written; see app/lib/site.ts.
+import { SITE } from "./lib/site";
 import { THEME_INIT_SCRIPT } from "./components/ThemeToggle";
 import { REVEAL_INIT_SCRIPT } from "./components/Reveal";
 
@@ -57,7 +59,6 @@ export const viewport: Viewport = {
   ],
 };
 
-const SITE = "https://surfing-whale.vercel.app";
 const TITLE = "Muhammad Fauzy — Surfing Whale";
 const DESCRIPTION =
   "I like building things that tell a story rather than report a number. Ledgers, forecasts, photographs, and the questions underneath them.";
@@ -112,6 +113,11 @@ export const metadata: Metadata = {
 
   // Relative image URLs above resolve against this.
   metadataBase: new URL(SITE),
+  // Nothing on this site carried a canonical. Without one, every variant of a
+  // URL — trailing slash, query string, http — is a separate page competing
+  // with itself. Self-referencing at the root; each page's own metadata may
+  // override it.
+  alternates: { canonical: "/" },
 };
 
 export default function RootLayout({
@@ -123,8 +129,11 @@ export default function RootLayout({
     // The two scripts below add classes to <html> before React hydrates, on
     // purpose; this tells React the difference is expected. It covers this
     // element's own attributes only, not anything inside it.
+    // `lang` was "id" on a site written in English. A screen reader reads
+    // English prose with Indonesian pronunciation rules, and search reads the
+    // page as Indonesian — both from one attribute nobody looks at.
     <html
-      lang="id"
+      lang="en-GB"
       suppressHydrationWarning
       className={`${jakarta.variable} ${geistMono.variable} ${oswald.variable} ${serif.variable} h-full antialiased`}
     >

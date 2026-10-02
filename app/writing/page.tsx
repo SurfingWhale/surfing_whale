@@ -7,6 +7,7 @@ import { SectionLabel } from "@/app/components/SectionLabel";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/writing" },
   title: "Writing — Surfing Whale",
   description: "Notes on taking something messy and finding the structure in it.",
   openGraph: {

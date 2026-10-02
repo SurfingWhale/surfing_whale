@@ -9,6 +9,7 @@ import { SectionLabel } from "@/app/components/SectionLabel";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/photo" },
   title: "Darkroom — Surfing Whale",
   description: "Photo essays: writing, and the photographs that go with it.",
   openGraph: {
