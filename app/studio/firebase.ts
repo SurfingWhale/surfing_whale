@@ -35,6 +35,27 @@ function authDomain(): string {
 
 type Kit = { auth: Auth; mod: typeof import("firebase/auth") };
 let kit: Promise<Kit> | null = null;
+// The same kit once it has arrived, for code that must not wait a tick.
+let loaded: Kit | null = null;
+
+/**
+ * The browser inside Instagram, Facebook, TikTok, LINE and the like — a
+ * WebView, which Google refuses to sign anyone in from (disallowed_useragent).
+ * WhatsApp and Gmail open links in the system's own browser view, which
+ * Google accepts, so they are not on the list.
+ */
+export function embeddedBrowser(): string | null {
+  const m = navigator.userAgent.match(
+    /\b(Instagram|FBAN|FBAV|FB_IAB|Line\/|TikTok|musical_ly|Bytedance|Twitter|Snapchat|LinkedInApp)/i
+  );
+  if (!m) return null;
+  const k = m[1].toLowerCase();
+  if (k.startsWith("fb")) return "Facebook";
+  if (k.startsWith("line")) return "LINE";
+  if (k === "tiktok" || k === "musical_ly" || k === "bytedance") return "TikTok";
+  if (k === "linkedinapp") return "LinkedIn";
+  return m[1];
+}
 
 function load(): Promise<Kit> {
   kit ??= Promise.all([import("firebase/app"), import("firebase/auth")]).then(([app, mod]) => {
@@ -47,7 +68,7 @@ function load(): Promise<Kit> {
       popupRedirectResolver: mod.browserPopupRedirectResolver,
     });
     return { auth, mod };
-  });
+  }).then((k) => (loaded = k));
   return kit;
 }
 
@@ -68,28 +89,34 @@ export async function currentUser(): Promise<{ user: User | null; error: unknown
   return { user: auth.currentUser, error };
 }
 
-/** The signed-in user, or null when the page is leaving for a redirect. */
-export async function signInWithGoogle(): Promise<User | null> {
-  const { auth, mod } = await load();
+/**
+ * The signed-in user, or null when the page is leaving for a redirect or the
+ * window was closed.
+ *
+ * Not async, on purpose. Safari only lets a tap open a window from inside the
+ * tap itself, and an `await` before signInWithPopup — even on a promise that
+ * has already resolved — was enough for it to block the window. So the popup
+ * is opened first thing, from the kit already loaded when the page mounted.
+ *
+ * A blocked window is reported, not papered over with a redirect: in a
+ * browser tab the redirect would go through firebaseapp.com, and Safari keeps
+ * that domain's storage apart from this one, so the sign-in would come back
+ * empty-handed with nothing on screen to say why.
+ */
+export function signInWithGoogle(): Promise<User | null> {
+  if (!loaded) return load().then(() => signInWithGoogle());
+  const { auth, mod } = loaded;
   const provider = new mod.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
-  if (standalone()) {
-    await mod.signInWithRedirect(auth, provider);
-    return null;
-  }
-  try {
-    return (await mod.signInWithPopup(auth, provider)).user;
-  } catch (err) {
-    const code = (err as { code?: string }).code;
-    // In-app browsers (Instagram, WhatsApp) block popups; a full-page
-    // redirect gets there instead and the page picks it up on return.
-    if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
-      await mod.signInWithRedirect(auth, provider);
-      return null;
+  if (standalone()) return mod.signInWithRedirect(auth, provider).then(() => null);
+  return mod.signInWithPopup(auth, provider).then(
+    (r) => r.user,
+    (err) => {
+      const code = (err as { code?: string }).code;
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return null;
+      throw err;
     }
-    if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return null;
-    throw err;
-  }
+  );
 }
 
 // Email and password: no popup and no redirect, so nothing here depends on a
@@ -113,9 +140,15 @@ export async function resendVerification(): Promise<void> {
   if (auth.currentUser) await mod.sendEmailVerification(auth.currentUser);
 }
 
+/**
+ * The reset link opens Firebase's page in the phone's browser, never in the
+ * home-screen app; the continue link brings that browser back to the studio.
+ * Only on hosts Firebase authorises — elsewhere a continue URL is refused.
+ */
 export async function resetPassword(email: string): Promise<void> {
   const { auth, mod } = await load();
-  await mod.sendPasswordResetEmail(auth, email);
+  const known = location.host === SIGN_IN_HOST || location.hostname === "localhost";
+  await mod.sendPasswordResetEmail(auth, email, known ? { url: `${location.origin}/studio` } : undefined);
 }
 
 export async function signOutOfFirebase(): Promise<void> {
@@ -138,11 +171,18 @@ export function describe(err: unknown): string {
     code === "auth/wrong-password" ||
     code === "auth/user-not-found"
   ) {
-    return "That email and password do not match.";
+    return "That email and password do not match. If this account was made with Google, it has no password yet — set one with Forgot password.";
   }
   if (code === "auth/email-already-in-use") return "That email already has an account. Sign in instead.";
   if (code === "auth/weak-password") return "Use at least 6 characters for the password.";
   if (code === "auth/invalid-email") return "That is not an email address.";
   if (code === "auth/too-many-requests") return "Too many tries. Wait a minute, then try again.";
+  if (code === "auth/popup-blocked") {
+    return "The browser blocked the Google window. Allow pop-ups for this site and tap again, or use email and password.";
+  }
+  if (code === "auth/operation-not-supported-in-this-environment" || code === "auth/web-storage-unsupported") {
+    return "This browser can't do Google sign-in. Open the page in Safari or Chrome, or use email and password.";
+  }
+  if (code === "auth/user-disabled") return "This account has been switched off.";
   return code ? `Sign-in failed (${code}).` : "Sign-in failed.";
 }

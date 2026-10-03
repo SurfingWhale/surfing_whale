@@ -24,6 +24,7 @@ import {
   signInWithGoogle,
   signOutOfFirebase,
   standalone,
+  embeddedBrowser,
 } from "./firebase";
 
 type Mode = "signin" | "register";
@@ -58,8 +59,16 @@ export function SignIn({
   const [refused, setRefused] = useState(false);
   // Decided after mount: the server render cannot know it is in an app.
   const [inApp, setInApp] = useState(false);
-  useEffect(() => setInApp(standalone()), []);
-  const showGoogle = !inApp || GOOGLE_IN_APP;
+  const [embedded, setEmbedded] = useState<string | null>(null);
+  const [resetAt, setResetAt] = useState(0);
+  useEffect(() => {
+    setInApp(standalone());
+    setEmbedded(embeddedBrowser());
+  }, []);
+  // Google is offered where it can finish: not inside another app's browser,
+  // which Google refuses, and not in the home-screen app until its redirect
+  // address is accepted (GOOGLE_IN_APP).
+  const showGoogle = (!inApp || GOOGLE_IN_APP) && !embedded;
 
   const clear = () => {
     setError(null);
@@ -117,16 +126,17 @@ export function SignIn({
     };
   }, [ready, proceed]);
 
-  const google = async () => {
+  // signInWithGoogle is called before anything is awaited, so the window it
+  // opens still counts as opened by the tap — see the note on it.
+  const google = () => {
     clear();
     setBusy(true);
-    try {
-      const user = await signInWithGoogle();
-      if (user) await exchange(user);
-    } catch (err) {
-      setError(describe(err));
-    }
-    setBusy(false);
+    signInWithGoogle()
+      .then(async (user) => {
+        if (user) await exchange(user);
+      })
+      .catch((err) => setError(describe(err)))
+      .finally(() => setBusy(false));
   };
 
   // The button stays pressable with a field empty and says which one, rather
@@ -165,13 +175,22 @@ export function SignIn({
     }
   };
 
+  // Each new reset email cancels the link in the one before, so a second tap
+  // soon after the first would only break the link on its way. A minute apart.
   const forgot = async () => {
     clear();
     const address = email.trim();
     if (!address) return setError("Enter your email first, then tap Forgot password.");
+    if (Date.now() - resetAt < 60_000) {
+      return setNotice("Already sent — open the newest email. You can ask again in a minute.");
+    }
     try {
       await resetPassword(address);
-      setNotice(`If ${address} has an account, a reset link is on its way.`);
+      setResetAt(Date.now());
+      setNotice(
+        `If ${address} has an account, a link is on its way from Firebase — check spam too. ` +
+          "Open only the newest one; each new email cancels the last. Choose a password there, then sign in here."
+      );
     } catch (err) {
       setError(describe(err));
     }
@@ -285,9 +304,18 @@ export function SignIn({
         )}
       </div>
 
-      {inApp && !GOOGLE_IN_APP && (
+      {inApp && !GOOGLE_IN_APP && !embedded && (
         <p className={`${hint} mt-6`}>
-          Google sign-in works when this page is open in Safari or Chrome.
+          In the app, sign in with email and password. If your account was made with
+          Google, give it a password once: tap Forgot password, open the email in the
+          browser, choose a password, then sign in here.
+        </p>
+      )}
+      {embedded && (
+        <p className={`${hint} mt-6`}>
+          Google sign-in does not work inside {embedded}&apos;s browser — Google refuses
+          it there. Open this page in Safari or Chrome (the ⋯ menu, then Open in browser),
+          or sign in with email and password.
         </p>
       )}
       {!signInReady && (
