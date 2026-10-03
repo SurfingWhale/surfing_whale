@@ -49,7 +49,7 @@ export function PhotographySection({
   ];
 
   return (
-    <section data-spot id="photography" className="w-full py-16 sm:py-24 border-t border-border section-rule">
+    <section data-spot id="photography" className="w-full py-24 border-t border-border section-rule">
       <div data-reveal className="frame frame-split">
         <div className="mb-16 space-y-5 text-[13px] leading-[2] text-fg-body max-w-[560px]">
           <p>

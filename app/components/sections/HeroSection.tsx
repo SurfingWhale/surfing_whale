@@ -191,7 +191,7 @@ export function HeroSection() {
 
       {/* Below the fold on a wide screen, on the first screen's own edge — the
           bio carries on from the sentence above it. */}
-      <div data-reveal className="frame frame-split frame-flush pb-12 sm:pb-16 min-[66rem]:pt-16">
+      <div data-reveal className="frame frame-split frame-flush pb-24 min-[66rem]:pb-16 min-[66rem]:pt-16">
         <DecodeText
           key={`bio-${mode}`}
           text={copy.bio}

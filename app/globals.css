@@ -945,17 +945,24 @@ html.intro-out .sw-intro-wave {
    applied to the page rather than to a component.
 
    128px to the neighbours, 64px between the pair. Two to one, which is the
-   ratio below which grouping stops reading as grouping. */
-section[data-weight="minor"] + section[data-weight="minor"] {
-  padding-top: var(--space-4);
-}
+   ratio below which grouping stops reading as grouping.
 
-section[data-weight="minor"]:has(+ section[data-weight="minor"]) {
-  padding-bottom: var(--space-4);
-}
+   From 640px up only. On a phone every section is 96px top and bottom — 192px
+   between one block's last line and the next one's first, about 3 cm on the
+   glass — at the owner's request, so the column breathes; that includes the
+   pair, which a phone shows one after the other anyway. */
+@media (min-width: 40rem) {
+  section[data-weight="minor"] + section[data-weight="minor"] {
+    padding-top: var(--space-4);
+  }
 
-/* The hairline between two sections of the same group would fence them apart
-   again, which is the thing the smaller gap is there to undo. */
-section[data-weight="minor"] + section[data-weight="minor"] {
-  border-top-width: 0;
+  section[data-weight="minor"]:has(+ section[data-weight="minor"]) {
+    padding-bottom: var(--space-4);
+  }
+
+  /* The hairline between two sections of the same group would fence them
+     apart again, which is the thing the smaller gap is there to undo. */
+  section[data-weight="minor"] + section[data-weight="minor"] {
+    border-top-width: 0;
+  }
 }

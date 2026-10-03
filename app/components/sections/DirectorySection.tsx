@@ -75,7 +75,7 @@ export function DirectorySection() {
     <section
       data-spot
       id="directory"
-      className="w-full pt-16 sm:pt-24 border-t border-border min-[66rem]:pt-0 min-[66rem]:border-t-0"
+      className="w-full pt-24 border-t border-border min-[66rem]:pt-0 min-[66rem]:border-t-0"
     >
       {/* On a phone the label introduces the stage. On a wide screen the
           stage's own path heading does that job, the way the reference's

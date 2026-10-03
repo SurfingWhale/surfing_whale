@@ -22,8 +22,11 @@
 // reads as noise.
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("../app", import.meta.url).pathname;
+// fileURLToPath, not .pathname: the checkout lives in "Surfing Whale", and
+// .pathname keeps the space as %20.
+const ROOT = fileURLToPath(new URL("../app", import.meta.url));
 const STEP = /\b(?:gap|gap-x|gap-y|space-y|space-x|p|px|py|pt|pb|m|mx|my|mt|mb)-(\d+(?:\.\d+)?)\b/g;
 
 const files = [];
