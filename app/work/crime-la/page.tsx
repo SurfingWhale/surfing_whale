@@ -239,9 +239,10 @@ export default function CrimeLAPage() {
             dataset. Different discipline.
           </p>
           <p>
-            The notebook version of this analysis is on{" "}
+            The original notebook is no longer public; the rest of my
+            notebooks are on{" "}
             <a
-              href="https://www.kaggle.com/code/muhammadfauzy43/eda-prediction-of-los-angeles-crime-by-edit"
+              href="https://www.kaggle.com/muhammadfauzy43/code"
               target="_blank"
               rel="noopener noreferrer"
               className={linkish}

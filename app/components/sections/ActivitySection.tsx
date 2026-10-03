@@ -15,44 +15,29 @@
 import { SectionLabel } from "@/app/components/SectionLabel";
 import { RowList, Row } from "@/app/components/RowList";
 
-const KAGGLE_USERNAME = "muhammadfauzy43";
-
-const KAGGLE_NOTEBOOKS = [
-  {
-    title: "EDA & Prediction of Los Angeles Crime",
-    url: "https://www.kaggle.com/code/muhammadfauzy43/eda-prediction-of-los-angeles-crime-by-edit",
-  },
-];
+// The one notebook this used to name (EDA & Prediction of Los Angeles Crime)
+// was taken down on Kaggle, so its link went to a 404. The list of notebooks
+// is the one address that stays true whatever is published there next.
+const KAGGLE_NOTEBOOKS = "https://www.kaggle.com/muhammadfauzy43/code";
 
 const link =
   "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200";
 
 export function ActivitySection() {
   return (
-    <section data-spot data-weight="minor" id="activity" className="w-full py-16 sm:py-24 border-t border-border section-rule">
+    <section data-spot data-weight="minor" id="activity" className="w-full py-24 border-t border-border section-rule">
       <div data-reveal className="frame frame-split">
         <SectionLabel note="Published notebooks.">Activity</SectionLabel>
 
         <RowList>
           <Row label="Kaggle">
-            {KAGGLE_NOTEBOOKS.map((n) => (
-              <a
-                key={n.url}
-                href={n.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${link} block`}
-              >
-                {n.title}
-              </a>
-            ))}
             <a
-              href={`https://www.kaggle.com/${KAGGLE_USERNAME}`}
+              href={KAGGLE_NOTEBOOKS}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-fg-body hover:text-fg transition-colors duration-300"
+              className={`${link} block`}
             >
-              All notebooks →
+              Notebooks on Kaggle →
             </a>
           </Row>
         </RowList>

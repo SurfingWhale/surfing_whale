@@ -923,7 +923,7 @@ flowchart TD
   DATA --> SELECTED["Selected case studies"] --> WORK
   DATA --> OTHER["Other work — Notion projects"] --> PANEL["Project panel"]
   PANEL --> OWNPAGE["/work/p/slug"]
-  DATA --> ACTIVITY["Activity"] --> KAGGLE["Kaggle profile ✓<br/>LA crime notebook ✗ 404"]
+  DATA --> ACTIVITY["Activity"] --> KAGGLE["Kaggle notebooks list ✓"]
   DATA --> ABOUT["About"] --> CV["CV dialog"]
 
   PHOTOS --> GALLERY["Gallery: filters · viewer with ← →"]
@@ -1007,10 +1007,10 @@ note, an access request, an approval email — had its form opened, not sent.
 | 2 | In Photographs, Projects · Activity · About and the skip link pointed at sections only the Data half has: four dead links. | header, `page.tsx` | **Fixed** `11d2ca2` — they switch halves, then scroll |
 | 3 | The project panel was a plain `div`: not announced as a dialog, focus left behind the backdrop. | `Projectmodal.tsx` | **Fixed** `11d2ca2` — role, aria-modal, focus in and back |
 | 4 | Library photographs never reached the gallery (§20); the photo panel opened off screen. | Photos room, gallery | **Fixed** `92db0b8` |
-| 5 | Kaggle notebook "EDA & Prediction of Los Angeles Crime" is a 404 — renamed, unlisted or made private. The profile link works. | Activity, `/work/crime-la` | **Open** — needs the current URL |
+| 5 | Kaggle notebook "EDA & Prediction of Los Angeles Crime" is a 404 — every slug variant 404s, so it was taken down, not renamed. | Activity, `/work/crime-la` | **Fixed** — both now link the notebooks list, `kaggle.com/muhammadfauzy43/code`; the case study says the original is no longer public |
 | 6 | Google sign-in from the home-screen app is off until the site's redirect URI is accepted. | §11 item 13 | **Open** — Google Cloud console |
 | 7 | Safari / WebKit has never been driven by a test; every check above is Chromium. | §11 item 8 | **Open** |
-| 8 | The same staircase photograph appears to be in the library more than once. | Studio › Photos | **Open** — hide or delete the copies |
+| 8 | The same photograph was in the library more than once — IMG_1304 three times (1500×2000 ×2, 1800×2400), IMG_8206 twice — none byte-identical, so storage could not tell. | gallery, `photos.ts` | **Fixed** — the gallery shows one per camera file name and aspect ratio, the largest; hiding any copy hides it. Files untouched; the studio still lists every copy |
 
 Passed, and worth knowing they were checked: theme toggle; every header
 link in the Data half (Contact stops 242px from the top because it is the

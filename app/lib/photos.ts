@@ -85,10 +85,28 @@ export async function listPublishedPhotos(): Promise<Photo[]> {
     // No table yet: everything shows, described generically.
   }
   const byId = new Map(rows.map((r) => [r.public_id, r]));
-  return files
-    .map((f) => ({ f, r: byId.get(f.publicId) }))
-    .filter(({ f, r }) => (r ? r.published : true) && f.width > 0 && f.height > 0)
-    .sort((a, b) => (a.r?.sort ?? 0) - (b.r?.sort ?? 0) || b.f.takenAt.localeCompare(a.f.takenAt))
+
+  const groups = new Map<string, { f: (typeof files)[number]; r?: Row }[]>();
+  for (const f of files) {
+    if (f.width <= 0 || f.height <= 0) continue;
+    const key = sameFrameKey(f.publicId, f.width, f.height);
+    const group = groups.get(key) ?? [];
+    group.push({ f, r: byId.get(f.publicId) });
+    groups.set(key, group);
+  }
+
+  return [...groups.values()]
+    // Hiding any copy hides the photograph. The studio lists every copy, so
+    // the one somebody taps "hide" on is not necessarily the one shown here,
+    // and a photograph that stays up after being hidden is the bug, not this.
+    .filter((group) => group.every(({ r }) => (r ? r.published : true)))
+    .map((group) => {
+      const largest = group.reduce((a, b) => (b.f.width * b.f.height > a.f.width * a.f.height ? b : a));
+      // The words and the place in the order may have been given to any copy.
+      const r = largest.r ?? group.find((c) => c.r)?.r;
+      return { f: largest.f, r, takenAt: group.reduce((t, c) => (c.f.takenAt > t ? c.f.takenAt : t), "") };
+    })
+    .sort((a, b) => (a.r?.sort ?? 0) - (b.r?.sort ?? 0) || b.takenAt.localeCompare(a.takenAt))
     .map(({ f, r }) => ({
       id: f.publicId,
       category: r && isCategory(r.category) ? r.category : "everyday",
@@ -97,6 +115,28 @@ export async function listPublishedPhotos(): Promise<Photo[]> {
       width: f.width,
       height: f.height,
     }));
+}
+
+/**
+ * Which uploads are the same photograph.
+ *
+ * Uploading one frame twice — again from the phone, or once before the
+ * compression changed — leaves two objects with different random bytes and
+ * often different sizes (1500×2000 and 1800×2400 of the same IMG_1304), and
+ * the gallery showed both side by side. The original file name survives in the
+ * object name (storage.ts, objectName), so the same camera name at the same
+ * aspect ratio is the same photograph and only the largest copy is shown.
+ * Nothing is deleted; the studio still lists every copy.
+ *
+ * Only for names with a camera's frame number in them. "image" or "photo" is
+ * what a phone calls many different pictures, and folding those together would
+ * hide photographs that are not copies of anything.
+ */
+function sameFrameKey(publicId: string, width: number, height: number): string {
+  const name = publicId.slice(publicId.lastIndexOf("/") + 1);
+  const slug = name.match(/^\d{4}-\d{2}-\d{2}-(.+)-[0-9a-f]{8}-\d+x\d+\.[a-z0-9]+$/)?.[1];
+  if (!slug || !/\d{3,}/.test(slug)) return publicId;
+  return `${slug}@${(width / height).toFixed(2)}`;
 }
 
 /** What the studio knows about the frames it is showing. */
