@@ -12,8 +12,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { GOOGLE_IN_APP } from "@/app/lib/firebaseConfig";
+import { SIGN_IN_HOST } from "@/app/lib/firebaseConfig";
 import {
+  allowAppHandler,
   currentUser,
   describe,
   register,
@@ -25,6 +26,8 @@ import {
   signOutOfFirebase,
   standalone,
   embeddedBrowser,
+  isIOS,
+  openStudioInSafari,
 } from "./firebase";
 
 type Mode = "signin" | "register";
@@ -60,15 +63,37 @@ export function SignIn({
   // Decided after mount: the server render cannot know it is in an app.
   const [inApp, setInApp] = useState(false);
   const [embedded, setEmbedded] = useState<string | null>(null);
+  const [ios, setIOS] = useState(false);
   const [resetAt, setResetAt] = useState(0);
+  // In the app, whether Google accepts the sign-in coming back to it yet —
+  // asked before Firebase loads, because it decides where Firebase signs in.
+  const [appGoogle, setAppGoogle] = useState(false);
+  const [probed, setProbed] = useState(false);
   useEffect(() => {
-    setInApp(standalone());
+    const app = standalone();
+    setInApp(app);
     setEmbedded(embeddedBrowser());
+    setIOS(isIOS());
+    if (!app) {
+      setProbed(true);
+      return;
+    }
+    fetch("/api/studio/google-ready")
+      .then((r) => r.json())
+      .then((j: { ready?: boolean }) => j.ready === true)
+      .catch(() => false)
+      .then((ok) => {
+        allowAppHandler(ok);
+        setAppGoogle(ok);
+        setProbed(true);
+      });
   }, []);
-  // Google is offered where it can finish: not inside another app's browser,
-  // which Google refuses, and not in the home-screen app until its redirect
-  // address is accepted (GOOGLE_IN_APP).
-  const showGoogle = (!inApp || GOOGLE_IN_APP) && !embedded;
+  // Google is offered everywhere but inside another app's browser, which
+  // Google refuses. In the home-screen app on an iPhone, until Google accepts
+  // the app's own sign-in address, the button takes the studio to Safari —
+  // where Google works — instead of starting a sign-in that cannot return.
+  const showGoogle = !embedded;
+  const viaSafari = inApp && ios && !appGoogle;
 
   const clear = () => {
     setError(null);
@@ -108,7 +133,7 @@ export function SignIn({
   );
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !probed) return;
     let alive = true;
     currentUser()
       .then(async ({ user, error }) => {
@@ -124,7 +149,7 @@ export function SignIn({
     return () => {
       alive = false;
     };
-  }, [ready, proceed]);
+  }, [ready, probed, proceed]);
 
   // signInWithGoogle is called before anything is awaited, so the window it
   // opens still counts as opened by the tap — see the note on it.
@@ -137,6 +162,17 @@ export function SignIn({
       })
       .catch((err) => setError(describe(err)))
       .finally(() => setBusy(false));
+  };
+
+  const safari = () => {
+    clear();
+    openStudioInSafari();
+    // iOS before 17 does not know the x-safari- link and stays where it is.
+    setTimeout(() => {
+      if (document.visibilityState === "visible") {
+        setNotice(`If Safari did not open, open ${SIGN_IN_HOST}/studio in Safari.`);
+      }
+    }, 1500);
   };
 
   // The button stays pressable with a field empty and says which one, rather
@@ -217,12 +253,12 @@ export function SignIn({
         <>
           <button
             type="button"
-            onClick={google}
+            onClick={viaSafari ? safari : google}
             disabled={!ready || busy}
             className="w-full h-11 rounded-lg border border-border bg-bg hover:border-border-strong flex items-center justify-center gap-3 text-[13px] font-medium text-fg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <GoogleMark />
-            Continue with Google
+            {viaSafari ? "Continue with Google in Safari" : "Continue with Google"}
           </button>
           <div className="flex items-center gap-3 my-6 text-[11px] text-fg-muted" aria-hidden="true">
             <span className="h-px flex-1 bg-border" />
@@ -304,11 +340,12 @@ export function SignIn({
         )}
       </div>
 
-      {inApp && !GOOGLE_IN_APP && !embedded && (
+      {viaSafari && (
         <p className={`${hint} mt-6`}>
-          In the app, sign in with email and password. If your account was made with
-          Google, give it a password once: tap Forgot password, open the email in the
-          browser, choose a password, then sign in here.
+          Google cannot hand a sign-in back to the home-screen app yet, so the button
+          opens the studio in Safari, where it works. As soon as Google accepts this
+          site&apos;s sign-in address it signs you in right here instead — nothing to
+          update. A password works in the app now.
         </p>
       )}
       {embedded && (

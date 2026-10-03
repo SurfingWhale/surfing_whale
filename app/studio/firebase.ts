@@ -15,8 +15,9 @@ const { apiKey, projectId, appId } = FIREBASE;
 
 export const signInReady = Boolean(projectId && apiKey);
 
-// Opened from the home screen. A popup there leaves for Safari and never
-// reports back, so sign-in goes by redirect within the app instead.
+// Opened from the home screen. On an iPhone a popup there leaves for Safari
+// and never reports back, so sign-in goes by redirect within the app instead
+// — once Google accepts the redirect (see appHandler below).
 export const standalone = () =>
   matchMedia("(display-mode: standalone)").matches ||
   (navigator as Navigator & { standalone?: boolean }).standalone === true;
@@ -27,10 +28,36 @@ export const standalone = () =>
 // firebaseapp.com — and that handler's redirect URI Google registers by
 // itself, so a browser sign-in never waits on a hand-entered URI in the
 // Google Cloud console. A preview has no URI of its own either way.
+//
+// Whether Google accepts the site's own handler yet is asked of the server
+// (/api/studio/google-ready) before Firebase is loaded, and set here.
+let appHandler = false;
+export function allowAppHandler(on: boolean) {
+  appHandler = on;
+}
+
 function authDomain(): string {
-  return standalone() && location.host === SIGN_IN_HOST
+  return standalone() && appHandler && location.host === SIGN_IN_HOST
     ? location.host
     : `${projectId}.firebaseapp.com`;
+}
+
+/** An iPhone or iPad, including an iPad that says it is a Mac. */
+export const isIOS = () =>
+  /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+  (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+
+/**
+ * The studio in Safari proper, from the home-screen app.
+ *
+ * In the app a Google popup leaves for Safari and its answer never comes
+ * back, so until the app can sign in by redirect (appHandler) the honest
+ * thing is to go to Safari on purpose: there Google works, and the studio is
+ * the same studio. x-safari-https is how iOS 17 and later hand a link to
+ * Safari from another app; a link to this site would only reopen the app.
+ */
+export function openStudioInSafari() {
+  location.href = `x-safari-https://${SIGN_IN_HOST}/studio`;
 }
 
 type Kit = { auth: Auth; mod: typeof import("firebase/auth") };
@@ -108,7 +135,7 @@ export function signInWithGoogle(): Promise<User | null> {
   const { auth, mod } = loaded;
   const provider = new mod.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
-  if (standalone()) return mod.signInWithRedirect(auth, provider).then(() => null);
+  if (standalone() && appHandler) return mod.signInWithRedirect(auth, provider).then(() => null);
   return mod.signInWithPopup(auth, provider).then(
     (r) => r.user,
     (err) => {

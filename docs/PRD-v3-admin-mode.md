@@ -316,16 +316,17 @@ Everything known to be unfinished, in the order it costs something.
     `https://github.com/SurfingWhale/surfing_whale.git`; only other clones (the
     cloud session's) may still use the old owner's URL.
 
-13. **Google sign-in from the home-screen app is still off.** The site's own
-    redirect URI, `https://surfing-whale.vercel.app/__/auth/handler`, is still
-    refused (`redirect_uri_mismatch`, re-checked 2026-10-02, about fourteen
-    hours after it was said to be added) — too long for propagation, so it is
-    most likely on the wrong client or in "Authorized JavaScript origins".
-    It belongs under **Authorized redirect URIs** of the Web client whose ID
-    starts `751278619218-posj0le1`, in the Google Cloud project
-    `surfing-whale`. Once it passes, set `GOOGLE_IN_APP = true` in
-    `app/lib/firebaseConfig.ts`. Browser tabs are unaffected: they sign in
-    through `firebaseapp.com`.
+13. **Google sign-in inside the home-screen app waits on one Google setting.**
+    Re-checked 2026-10-03 against every likely variant: the OAuth web client
+    `751278619218-posj0le1fdgio4u8e68n3ik05otsh80a.apps.googleusercontent.com`
+    accepts exactly one redirect URI, `https://surfing-whale.firebaseapp.com/__/auth/handler`.
+    `https://surfing-whale.vercel.app/__/auth/handler` was never saved on it.
+    It goes under **Authorized redirect URIs** of that client (Google Cloud
+    console, project `surfing-whale`, APIs & Services → Credentials). Nothing
+    to deploy afterwards: `/api/studio/google-ready` asks Google the way a
+    sign-in would, and the app's Google button signs in in place the first
+    time the answer is yes. Until then, on an iPhone, the app's button opens
+    the studio in Safari, where Google works.
 
 ## 12. Discoverability audit — 2026-10-02
 
