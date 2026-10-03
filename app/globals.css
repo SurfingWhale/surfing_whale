@@ -968,9 +968,9 @@ html.intro-out .sw-intro-wave {
 }
 
 /* ---- Hallo -------------------------------------------------------------
-   The first screen: a greeting in an iridescent sky (IridescentClouds.tsx).
-   It reaches up under the translucent header, so the sky is the whole first
-   screen rather than a band beneath a white strip. */
+   The first screen: the greeting in chrome (HalloSection.tsx). It reaches up
+   under the translucent header so the word sits in the middle of the whole
+   window, not of the window less a strip. */
 .hallo-stage {
   position: relative;
   overflow: hidden;
@@ -978,42 +978,6 @@ html.intro-out .sw-intro-wave {
   height: 100svh;
   min-height: 30rem;
   padding-top: 3.5rem;
-}
-
-/* What shows before the first frame, and instead of it without WebGL. */
-.hallo-sky {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(55% 45% at 22% 32%, #f5d2ea 0%, transparent 70%),
-    radial-gradient(50% 45% at 78% 28%, #cde3fb 0%, transparent 70%),
-    radial-gradient(60% 50% at 52% 62%, #e2d8fb 0%, transparent 72%),
-    radial-gradient(40% 35% at 85% 70%, #d3f3e6 0%, transparent 70%),
-    var(--bg);
-  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .hallo-sky { opacity: 0.35; }
-}
-:root[data-theme="dark"] .hallo-sky { opacity: 0.35; }
-
-.iri-canvas {
-  opacity: 0;
-  transition: opacity 0.9s var(--ease-out);
-}
-.iri-canvas[data-drawn] {
-  opacity: 1;
-}
-
-.hallo-word {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(6.5rem, 30vw, 22rem);
-  line-height: 0.85;
-  letter-spacing: -0.035em;
-  color: var(--fg);
-  text-align: center;
 }
 
 /* ---- The page as a sheet over the footer ---------------------------------

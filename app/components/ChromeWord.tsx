@@ -93,23 +93,49 @@ export function ChromeWord({
   tone = "hot",
   className = "",
   rounded = "",
+  fit = false,
 }: {
   /** One short word. It is bent along the swell, so it stays one line. */
   text: string;
-  /** Height of the band. The type is always cropped to it. */
-  height?: number;
+  /** Height of the band, in px or any CSS length. The type is always cropped to it. */
+  height?: number | string;
+  /**
+   * Draw the word as large as the band allows. The swell is wider than a
+   * short word, so at the card's size the word fills about half the box —
+   * right for a card, too small for a page's first screen. With fit, the
+   * view is cut to the word's own bounds once it has been laid out.
+   */
+  fit?: boolean;
   tone?: keyof typeof PALETTE;
   className?: string;
   rounded?: string;
 }) {
   const svg = useRef<SVGSVGElement>(null);
   const stripe = useRef<SVGLinearGradientElement>(null);
+  const word = useRef<SVGTextElement>(null);
   // Filter ids are document-global. Two of these on one page without a prefix
   // each and the second silently renders with the first's palette. useId
   // rather than a random string, so the server and the browser agree on it;
   // its colons are dropped because they do not survive inside url(#…).
   const id = `cw${useId().replace(/:/g, "")}`;
   const p = PALETTE[tone];
+
+  // Measured, not hard-coded: the bounds depend on the word and on the
+  // webfont, so they are taken again once the font has arrived. The pad
+  // keeps the filters' blur inside the view.
+  useEffect(() => {
+    const el = svg.current;
+    const t = word.current;
+    if (!fit || !el || !t) return;
+    const measure = () => {
+      const b = t.getBBox();
+      if (!b.width) return;
+      const pad = 6;
+      el.setAttribute("viewBox", `${b.x - pad} ${b.y - pad} ${b.width + pad * 2} ${b.height + pad * 2}`);
+    };
+    measure();
+    document.fonts?.ready.then(measure);
+  }, [fit, text]);
 
   useEffect(() => {
     const el = svg.current;
@@ -230,6 +256,7 @@ export function ChromeWord({
 
         <g filter={`url(#${id}-surface)`}>
           <text
+            ref={word}
             filter={`url(#${id}-material)`}
             fill={`url(#${id}-stripe)`}
             style={{
