@@ -50,9 +50,14 @@ export function ProfileModeProvider({ children }: { children: ReactNode }) {
       const a = (e.target as Element | null)?.closest?.("a[href]");
       const href = a?.getAttribute("href") ?? "";
       const m = href.match(/^\/?#(.+)$/);
-      if (!m || current.current !== "capture" || document.getElementById(m[1])) return;
+      if (!m || document.getElementById(m[1])) return;
+      // The footer links to the photographs too, which only the other half
+      // has. Any other missing section belongs to the Data half.
+      const next: Mode | null =
+        current.current === "capture" ? "analyst" : m[1] === "photography" ? "capture" : null;
+      if (!next) return;
       e.preventDefault();
-      setMode("analyst");
+      setMode(next);
       // The section mounts on the next render; try for a few frames.
       let tries = 0;
       const go = () => {

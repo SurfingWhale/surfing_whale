@@ -966,3 +966,342 @@ html.intro-out .sw-intro-wave {
     border-top-width: 0;
   }
 }
+
+/* ---- Hallo -------------------------------------------------------------
+   The first screen: a greeting in an iridescent sky (IridescentClouds.tsx).
+   It reaches up under the translucent header, so the sky is the whole first
+   screen rather than a band beneath a white strip. */
+.hallo-stage {
+  position: relative;
+  overflow: hidden;
+  margin-top: -4rem;
+  height: 100svh;
+  min-height: 30rem;
+  padding-top: 3.5rem;
+}
+
+/* What shows before the first frame, and instead of it without WebGL. */
+.hallo-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(55% 45% at 22% 32%, #f5d2ea 0%, transparent 70%),
+    radial-gradient(50% 45% at 78% 28%, #cde3fb 0%, transparent 70%),
+    radial-gradient(60% 50% at 52% 62%, #e2d8fb 0%, transparent 72%),
+    radial-gradient(40% 35% at 85% 70%, #d3f3e6 0%, transparent 70%),
+    var(--bg);
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hallo-sky { opacity: 0.35; }
+}
+:root[data-theme="dark"] .hallo-sky { opacity: 0.35; }
+
+.iri-canvas {
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-out);
+}
+.iri-canvas[data-drawn] {
+  opacity: 1;
+}
+
+.hallo-word {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(6.5rem, 30vw, 22rem);
+  line-height: 0.85;
+  letter-spacing: -0.035em;
+  color: var(--fg);
+  text-align: center;
+}
+
+/* ---- The page as a sheet over the footer ---------------------------------
+   Everything above the footer sits on one sheet with the page colour behind
+   it. The footer is pinned under it (sticky to the bottom of the window), so
+   the footer is only seen once the sheet has scrolled off it — the end of the
+   page is a reveal, not one more block in a column.
+
+   The sheet's stacking context is why the header and every dialog live
+   inside it: anything outside would be ranked against the sheet as a whole. */
+.page-sheet {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  box-shadow: 0 28px 60px -32px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 66rem) {
+  .page-sheet {
+    border-bottom-left-radius: 36px;
+    border-bottom-right-radius: 36px;
+  }
+}
+
+/* ---- The footer ------------------------------------------------------------
+   Ultramarine and paper, set in the serif, after an engraved-print footer the
+   owner picked. Its own palette on purpose: it is a printed plate at the end
+   of the page, and it stays the same in the dark theme. */
+.site-footer {
+  --sea-ink: #1f3b9f;
+  --sea-paper: #f2e7cf;
+  --reveal: 1;
+  position: sticky;
+  bottom: 0;
+  z-index: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--sea-ink);
+  color: var(--sea-paper);
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+.site-footer[data-static] {
+  position: relative;
+  height: auto;
+}
+
+/* Paper grain, so the blue reads as ink on stock and not as a screen fill. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.foot-inner {
+  position: relative;
+  padding-top: 3rem;
+  transform: translateY(calc((1 - var(--reveal)) * 4rem));
+  opacity: calc(0.35 + var(--reveal) * 0.65);
+}
+
+/* Three columns even on a phone. Stacked, the lists made the footer taller
+   than the screen, and a footer that does not fit cannot sit under the page
+   (SiteFooter.tsx) — so a long name wraps inside its column instead. */
+.foot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem 1rem;
+}
+
+.foot-brand,
+.foot-hello {
+  grid-column: 1 / -1;
+}
+
+.foot-mark {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2.125rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.foot-tagline {
+  margin-top: 0.875rem;
+  max-width: 22rem;
+  font-style: italic;
+  font-size: 1.125rem;
+  line-height: 1.45;
+  opacity: 0.92;
+}
+
+.foot-facts {
+  display: none;
+  margin-top: 1.5rem;
+  font-size: 1.0625rem;
+  line-height: 1;
+}
+.foot-facts li {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 0.875rem;
+}
+.foot-facts svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+}
+
+.foot-head {
+  font-size: 0.9375rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.foot-head::after {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 1px;
+  margin-top: 0.75rem;
+  background: currentColor;
+  opacity: 0.8;
+}
+
+.foot-list {
+  margin-top: 0.875rem;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.foot-list li + li {
+  margin-top: 0.45rem;
+}
+
+.site-footer a {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s;
+}
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+/* On a phone the button says it; the heading and the line are for room. */
+.foot-hello > .foot-head,
+.foot-note {
+  display: none;
+}
+.foot-note {
+  margin-top: 0.875rem;
+  max-width: 19rem;
+  font-style: italic;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+}
+
+.foot-cta {
+  margin-top: 0;
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--sea-paper);
+  font-style: italic;
+  font-size: 1.0625rem;
+}
+.foot-cta > span:first-child {
+  padding: 0.6rem 1.1rem;
+  min-width: 11rem;
+}
+.foot-cta-arrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  background: var(--sea-paper);
+  color: var(--sea-ink);
+  font-style: normal;
+}
+.site-footer .foot-cta {
+  text-decoration: none;
+}
+
+.foot-base {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: 1.75rem;
+  font-style: italic;
+  font-size: 0.9375rem;
+}
+.foot-sep {
+  opacity: 0.7;
+}
+
+/* The engraving takes whatever height is left, anchored at its foot so the
+   whale is never the part that gets cropped. */
+.foot-sea {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 8.75rem;
+  margin-top: 1rem;
+  transform: translateY(calc((1 - var(--reveal)) * 2rem));
+}
+.foot-sea img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
+}
+.site-footer[data-static] .foot-sea {
+  height: 16rem;
+  flex: none;
+}
+
+@media (min-width: 40rem) {
+  .foot-facts,
+  .foot-hello > .foot-head,
+  .foot-note {
+    display: block;
+  }
+  .foot-list {
+    font-size: 1.0625rem;
+  }
+  .foot-cta {
+    margin-top: 1rem;
+  }
+  .foot-mark {
+    font-size: 2.75rem;
+  }
+}
+
+@media (min-width: 66rem) {
+  .foot-inner {
+    padding-top: 6rem;
+  }
+  .foot-grid {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1.35fr;
+    gap: 2rem;
+  }
+  .foot-brand,
+  .foot-hello {
+    grid-column: auto;
+  }
+  .foot-tagline {
+    font-size: 1.25rem;
+  }
+  .foot-list {
+    font-size: 1.1875rem;
+    line-height: 1.5;
+  }
+  .foot-list li + li {
+    margin-top: 0.5rem;
+  }
+  .foot-base {
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+.site-nav,
+.visitor-card {
+  transition: transform 0.35s var(--ease-out), opacity 0.35s var(--ease-out);
+}
+html[data-foot] .site-nav {
+  transform: translateY(-100%);
+}
+html[data-foot] .visitor-card {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foot-inner,
+  .foot-sea {
+    transform: none;
+    opacity: 1;
+  }
+}

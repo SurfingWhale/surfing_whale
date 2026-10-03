@@ -8,6 +8,8 @@ import { ContactSection } from "./components/sections/ContactSection";
 import { PhotographySection } from "./components/sections/PhotographySection";
 import { GuestNotesSection } from "./components/sections/GuestNotesSection";
 import { TestamentSection } from "./components/sections/TestamentSection";
+import { HalloSection } from "./components/sections/HalloSection";
+import { SiteFooter } from "./components/SiteFooter";
 import { MobileNav } from "./components/Mobilenav/Mobilenav";
 import { GlassNav, type NavLink } from "./components/GlassNav";
 import { ProfileContent } from "./components/ProfileContent";
@@ -60,10 +62,13 @@ export default async function Home() {
   return (
     <main className="relative min-h-screen bg-bg text-fg">
       <JsonLd data={homeGraph()} />
-      <a href="#content" className="skip-link text-[13px] font-medium">
+      {/* Everything but the footer, on one sheet that lifts off it at the end
+          of the page (globals.css, .page-sheet). */}
+      <div className="page-sheet">
+      <a href="#hero" className="skip-link text-[13px] font-medium">
         Skip to content
       </a>
-      <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
+      <nav data-spot className="site-nav fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="frame h-14 flex items-center justify-between gap-6">
           <AdminEntry>
             <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">
@@ -83,12 +88,14 @@ export default async function Home() {
         </div>
       </nav>
 
-      {/* Where the skip link lands: the start of the content in either half,
-          not a section only one of them has. */}
+      {/* The skip link lands on the hero (#hero), past the greeting: the
+          start of the content in either half, not a section only one of them
+          has. */}
       <div id="content" className="pt-16">
         <UnlockedBanner />
         <AccessProvider>
         <ProfileModeProvider>
+          <HalloSection />
           <HeroSection />
           <ProfileContent
             analystContent={
@@ -116,17 +123,11 @@ export default async function Home() {
         </AccessProvider>
       </div>
 
-      <footer data-spot className="border-t border-border py-8 mt-16">
-        <div className="frame flex flex-col md:flex-row justify-between items-center gap-3">
-          <span className="text-[13px] text-fg-secondary">Muhammad Fauzy</span>
-          <span className="text-[13px] text-fg-muted">
-            © {new Date().getFullYear()} Surfing Whale
-          </span>
-        </div>
-      </footer>
-
       <Reveal />
       <VisitorCard />
+      </div>
+
+      <SiteFooter hasWriting={posts.length > 0} hasDarkroom={essays.length > 0} />
     </main>
   );
 }

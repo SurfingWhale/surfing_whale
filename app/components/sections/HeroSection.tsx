@@ -117,7 +117,7 @@ export function HeroSection() {
   const copy = COPY[mode];
 
   return (
-    <section data-spot className="w-full">
+    <section data-spot id="hero" className="w-full">
       {/* The first screen: kicker, name, the one sentence, the switch. On a
           wide screen it fills the viewport (globals.css, .hero-stage); on a
           phone it is the same column it always was. */}

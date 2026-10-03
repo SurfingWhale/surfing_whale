@@ -148,7 +148,7 @@ export function VisitorCard() {
       // overflow-hidden is what makes the band work: the card's own rounded
       // edge does the cropping, so the mark runs off the top instead of
       // sitting inside it.
-      className={`fixed z-40 glass glass-panel rounded-[20px] overflow-hidden
+      className={`visitor-card fixed z-40 glass glass-panel rounded-[20px] overflow-hidden
         left-4 right-4 sm:left-auto sm:right-6 sm:w-[310px]
         transition-[opacity,transform] duration-[380ms]
         ease-[cubic-bezier(0.34,1.24,0.64,1)] motion-reduce:transition-none

@@ -18,7 +18,7 @@ function Banner() {
   return (
     <div
       role="status"
-      className="border-b border-border bg-bg-subtle"
+      className="relative z-10 border-b border-border bg-bg-subtle"
     >
       <div className="frame py-3 flex items-start justify-between gap-6">
         <p className="text-[13px] leading-[2] text-fg-body">
