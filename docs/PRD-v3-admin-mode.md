@@ -900,3 +900,135 @@ are on my photography page — was the right one, and the site's was not.
 to make it show and then look at the public page to see that it does — not
 to explain the steps that would make it show. Verified here by the page's
 own payload after deploy, not by asking.
+
+## 21. Flow map and audit — 2026-10-03
+
+Every page, button and direction on the site, traced and tested. Two maps —
+what a visitor can do, and what the owner can do — then where each thing
+lives, then what broke. GitHub draws the diagrams; in a plain editor they
+read top to bottom.
+
+### 21.1 Visitor flows
+
+```mermaid
+flowchart TD
+  V([Visitor]) --> HOME["/ — home"]
+  HOME --> NAV["Header: Home · Projects · Activity · About · Notes · Contact<br/>theme toggle · menu on phones"]
+  HOME --> HERO["Hero: the name · avatar · switch Data ⇄ Photographs"]
+  HERO -->|Data| DATA["Data half"]
+  HERO -->|Photographs| PHOTOS["Photographs half"]
+  NAV -.->|"in Photographs, a link to a Data section switches halves first"| DATA
+
+  DATA --> INDEX["Index stage"] --> WORK["/work/finance-dashboard · /padel · /coffee-access · /crime-la · /tracker-doc"]
+  DATA --> SELECTED["Selected case studies"] --> WORK
+  DATA --> OTHER["Other work — Notion projects"] --> PANEL["Project panel"]
+  PANEL --> OWNPAGE["/work/p/slug"]
+  DATA --> ACTIVITY["Activity"] --> KAGGLE["Kaggle profile ✓<br/>LA crime notebook ✗ 404"]
+  DATA --> ABOUT["About"] --> CV["CV dialog"]
+
+  PHOTOS --> GALLERY["Gallery: filters · viewer with ← →"]
+  PHOTOS --> DECK["Turntable: California Dreamin'"] --> APPLE["Apple Music ↗"]
+
+  HOME --> NOTES["Guest notes: ← → through the fan"] --> NOTEFORM["Note form"]
+  NOTEFORM -->|POST /api/guest-notes| GB[("Notion · guest book")]
+  HOME --> CONTACT["Contact"]
+  CONTACT -->|Send by email| MAILTO["mailto: the owner"]
+  CONTACT -->|Send on WhatsApp| READER{"Approved reader?"}
+  WORK -->|Read the full document| READER
+  PANEL -->|the rest of the piece| READER
+  READER -->|no| ASK["Access request form"]
+  READER -->|yes, on WhatsApp| WA["wa.me — WHATSAPP_NUMBER"]
+  READER -->|yes, on a case study| FULL["Full case study"]
+  ASK -->|POST /api/access| AR[("Notion · access requests")]
+  AR -->|owner approves in Studio › Access| LINK["Email with /unlock/token — Resend"]
+  LINK -->|sets the reader cookie| FULL
+
+  OLD1["/darkroom"] -->|307| STUDIOLINK["/studio"]
+  OLD2["/archive"] -->|307| HOME
+  NOPE["any unknown URL"] --> NF["404 page → home · darkroom"]
+```
+
+### 21.2 Owner flows
+
+```mermaid
+flowchart TD
+  O([Owner]) -->|"five taps on the name, or open /studio"| DOOR["/studio — sign in<br/>← Surfing Whale goes home"]
+  DOOR -->|in a browser tab| GOOGLE["Continue with Google — popup"]
+  DOOR -->|anywhere, incl. the home-screen app| PASS["Email + password"]
+  PASS -.->|"account made with Google has no password"| RESET["Forgot password → newest email → set one"]
+  DOOR -.->|"inside Instagram · FB · TikTok · LINE"| OPENIN["Open in Safari / Chrome"]
+  GOOGLE --> FIREBASE[("Firebase Auth · project surfing-whale")]
+  PASS --> FIREBASE
+  FIREBASE -->|ID token| SESSION{"POST /api/darkroom/session<br/>signed by Google · verified admin email?"}
+  SESSION -->|yes — sw-darkroom cookie, 7 days, renews| STUDIO["Studio"]
+  SESSION -->|no| REFUSED["That account cannot open the studio"]
+
+  STUDIO --> WRITE["Write"] -->|Save draft · Publish · Update| POSTS[("Supabase · surfingwhale_posts")] --> WRITING["/writing · /writing/slug"]
+  STUDIO --> DARK["Darkroom"] -->|Save draft · Publish · Update| ESSAYS[("Supabase · surfingwhale_essays")] --> PHOTOPAGE["/photo · /photo/slug"]
+  STUDIO --> LIB["Photos — the library"] -->|Choose photos · compressed in the browser| STORE[("Supabase Storage · library/")]
+  WRITE -->|From library| STORE
+  DARK -->|From library · Choose photos| STORE
+  STORE -->|every photo, unless hidden| HOMEGALLERY["Home › Photographs gallery"]
+  LIB -->|hide · describe · file| META[("surfingwhale_photos")] --> HOMEGALLERY
+  LIB -.->|delete refused while an essay or post uses it| STORE
+  STUDIO --> NOTESROOM["Notes"] -->|publish · hide · delete| GB[("Notion · guest book")] --> HOMENOTES["Home › Guest notes"]
+  STUDIO --> ACCESSROOM["Access"] -->|hold to approve| AR[("Notion · access requests")] -->|Resend| UNLOCK["/unlock/token → reader"]
+  STUDIO -->|Sign out| DOOR
+```
+
+### 21.3 Where to go
+
+| I want to… | Go to | It ends up |
+| --- | --- | --- |
+| Put a photograph on the site | Studio › Photos › Choose photos | Home › Photographs, straight away |
+| Keep one off the site | Studio › Photos › tap it › Hide from the site | Stays in the library |
+| Describe or file a photograph | Studio › Photos › tap it | The gallery's alt text and filter |
+| Write a post | Studio › Write › New › Publish | `/writing/<slug>` |
+| Make a photo essay | Studio › Darkroom › New › Publish | `/photo/<slug>` |
+| Publish a guest note | Studio › Notes | Home › Guest notes |
+| Let someone read a case study | Studio › Access › hold Approve | They get an email link |
+| Get into the studio | `/studio`, or five taps on the name | Sign-in screen |
+| Change a variable | Vercel › surfing-whale › Settings › Environment Variables | §10 |
+| Run the database script | Supabase › SQL Editor › `supabase/surfing-whale.sql` | Safe to run again |
+
+### 21.4 What the audit found
+
+Run against the live site with a scripted browser (desktop 1440 and phone
+390): every link followed two levels deep and its status read, every anchor
+checked against the page it is on in each half, every button pressed and its
+result asserted. The studio was driven signed in, locally, with its API
+answered by fixtures — signing in on production needs the owner's Google
+account. About ninety checks. Anything that would write real data — a guest
+note, an access request, an approval email — had its form opened, not sent.
+
+| # | Finding | Where | State |
+| --- | --- | --- | --- |
+| 1 | The opening overlay returned to its resting frame after it finished — the 100 and the wave's crest over the bottom sixth of every screen, at z 9999, for about two seconds, until a backstop swept it again. It covered the access-request form in the project panel. | `Intro.tsx` | **Fixed** `11d2ca2`, verified live |
+| 2 | In Photographs, Projects · Activity · About and the skip link pointed at sections only the Data half has: four dead links. | header, `page.tsx` | **Fixed** `11d2ca2` — they switch halves, then scroll |
+| 3 | The project panel was a plain `div`: not announced as a dialog, focus left behind the backdrop. | `Projectmodal.tsx` | **Fixed** `11d2ca2` — role, aria-modal, focus in and back |
+| 4 | Library photographs never reached the gallery (§20); the photo panel opened off screen. | Photos room, gallery | **Fixed** `92db0b8` |
+| 5 | Kaggle notebook "EDA & Prediction of Los Angeles Crime" is a 404 — renamed, unlisted or made private. The profile link works. | Activity, `/work/crime-la` | **Open** — needs the current URL |
+| 6 | Google sign-in from the home-screen app is off until the site's redirect URI is accepted. | §11 item 13 | **Open** — Google Cloud console |
+| 7 | Safari / WebKit has never been driven by a test; every check above is Chromium. | §11 item 8 | **Open** |
+| 8 | The same staircase photograph appears to be in the library more than once. | Studio › Photos | **Open** — hide or delete the copies |
+
+Passed, and worth knowing they were checked: theme toggle; every header
+link in the Data half (Contact stops 242px from the top because it is the
+last section); the name and avatar; all five Index rows; all three Notion
+folders open their panel and close on Escape; CV opens; the guest-note fan
+both ways and its form; Contact's empty-form message, its mailto, and the
+access gate for an unapproved reader; the mode switch mounting and
+unmounting the gallery and turntable; filters; the viewer's next and close;
+play and pause; "Show how it was made" and the access gate on three case
+studies; the phone menu; five taps to `/studio`; the sign-in screen and its
+way home; `/darkroom` and `/archive` redirects, the 404, sitemap and robots;
+nine studio APIs refusing a request with no session (401); and in the
+studio, all five rooms, publish refusing a missing title, unsaved-change
+marking, save draft, the library picker in both editors, the photo panel in
+view, hide, the in-use delete refusal, the WhatsApp warning, sign out. No
+JavaScript errors on any page tested.
+
+Three failures in the first pass were the test, not the site — a panel with
+no `role="dialog"` was not recognised (that became finding 3), and the
+phone menu's state was read before it closed. Each was re-checked by
+screenshot before being ruled out.
