@@ -59,7 +59,7 @@ export default async function Home() {
   return (
     <main className="relative min-h-screen bg-bg text-fg">
       <JsonLd data={homeGraph()} />
-      <a href="#project" className="skip-link text-[13px] font-medium">
+      <a href="#content" className="skip-link text-[13px] font-medium">
         Skip to content
       </a>
       <nav data-spot className="fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
@@ -82,7 +82,9 @@ export default async function Home() {
         </div>
       </nav>
 
-      <div className="pt-16">
+      {/* Where the skip link lands: the start of the content in either half,
+          not a section only one of them has. */}
+      <div id="content" className="pt-16">
         <UnlockedBanner />
         <AccessProvider>
         <ProfileModeProvider>

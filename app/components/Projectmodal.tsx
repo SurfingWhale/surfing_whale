@@ -1,7 +1,7 @@
 "use client";
 // app/components/Projectmodal.tsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { NotionBlock, NotionProject } from "@/app/lib/notion";
 import { useAccess } from "@/app/components/AccessGate";
 import { ReadMoreGate } from "@/app/components/ReadMoreGate";
@@ -37,6 +37,18 @@ interface Props {
         .finally(() => setLoading(false));
     }, [project]);
 
+    // Focus goes to the panel's Close button when it opens and back to the
+    // folder that opened it when it closes, so a keyboard or screen-reader
+    // user is never left behind the backdrop.
+    const closeRef = useRef<HTMLButtonElement>(null);
+    const titleId = useId();
+    useEffect(() => {
+        if (!project) return;
+        const opener = document.activeElement as HTMLElement | null;
+        closeRef.current?.focus();
+        return () => opener?.focus?.();
+    }, [project]);
+
     // Close on Escape
     useEffect(() => {
         const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -60,11 +72,16 @@ interface Props {
             onClick={onClose}
         />
 
-        <div className="fixed top-0 right-0 z-50 h-full w-full max-w-xl bg-bg border-l border-border overflow-y-auto flex flex-col">
+        <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            className="fixed top-0 right-0 z-50 h-full w-full max-w-xl bg-bg border-l border-border overflow-y-auto flex flex-col"
+        >
 
             <div className="sticky top-0 bg-bg/95 backdrop-blur-md border-b border-border px-6 py-4 flex items-start justify-between gap-4 z-10">
             <div className="flex-1 min-w-0">
-                <h2 className="text-[13px] font-medium tracking-[-0.02em] truncate">
+                <h2 id={titleId} className="text-[13px] font-medium tracking-[-0.02em] truncate">
                 {project.title}
                 </h2>
                 <div className="flex gap-2 mt-2 flex-wrap">
@@ -76,6 +93,7 @@ interface Props {
                 </div>
             </div>
             <button
+                ref={closeRef}
                 onClick={onClose}
                 aria-label="Close"
                 className="text-[13px] text-fg-secondary hover:text-fg transition-colors flex-shrink-0 mt-1"

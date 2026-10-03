@@ -175,7 +175,16 @@ export function Intro() {
     // And the class that gates all of this goes once the exit has run, so a
     // second mount — a fast route change, Strict Mode in development — never
     // replays it.
-    const done = setTimeout(() => html.classList.remove("intro", "intro-out"), INTRO_MS + 400);
+    //
+    // The overlay unmounts here too. It used to stay mounted with the classes
+    // gone, which put it back to its resting frame — the 100 and the wave's
+    // crest across the bottom sixth of the screen, above everything (z 9999)
+    // — until the inline backstop re-added intro-out seconds later and swept
+    // the wave a second time. The audit caught it covering the access form.
+    const done = setTimeout(() => {
+      html.classList.remove("intro", "intro-out");
+      setOn(false);
+    }, INTRO_MS + 400);
 
     return () => {
       cancelAnimationFrame(raf.current);

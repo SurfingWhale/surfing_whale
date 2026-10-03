@@ -3,7 +3,7 @@
 // avatar, the tagline, and the body sections all switch together.
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 export type Mode = "analyst" | "capture";
 
@@ -37,6 +37,35 @@ const ProfileModeContext = createContext<{
 
 export function ProfileModeProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>("analyst");
+  const current = useRef(mode);
+  current.current = mode;
+
+  // The header's links — Projects, Activity, About — point at sections that
+  // only exist in the Data half. In Photographs they were dead: the click
+  // went nowhere and nothing said why. A link to a section that is not on
+  // the page now switches to the half that has it, then scrolls there.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const a = (e.target as Element | null)?.closest?.("a[href]");
+      const href = a?.getAttribute("href") ?? "";
+      const m = href.match(/^\/?#(.+)$/);
+      if (!m || current.current !== "capture" || document.getElementById(m[1])) return;
+      e.preventDefault();
+      setMode("analyst");
+      // The section mounts on the next render; try for a few frames.
+      let tries = 0;
+      const go = () => {
+        const el = document.getElementById(m[1]);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        else if (tries++ < 20) requestAnimationFrame(go);
+      };
+      requestAnimationFrame(go);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   return (
     <ProfileModeContext.Provider value={{ mode, setMode }}>
       {children}
