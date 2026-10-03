@@ -22,9 +22,9 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     type: "article",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: TITLE }],
+    images: [{ url: "/og-surfing-whale.jpg", width: 1200, height: 630, alt: TITLE }],
   },
-  twitter: { card: "summary_large_image", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", images: ["/og-surfing-whale.jpg"] },
 };
 
 const column = "container mx-auto px-6 max-w-[680px]";

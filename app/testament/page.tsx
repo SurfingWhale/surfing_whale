@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "Testament",
     description: DESCRIPTION,
     type: "article",
-    images: [{ url: "/og.png" }],
+    images: [{ url: "/og-surfing-whale.jpg", width: 1200, height: 630 }],
   },
 };
 

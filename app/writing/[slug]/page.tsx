@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       description: post.standfirst || undefined,
       type: "article",
       // Falls back to the site card rather than unfurling bare.
-      images: [{ url: post.cover || "/og.png" }],
+      images: [{ url: post.cover || "/og-surfing-whale.jpg" }],
     },
   };
 }

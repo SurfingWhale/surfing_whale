@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: essay.title,
       description: essay.subtitle || undefined,
       // Falls back to the site card rather than unfurling bare.
-      images: [{ url: essay.cover || "/og.png" }],
+      images: [{ url: essay.cover || "/og-surfing-whale.jpg" }],
     },
   };
 }

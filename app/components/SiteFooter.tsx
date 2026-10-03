@@ -52,18 +52,6 @@ function Column({ title, items }: { title: string; items: Item[] }) {
   );
 }
 
-/** A whale's tail, for the wordmark. */
-function Fluke({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 40" aria-hidden="true" className={className}>
-      <path
-        fill="currentColor"
-        d="M20 40c.8-6 1.6-11 2.2-15.5C17 22 8 17.5 0 6c6 4 13.5 5.4 20.5 5.6 2.6.1 3.5 2.2 3.5 4.6 0-2.4.9-4.5 3.5-4.6C34.5 11.4 42 10 48 6c-8 11.5-17 16-22.2 18.5.6 4.5 1.4 9.5 2.2 15.5z"
-      />
-    </svg>
-  );
-}
-
 export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; hasDarkroom: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const [art, setArt] = useState(false);
@@ -153,7 +141,7 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
         <div className="foot-grid">
           <div className="foot-brand">
             <p className="foot-mark">
-              <Fluke className="w-9 h-auto shrink-0" />
+              <span aria-hidden="true" className="logo-mark h-11" />
               <span>Surfing Whale</span>
             </p>
             <p className="foot-tagline">

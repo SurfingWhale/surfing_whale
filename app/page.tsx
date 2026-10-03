@@ -71,7 +71,8 @@ export default async function Home() {
       <nav data-spot className="site-nav fixed top-0 left-0 w-full z-50 border-b border-border bg-bg/80 backdrop-blur-md">
         <div className="frame h-14 flex items-center justify-between gap-6">
           <AdminEntry>
-            <span className="text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">
+            <span className="flex items-center gap-2 text-[13px] font-medium tracking-[-0.02em] whitespace-nowrap">
+              <span aria-hidden="true" className="logo-mark h-6 text-[var(--brand-ink)]" />
               Surfing Whale
             </span>
           </AdminEntry>

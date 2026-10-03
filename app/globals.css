@@ -43,6 +43,8 @@
   /* The one colour on an otherwise neutral page — text selection, link
      hover underlines, highlights. */
   --accent-soft: #c8ddd4;
+  /* The logo's ink, sampled from the owner's stamp. */
+  --brand-ink: #2154a4;
   --sel-bg: #c8ddd4;
   --sel-fg: #111111;
   /* Warm paper for the case folder — at #f0f0f0 it vanished against the page. */
@@ -60,6 +62,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --brand-ink: #8eaef0;
     --bg: #111111;
     --bg-subtle: #1a1a1a;
     --bg-muted: #222222;
@@ -85,6 +88,7 @@
 }
 
 [data-theme="dark"] {
+  --brand-ink: #8eaef0;
   --bg: #111111;
   --bg-subtle: #1a1a1a;
   --bg-muted: #222222;
@@ -1276,4 +1280,18 @@ html[data-foot] .visitor-card {
     transform: none;
     opacity: 1;
   }
+}
+
+/* ---- The logo -------------------------------------------------------------
+   The owner's whale-tail stamp, cut out of its scan (public/logo-mark.webp)
+   and used as a mask, so one file takes whatever ink it is set in: the
+   brand blue in the header, the footer's own ink in the footer. The stamp's
+   rough edges and hatching survive, because they are in the mask's alpha. */
+.logo-mark {
+  display: inline-block;
+  flex: none;
+  aspect-ratio: 681 / 514;
+  background-color: currentColor;
+  -webkit-mask: url("/logo-mark.webp") center / contain no-repeat;
+  mask: url("/logo-mark.webp") center / contain no-repeat;
 }

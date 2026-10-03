@@ -95,10 +95,14 @@ export const metadata: Metadata = {
     siteName: "Surfing Whale",
     images: [
       {
-        url: "/og.png",
+        // A new name, not new bytes under the old one: WhatsApp keeps the
+        // preview it fetched for a URL, so /og.png would have kept showing
+        // the old card in every chat that had already seen it.
+        url: "/og-surfing-whale.jpg",
         width: 1200,
         height: 630,
-        alt: "Surfing Whale — I like building things that tell a story rather than report a number.",
+        type: "image/jpeg",
+        alt: "A whale's tail in blue ink over the words Surfing Whale — I like building things that tell a story rather than report a number.",
       },
     ],
     locale: "en_GB",
@@ -109,7 +113,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og.png"],
+    images: ["/og-surfing-whale.jpg"],
   },
 
   // Relative image URLs above resolve against this.

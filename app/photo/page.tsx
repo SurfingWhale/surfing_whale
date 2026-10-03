@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Darkroom",
     description: "Photo essays: writing, and the photographs that go with it.",
-    images: [{ url: "/og.png", width: 1200, height: 630 }],
+    images: [{ url: "/og-surfing-whale.jpg", width: 1200, height: 630 }],
   },
 };
 

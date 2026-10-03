@@ -39,7 +39,7 @@ export async function generateMetadata({
   const image = project.image?.includes("placeholder")
     ? undefined
     : project.image;
-  const preview = image ?? visualFor(slug)?.image ?? "/og.png";
+  const preview = image ?? visualFor(slug)?.image ?? "/og-surfing-whale.jpg";
 
   return {
     title: `${project.title} — Surfing Whale`,
