@@ -9,7 +9,7 @@ const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/ch
 const p=await (await b.newContext({viewport:{width:430,height:900}})).newPage();
 // /archive is not a page any more: it redirects home, so reading its h1 would
 // only re-check the home page. Its redirect is asserted on its own below.
-for (const path of ['/','/photo','/writing','/studio','/nope']) {
+for (const path of ['/','/photo','/writing','/testament','/studio','/nope']) {
   const r=await p.goto(BASE+path,{waitUntil:'networkidle'});
   await p.waitForTimeout(500);
   const m=await p.evaluate(()=>{

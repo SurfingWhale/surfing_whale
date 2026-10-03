@@ -7,6 +7,7 @@ import { ActivitySection } from "./components/sections/ActivitySection";
 import { ContactSection } from "./components/sections/ContactSection";
 import { PhotographySection } from "./components/sections/PhotographySection";
 import { GuestNotesSection } from "./components/sections/GuestNotesSection";
+import { TestamentSection } from "./components/sections/TestamentSection";
 import { MobileNav } from "./components/Mobilenav/Mobilenav";
 import { GlassNav, type NavLink } from "./components/GlassNav";
 import { ProfileContent } from "./components/ProfileContent";
@@ -104,6 +105,9 @@ export default async function Home() {
             captureContent={<PhotographySection hasDarkroom={essays.length > 0} photos={photos} />}
           />
         </ProfileModeProvider>
+        {/* After the work and the photographs, before the visitor is asked to
+            say anything: what the rest of the page is for. */}
+        <TestamentSection />
         {/* Inside the provider now. Contact asks the gate whether this reader
             is approved before it will open WhatsApp, so it has to be able to
             see it — and the gate is the thing that explains the wait. */}
