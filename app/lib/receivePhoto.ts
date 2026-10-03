@@ -4,6 +4,7 @@
 // 8MB frame arrives as a few hundred kilobytes — well under the platform's
 // 4.5MB body limit — and a batch of forty goes up as forty small requests.
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
 import { type Folder, storageConfigured, uploadPhoto } from "@/app/lib/storage";
 
@@ -53,9 +54,11 @@ export async function receivePhoto(req: NextRequest, folder: Folder = "library")
   try {
     const bytes = Buffer.from(await file.arrayBuffer());
     const base = file.name.replace(/\.[^.]+$/, "");
-    // Nothing in the library is public by itself — a photograph reaches the
-    // site only inside an essay or a post, whose save revalidates the pages.
-    return NextResponse.json(await uploadPhoto(folder, bytes, file.type, base, width, height));
+    const shot = await uploadPhoto(folder, bytes, file.type, base, width, height);
+    // A library photograph is in the gallery unless it is hidden, so an upload
+    // shows on the next load of the home page, not a minute later.
+    if (folder === "library") revalidatePath("/");
+    return NextResponse.json(shot);
   } catch (err) {
     console.error(`Upload to ${folder} failed:`, err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Upload failed." }, { status: 502 });

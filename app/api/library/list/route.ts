@@ -54,7 +54,8 @@ export async function GET(): Promise<NextResponse> {
       ...p,
       alt: meta[p.publicId]?.alt ?? "",
       category: meta[p.publicId]?.category ?? "everyday",
-      published: meta[p.publicId]?.published ?? false,
+      // No row means nobody has hidden it: it is on the site.
+      published: meta[p.publicId]?.published ?? true,
     })),
   });
 }

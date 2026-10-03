@@ -10,6 +10,7 @@
 // The files stay in Storage. This table holds the one thing a file cannot say:
 // what the photograph is of, whether it is on the site, and in what order.
 import { table, unwrap, dbConfigured } from "./db";
+import { listLibrary } from "./storage";
 import type { Photo, PhotoCategory } from "@/app/data/photography";
 
 export const CATEGORIES = ["portraits", "everyday", "landscapes"] as const;
@@ -43,44 +44,59 @@ const toMeta = (r: Row): PhotoMeta => ({
   sort: r.sort,
 });
 
+/** What a photograph says until it is described. */
+export const DEFAULT_ALT = "A photograph by Muhammad Fauzy";
+
 /**
- * The gallery's photographs, in order.
+ * The gallery's photographs: every photograph in the library, unless it has
+ * been taken off the site.
  *
- * One select, no bucket listing: the URL and the dimensions are copied onto
- * the row when it is saved, so this runs without the service-role key ever
- * touching Storage and without a round trip per frame.
+ * It used to be the other way round — nothing showed until each frame was
+ * opened, described and published one by one. Fifteen photographs went into
+ * the library, the SQL was run, and the gallery still showed the five old
+ * frames from the repository, because not one of the fifteen had been through
+ * that step. Uploading a photograph is the decision to show it; hiding one is
+ * the exception, so the exception is the thing that takes a tap.
  *
- * Returns [] rather than throwing when the database is not configured or the
- * table was never made. The caller falls back to the manifest in the
- * repository, so a half-set-up deployment shows the old photographs instead of
- * an error.
+ * A row in surfingwhale_photos now only ever says "hidden", "described as…",
+ * "belongs in…" or "goes here in the order". A photograph with no row is on
+ * the site, described generically until it is given words of its own.
+ *
+ * Returns [] when nothing can be read; the caller then falls back to the
+ * manifest in the repository rather than showing an empty gallery.
  */
 export async function listPublishedPhotos(): Promise<Photo[]> {
   if (!dbConfigured()) return [];
+  let files: Awaited<ReturnType<typeof listLibrary>> = [];
   try {
-    const rows = unwrap(
-      await table("surfingwhale_photos")
-        .select("public_id, alt, category, published, url, width, height, sort")
-        .eq("published", true)
-        .order("sort", { ascending: true })
-        .order("taken_at", { ascending: false }),
-      "List published photographs"
-    ) as Row[];
-    return rows
-      // A row with no URL or no dimensions would lay the grid out wrong and
-      // show a broken frame, which is worse than not showing it.
-      .filter((r) => r.url && r.width > 0 && r.height > 0)
-      .map((r) => ({
-        id: r.public_id,
-        category: r.category,
-        src: r.url,
-        alt: r.alt,
-        width: r.width,
-        height: r.height,
-      }));
+    files = await listLibrary();
   } catch {
     return [];
   }
+  let rows: Row[] = [];
+  try {
+    rows = unwrap(
+      await table("surfingwhale_photos").select(
+        "public_id, alt, category, published, url, width, height, sort"
+      ),
+      "Read photograph details"
+    ) as Row[];
+  } catch {
+    // No table yet: everything shows, described generically.
+  }
+  const byId = new Map(rows.map((r) => [r.public_id, r]));
+  return files
+    .map((f) => ({ f, r: byId.get(f.publicId) }))
+    .filter(({ f, r }) => (r ? r.published : true) && f.width > 0 && f.height > 0)
+    .sort((a, b) => (a.r?.sort ?? 0) - (b.r?.sort ?? 0) || b.f.takenAt.localeCompare(a.f.takenAt))
+    .map(({ f, r }) => ({
+      id: f.publicId,
+      category: r && isCategory(r.category) ? r.category : "everyday",
+      src: f.url,
+      alt: r?.alt?.trim() || DEFAULT_ALT,
+      width: f.width,
+      height: f.height,
+    }));
 }
 
 /** What the studio knows about the frames it is showing. */
@@ -95,12 +111,6 @@ export async function metaFor(publicIds: string[]): Promise<Record<string, Photo
   return Object.fromEntries(rows.map((r) => [r.public_id, toMeta(r)]));
 }
 
-export class NeedsAlt extends Error {
-  constructor() {
-    super("Describe the photograph first — that line is what a screen reader says, and the only part of a photograph search can read.");
-  }
-}
-
 export async function savePhotoMeta(input: {
   publicId: string;
   alt: string;
@@ -111,11 +121,9 @@ export async function savePhotoMeta(input: {
   height: number;
   sort?: number;
 }): Promise<void> {
+  // Optional now: an undescribed photograph is shown with DEFAULT_ALT, and the
+  // Photos room keeps asking for words of its own.
   const alt = input.alt.trim().slice(0, 300);
-  // Refused at the point of publishing rather than warned about later. The
-  // site already carries case-study exhibits with alt="" that describe
-  // themselves to nobody; this is where that stops being added to.
-  if (input.published && !alt) throw new NeedsAlt();
   unwrap(
     await table("surfingwhale_photos").upsert(
       {

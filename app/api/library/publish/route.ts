@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { isUnlocked } from "@/app/lib/darkroomSession";
 import { isLibraryPath, publicUrlOf } from "@/app/lib/storage";
-import { savePhotoMeta, isCategory, NeedsAlt } from "@/app/lib/photos";
+import { savePhotoMeta, isCategory } from "@/app/lib/photos";
 import { SetupError } from "@/app/lib/db";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -40,7 +40,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);
     console.error("Library publish failed:", reason);
-    if (err instanceof NeedsAlt) return NextResponse.json({ error: reason }, { status: 422 });
     if (err instanceof SetupError) return NextResponse.json({ error: reason }, { status: 503 });
     return NextResponse.json({ error: `Could not save it: ${reason}` }, { status: 502 });
   }

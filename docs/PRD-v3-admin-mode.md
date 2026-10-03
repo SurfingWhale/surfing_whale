@@ -855,3 +855,48 @@ matched a fix I had already written.
 The fake Supabase now holds **fifteen** photographs rather than eight, because
 a fixture smaller than the real thing is a fixture that passes on broken code.
 That change did not make B fail either, which is how the above is known.
+
+## 20. Fifteen photographs, and the gallery still showed five — 2026-10-03
+
+Fauzy uploaded fifteen photographs to the library, ran the SQL when asked to,
+got "Success. No rows returned" — and the gallery still showed the five old
+frames from the repository. He then had to ask why, again. This is the bug,
+and the part of it that was ours.
+
+**The bug was the design, not a line.** A library photograph reached the
+gallery only after being opened, described and published, one at a time
+(§18). Nothing in the room said that uploading was not enough, and the
+fallback to the repository's five frames made "nothing published" look like
+"nothing works". The owner's model — I put photographs in my library, they
+are on my photography page — was the right one, and the site's was not.
+
+**What made it worse:**
+
+1. Each answer moved the fix one step further away instead of making it.
+   "Run the SQL" was presented as the fix; the SQL only made publishing
+   *possible*. "Success" then meant nothing visible, and the next answer was
+   another set of instructions instead of a change.
+2. `b2918e9` emptied the effect that scrolls the photo panel into view —
+   `// (removed for the test)` — and shipped it. With fifteen photographs the
+   panel opens below the grid, off screen, so tapping a frame appeared to do
+   nothing. The one route to publishing was hidden by a test edit.
+3. The status could not be checked from outside — the table is locked to the
+   server, by design — so "check the studio and tell me" was handed back to
+   the person who was already tired of checking.
+
+**Fixed:**
+
+- Every library photograph is in the gallery unless it is hidden. A row in
+  `surfingwhale_photos` now only hides, describes, files or orders a frame; a
+  frame with no row shows, described as "A photograph by Muhammad Fauzy"
+  until it is given words of its own. The description is asked for, no
+  longer required.
+- Uploading and deleting revalidate the home page, so a new photograph is
+  there on the next load.
+- The panel scrolls into view again.
+- The Photos room's missing-table notice now says what still works.
+
+**The rule this leaves:** when the owner says "it doesn't show", the job is
+to make it show and then look at the public page to see that it does — not
+to explain the steps that would make it show. Verified here by the page's
+own payload after deploy, not by asking.

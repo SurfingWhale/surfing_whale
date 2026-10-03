@@ -11,11 +11,11 @@
 // was a hand-edited array in the repository, so the other way round was a
 // commit. Uploading twenty photographs and expecting to see them is the
 // obvious thing to do and it led nowhere. Tapping a frame here now opens the
-// one panel that puts it on the site.
+// one panel that describes it, files it, or hides it.
 //
-// Publishing asks for a description and will not go without one. It is the
-// only part of a photograph a screen reader can say or a search engine can
-// read, and it is cheapest to write while looking at the frame.
+// Every photograph here is on the site unless it is hidden: uploading is the
+// decision to show it. A description is asked for, not required — until it is
+// written the gallery says "A photograph by Muhammad Fauzy".
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -105,7 +105,7 @@ export function Photos() {
             takenAt: new Date().toISOString(),
             alt: "",
             category: "everyday",
-            published: false,
+            published: true,
           },
           ...(f ?? []),
         ]);
@@ -158,7 +158,8 @@ export function Photos() {
   // it is not what "the button isn't there" was. That was the label, below.
   useEffect(() => {
     if (!open) return;
-    // (removed for the test)
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    panel.current?.scrollIntoView({ block: "nearest", behavior: still ? "auto" : "smooth" });
   }, [open]);
 
   const save = async (f: Frame, published: boolean) => {
@@ -223,13 +224,13 @@ export function Photos() {
         {details && !details.ok && (
           <div role="status" className="mb-4 rounded-xl border border-border px-4 py-3">
             <p className="text-[13px] leading-[1.7] text-fg">
-              Photographs cannot go on the site yet — the table they live in is
-              not there.
+              Every photograph here is on the site, but hiding or describing one
+              needs a table that is not there yet.
             </p>
             <p className="text-[13px] leading-[1.7] text-fg-body">
               Run <code className="font-mono">supabase/surfing-whale.sql</code>{" "}
               once in Supabase → SQL Editor. It is safe to run again if it has
-              been run before. Uploading and deleting work without it.
+              been run before.
             </p>
             {/* Only when it says something the two lines above do not. The
                 common case — the tables were never made — already IS those two
@@ -344,7 +345,7 @@ export function Photos() {
               <div className="min-w-0 flex-1 space-y-3">
                 <Field
                   label="What is in the photograph"
-                  hint="Needed to put it on the site"
+                  hint="Optional — what a screen reader says, and what search can read"
                 >
                   <textarea
                     className={textareaClass}
@@ -376,11 +377,11 @@ export function Photos() {
                       names the missing field instead of greying itself out
                       and explaining nothing. */}
                   <Button variant="primary" disabled={saving} onClick={() => void save(f, true)}>
-                    {saving ? "Saving…" : f.published ? "Save" : "Put it on the site"}
+                    {saving ? "Saving…" : f.published ? "Save" : "Show it on the site"}
                   </Button>
                   {f.published && (
                     <Button disabled={saving} onClick={() => void save(f, false)}>
-                      Take it off
+                      Hide from the site
                     </Button>
                   )}
                   <Button variant="quiet" onClick={() => { setOpen(null); setDraft(null); }}>
