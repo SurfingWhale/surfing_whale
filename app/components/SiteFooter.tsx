@@ -100,8 +100,8 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
       // Once the footer has most of the screen, the header and the note card
       // are covering a page that has scrolled away; they step aside.
       document.documentElement.toggleAttribute("data-foot", p > 0.55);
-      // The engraving is 270 KB; fetch it when the end of the page is near,
-      // not for every visitor who reads the hero and leaves.
+      // The engraving is a few hundred KB; fetch it when the end of the page
+      // is near, not for every visitor who reads the hero and leaves.
       if (!art && bottom < window.innerHeight * 2.5) setArt(true);
     };
     const onScroll = () => {
@@ -131,6 +131,24 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
 
   return (
     <footer ref={ref} className="site-footer" data-spot>
+      {/* The plate: sky, headlands and the whale's tail, ink on paper. It is
+          the whole footer's ground, anchored at its foot so the tail and the
+          horizon are the part that is never cropped. */}
+      <div className="foot-plate" aria-hidden="true">
+        {art && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/footer-sea.webp"
+            srcSet="/footer-sea-960.webp 960w, /footer-sea.webp 1586w"
+            // Cropped to cover, so a tall screen needs the width that fills
+            // its height: 1.6 times the height for this 1586×992 plate.
+            sizes="max(100vw, 160svh)"
+            alt=""
+            decoding="async"
+          />
+        )}
+      </div>
+
       <div className="foot-inner frame">
         <div className="foot-grid">
           <div className="foot-brand">
@@ -180,12 +198,8 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
         </div>
       </div>
 
-      <div className="foot-sea" aria-hidden="true">
-        {art && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src="/footer-sea.svg" alt="" decoding="async" />
-        )}
-      </div>
+      {/* Room below the words for the horizon and the tail. */}
+      <div className="foot-sea" aria-hidden="true" />
     </footer>
   );
 }

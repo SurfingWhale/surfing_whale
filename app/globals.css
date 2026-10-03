@@ -1041,12 +1041,14 @@ html.intro-out .sw-intro-wave {
 }
 
 /* ---- The footer ------------------------------------------------------------
-   Ultramarine and paper, set in the serif, after an engraved-print footer the
-   owner picked. Its own palette on purpose: it is a printed plate at the end
-   of the page, and it stays the same in the dark theme. */
+   Blue ink on paper, set in the serif: the owner's engraving of a whale's
+   tail in open water is the ground of the whole footer, and the type is
+   printed in the same ink. Its own palette on purpose: it is a plate at the
+   end of the page, and it stays the same in the dark theme. Both colours are
+   sampled from the engraving (the tail, the paper), deepened a step for text. */
 .site-footer {
-  --sea-ink: #1f3b9f;
-  --sea-paper: #f2e7cf;
+  --sea-ink: #1d4596;
+  --sea-paper: #f4efe6;
   --reveal: 1;
   position: sticky;
   bottom: 0;
@@ -1055,8 +1057,8 @@ html.intro-out .sw-intro-wave {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--sea-ink);
-  color: var(--sea-paper);
+  background: var(--sea-paper);
+  color: var(--sea-ink);
   font-family: var(--font-serif), Georgia, serif;
 }
 
@@ -1065,15 +1067,30 @@ html.intro-out .sw-intro-wave {
   height: auto;
 }
 
-/* Paper grain, so the blue reads as ink on stock and not as a screen fill. */
-.site-footer::before {
+.foot-plate {
+  position: absolute;
+  inset: 0;
+  transform: translateY(calc((1 - var(--reveal)) * 2rem));
+}
+.foot-plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
+}
+/* The sky is hatched as densely as the sea, and type set over it is hard to
+   read. A wash of the paper's own colour quiets the top of the sky where the
+   words are and is gone well before the clouds over the headlands. */
+.foot-plate::after {
   content: "";
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  opacity: 0.22;
-  mix-blend-mode: soft-light;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background: linear-gradient(
+    to bottom,
+    rgb(244 239 230 / 0.86) 0%,
+    rgb(244 239 230 / 0.7) 32%,
+    rgb(244 239 230 / 0) 60%
+  );
 }
 
 .foot-inner {
@@ -1186,7 +1203,8 @@ html.intro-out .sw-intro-wave {
   margin-top: 0;
   display: inline-flex;
   align-items: stretch;
-  border: 1px solid var(--sea-paper);
+  border: 1px solid currentColor;
+  background: rgb(244 239 230 / 0.6);
   font-style: italic;
   font-size: 1.0625rem;
 }
@@ -1198,8 +1216,8 @@ html.intro-out .sw-intro-wave {
   display: grid;
   place-items: center;
   width: 2.75rem;
-  background: var(--sea-paper);
-  color: var(--sea-ink);
+  background: var(--sea-ink);
+  color: var(--sea-paper);
   font-style: normal;
 }
 .site-footer .foot-cta {
@@ -1218,22 +1236,12 @@ html.intro-out .sw-intro-wave {
   opacity: 0.7;
 }
 
-/* The engraving takes whatever height is left, anchored at its foot so the
-   whale is never the part that gets cropped. */
+/* Whatever height is left under the words, so the horizon and the tail have
+   open water round them. */
 .foot-sea {
-  position: relative;
   flex: 1 1 auto;
   min-height: 8.75rem;
   margin-top: 1rem;
-  transform: translateY(calc((1 - var(--reveal)) * 2rem));
-}
-.foot-sea img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 100%;
 }
 .site-footer[data-static] .foot-sea {
   height: 16rem;
@@ -1300,7 +1308,7 @@ html[data-foot] .visitor-card {
 
 @media (prefers-reduced-motion: reduce) {
   .foot-inner,
-  .foot-sea {
+  .foot-plate {
     transform: none;
     opacity: 1;
   }
