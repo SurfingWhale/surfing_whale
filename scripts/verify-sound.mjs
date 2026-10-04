@@ -22,6 +22,11 @@
 // The Apple preview is not reachable from CI, so a local tone of the same
 // shape stands in for it.
 import { chromium } from 'playwright';
+import { mkdirSync } from 'fs';
+// Screenshots are working output, not repository content: they land in an
+// ignored folder so a run cannot leave debris in a public repo.
+const SHOTS = new URL('.shots/', import.meta.url).pathname.replace(/\/$/, '');
+mkdirSync(SHOTS, { recursive: true });
 const PORT = process.argv[2] || '3477';
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
 const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,hasTouch:true,isMobile:true});
@@ -35,7 +40,7 @@ await p.goto(`http://localhost:${PORT}/`,{waitUntil:'domcontentloaded'});
 await p.waitForTimeout(600);
 const offer = await p.$('button:has-text("Play the record")');
 check('the opening offers the record', !!offer, 'no button');
-await p.screenshot({path:`${process.cwd()}/sound-offer.png`});
+await p.screenshot({path:SHOTS+"/sound-offer.png"});
 
 if (offer) {
   await offer.click();
@@ -66,7 +71,7 @@ const vinyl = await p.evaluate(()=>{
 const after = await p.evaluate(()=>performance.getEntriesByType('resource').filter(r=>/mzaf/.test(r.name)).length);
 console.log('      preview fetched after opening the gallery:', after, 'time(s)');
 check('the turntable joined the same side, it did not start a second', after === 1, `${after} fetches`);
-await p.screenshot({path:`${process.cwd()}/sound-vinyl.png`});
+await p.screenshot({path:SHOTS+"/sound-vinyl.png"});
 console.log(fails?`\n${fails} FAILED`:'\nALL PASS');
 await b.close();
 process.exit(fails ? 1 : 0);

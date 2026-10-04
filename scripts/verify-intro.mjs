@@ -20,6 +20,11 @@
 // not everything under chunks/. Blocking both tests nothing: there would be
 // no curtain to get stuck behind.
 import { chromium } from 'playwright';
+import { mkdirSync } from 'fs';
+// Screenshots are working output, not repository content: they land in an
+// ignored folder so a run cannot leave debris in a public repo.
+const SHOTS = new URL('.shots/', import.meta.url).pathname.replace(/\/$/, '');
+mkdirSync(SHOTS, { recursive: true });
 const PORT = process.argv[2] || '3477';
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
 let fails=0;
@@ -31,14 +36,14 @@ const check=(n,ok,got)=>{ console.log(`  ${ok?'PASS':'FAIL'}  ${n}${ok?'':'  -> 
   const p=await ctx.newPage();
   await p.goto(`http://localhost:${PORT}/`,{waitUntil:'commit'});
   await p.waitForTimeout(60);
-  await p.screenshot({path:`${process.cwd()}/first.png`});
+  await p.screenshot({path:SHOTS+"/first.png"});
   const dark=await p.evaluate(()=>{
     const c=document.createElement('canvas');return getComputedStyle(document.documentElement).getPropertyValue('--fg').trim();
   });
   const cls=await p.evaluate(()=>document.documentElement.classList.contains('intro'));
   check('the class is on before anything renders', cls===true, String(cls));
   console.log('      --fg is', dark);
-  for(let i=0;i<22;i++){ await p.screenshot({path:`${process.cwd()}/j${String(i).padStart(2,'0')}.png`}); await p.waitForTimeout(90); }
+  for(let i=0;i<22;i++){ await p.screenshot({path:SHOTS+`/j${String(i).padStart(2,"0")}.png`}); await p.waitForTimeout(90); }
   await ctx.close();
 }
 
@@ -65,7 +70,7 @@ const check=(n,ok,got)=>{ console.log(`  ${ok?'PASS':'FAIL'}  ${n}${ok?'':'  -> 
   const el=await p.evaluate(()=>!!document.querySelector('.sw-intro'));
   check('reduced motion: no class', cls===false, String(cls));
   check('reduced motion: no overlay element', el===false, String(el));
-  await p.screenshot({path:`${process.cwd()}/reduced.png`});
+  await p.screenshot({path:SHOTS+"/reduced.png"});
   await ctx.close();
 }
 
@@ -78,7 +83,7 @@ const check=(n,ok,got)=>{ console.log(`  ${ok?'PASS':'FAIL'}  ${n}${ok?'':'  -> 
   const hidden=await p.evaluate(()=>0).catch(()=>null);
   const txt=await p.textContent('body');
   check('JS off: the page content is served', (txt||'').includes('Muhammad'), (txt||'').slice(0,40));
-  await p.screenshot({path:`${process.cwd()}/nojs.png`});
+  await p.screenshot({path:SHOTS+"/nojs.png"});
   await ctx.close();
 }
 
@@ -110,7 +115,7 @@ const check=(n,ok,got)=>{ console.log(`  ${ok?'PASS':'FAIL'}  ${n}${ok?'':'  -> 
   // assert is that it stopped being visible, by CSS, with React never mounting.
   check('no JS: it left anyway (CSS, not React)', blocked.visibility==='hidden' || blocked.opacity==='0', `visibility=${blocked.visibility} opacity=${blocked.opacity}`);
   check('no JS: the page underneath is what you hit', blocked.hitIsPage===true, blocked.hit);
-  await p.screenshot({path:`${process.cwd()}/nohydrate.png`});
+  await p.screenshot({path:SHOTS+"/nohydrate.png"});
   await ctx.close();
 }
 // F — a slow connection must show ink first, never white

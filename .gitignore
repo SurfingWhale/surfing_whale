@@ -50,3 +50,6 @@ next-env.d.ts
 .claude/rules/
 .claude/skills/
 CLAUDE.md
+
+# verification screenshots (scripts/verify-*.mjs working output)
+scripts/.shots/

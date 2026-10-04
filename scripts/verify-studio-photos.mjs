@@ -21,6 +21,11 @@
 // necessary. B is kept because it would catch a regression that put the panel
 // somewhere unreachable; it is not evidence that it ever was.
 import { chromium } from 'playwright';
+import { mkdirSync } from 'fs';
+// Screenshots are working output, not repository content: they land in an
+// ignored folder so a run cannot leave debris in a public repo.
+const SHOTS = new URL('.shots/', import.meta.url).pathname.replace(/\/$/, '');
+mkdirSync(SHOTS, { recursive: true });
 const PORT = process.argv[2] || '3477';
 import { createHmac } from 'crypto';
 const e=String(Date.now()+86400000);
@@ -55,6 +60,6 @@ check('tapping a tile opens the panel', r.open === true, String(r.open));
 check('the panel is on screen afterwards', r.inView === true, `top=${r.top} bottom=${r.bottom} viewport=${r.vh}`);
 check('the room says a tap is what opens it', hint === true, String(hint));
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASS');
-await p.screenshot({path:`${process.cwd()}/studio-tap.png`});
+await p.screenshot({path:SHOTS+"/studio-tap.png"});
 await b.close();
 process.exit(fails ? 1 : 0);
