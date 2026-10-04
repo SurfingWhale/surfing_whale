@@ -1,191 +1,23 @@
 // app/components/VinylPlayer.tsx
 //
-// A record on the turntable while the photographs are open: California
-// Dreamin', from the Apple Music preview. After the vinyl card on
-// shwn.design — a clear disc with the sleeve as its label, an arm that drops
-// onto it, and the track named beside it.
+// The turntable beside the photographs: a clear disc with the sleeve as its
+// label, an arm that drops onto it, and the track named beside it. After the
+// vinyl card on shwn.design.
 //
-// It starts on its own, because it only ever mounts in answer to a click — the
-// switch to Photographs — and a browser lets a page play sound in answer to
-// one. If the browser still says no, it waits, arm up, for a tap. Switching
-// back to Data unmounts it, which stops it.
-//
-// The preview is thirty seconds, and it plays for as long as the gallery is
-// open: each pass rises out of the one before and falls into the next, two
-// and a half seconds of overlap, so the seam is a crossfade rather than a cut.
-// That needs a gain that can move, and iOS ignores writes to
-// HTMLMediaElement.volume — so the record is played through Web Audio, from a
-// buffer decoded once, with every pass and its fades scheduled on the audio
-// clock. If Web Audio cannot have it, a plain looping <audio> plays instead.
-//
-// The audio and the sleeve are Apple's preview assets, used the way Apple
-// provides them: to play a sample and point at the full track, which the
-// "Apple Music" link does. The full song is not hosted here; it is not ours to.
+// The deck itself lives in app/lib/turntable.ts and belongs to the page, not
+// to this component — the opening can start the same record, and when it has,
+// this mounts onto a side already turning rather than starting a second one.
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const TRACK = {
-  title: "California Dreamin'",
-  artist: "The Mamas & The Papas",
-  album: "If You Can Believe Your Eyes and Ears",
-  preview:
-    "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/21/30/9a/21309af6-0458-39c9-f420-22bb0f0ac11b/mzaf_5048935370131739463.plus.aac.p.m4a",
-  sleeve:
-    "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/19/39/88/193988e9-02c3-b879-5881-2d31c9774bbf/06UMGIM04100.rgb.jpg/600x600bb.jpg",
-  link: "https://music.apple.com/us/album/california-dreamin-single/1440795791?i=1440796325",
-};
-
-const VOLUME = 0.7;
-/** Seconds each pass overlaps the next. */
-const XFADE = 2.5;
-/** The single runs 2:42; the arm crosses the record in that time, then returns. */
-const SIDE = 162;
-
-type Position = { pass: number; side: number };
-
-/** The record player behind the picture: one AudioContext, one decoded buffer. */
-class Turntable {
-  kind: "web audio" | "element" = "web audio";
-  closed = false;
-  private ctx: AudioContext | null = null;
-  private master: GainNode | null = null;
-  private buffer: AudioBuffer | null = null;
-  private loading: Promise<AudioBuffer> | null = null;
-  private first = 0;
-  private next = 0;
-  private pump = 0;
-  private element: HTMLAudioElement | null = null;
-
-  constructor(private url: string) {
-    // Web Audio follows the ring/silent switch on iOS unless told this is
-    // playback, like music, rather than a sound effect.
-    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
-    if (session) session.type = "playback";
-    const Ctx =
-      window.AudioContext ??
-      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!Ctx) {
-      this.kind = "element";
-      return;
-    }
-    this.ctx = new Ctx();
-    this.master = this.ctx.createGain();
-    this.master.gain.value = 0;
-    this.master.connect(this.ctx.destination);
-  }
-
-  private async load(): Promise<AudioBuffer> {
-    const res = await fetch(this.url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.arrayBuffer();
-    // The callback form, which every Safari that has Web Audio understands.
-    return new Promise((ok, no) => this.ctx!.decodeAudioData(data, ok, no));
-  }
-
-  /** True once sound is actually coming out. */
-  async play(): Promise<boolean> {
-    if (this.kind === "element") return this.playElement();
-    const ctx = this.ctx!;
-    // Asked for first, while this is still the tap's (or the click's) call
-    // stack — Safari only lets a context start from inside one.
-    const resumed = ctx.resume().catch(() => {});
-    try {
-      this.buffer ??= await (this.loading ??= this.load());
-    } catch {
-      this.kind = "element";
-      void ctx.close().catch(() => {});
-      return this.playElement();
-    }
-    await resumed;
-    if (this.closed || ctx.state !== "running") return false;
-    if (!this.first) {
-      this.first = this.next = ctx.currentTime + 0.05;
-      this.schedule();
-      this.pump = window.setInterval(() => this.schedule(), 500);
-    }
-    this.fade(VOLUME, 0.9);
-    return true;
-  }
-
-  async pause(): Promise<void> {
-    if (this.kind === "element") {
-      this.element?.pause();
-      return;
-    }
-    this.fade(0, 0.25);
-    await new Promise((r) => setTimeout(r, 260));
-    if (!this.closed) await this.ctx!.suspend().catch(() => {});
-  }
-
-  /** Where the arm and the bar are: through this pass, and across the side. */
-  position(): Position {
-    if (this.kind === "element") {
-      const a = this.element;
-      const pass = a && a.duration ? a.currentTime / a.duration : 0;
-      return { pass, side: pass };
-    }
-    if (!this.first || !this.buffer) return { pass: 0, side: 0 };
-    const t = Math.max(0, this.ctx!.currentTime - this.first);
-    const lap = this.buffer.duration - XFADE;
-    return { pass: (t % lap) / lap, side: (t % SIDE) / SIDE };
-  }
-
-  close() {
-    this.closed = true;
-    window.clearInterval(this.pump);
-    this.element?.pause();
-    void this.ctx?.close().catch(() => {});
-  }
-
-  // Keeps a few seconds of passes queued on the audio clock. A suspended
-  // context's clock stands still, so pausing never lets the queue run ahead.
-  private schedule() {
-    const ctx = this.ctx!;
-    const b = this.buffer;
-    if (!b || this.closed) return;
-    while (this.next < ctx.currentTime + 4) {
-      const at = this.next;
-      const src = ctx.createBufferSource();
-      src.buffer = b;
-      const g = ctx.createGain();
-      const opening = at === this.first;
-      g.gain.setValueAtTime(opening ? 1 : 0, at);
-      if (!opening) g.gain.linearRampToValueAtTime(1, at + XFADE);
-      g.gain.setValueAtTime(1, at + b.duration - XFADE);
-      g.gain.linearRampToValueAtTime(0, at + b.duration);
-      src.connect(g).connect(this.master!);
-      src.onended = () => {
-        src.disconnect();
-        g.disconnect();
-      };
-      src.start(at);
-      this.next = at + b.duration - XFADE;
-    }
-  }
-
-  private fade(to: number, secs: number) {
-    const g = this.master!.gain;
-    const now = this.ctx!.currentTime;
-    g.cancelScheduledValues(now);
-    g.setValueAtTime(g.value, now);
-    g.linearRampToValueAtTime(to, now + secs);
-  }
-
-  private async playElement(): Promise<boolean> {
-    if (!this.element) {
-      this.element = new Audio(this.url);
-      this.element.loop = true;
-      this.element.volume = VOLUME;
-    }
-    try {
-      await this.element.play();
-      return !this.closed;
-    } catch {
-      return false;
-    }
-  }
-}
+import {
+  TRACK,
+  Turntable,
+  theDeck,
+  deckPlaying,
+  SIDE,
+  type Position,
+} from "@/app/lib/turntable";
 
 export function VinylPlayer() {
   const deck = useRef<Turntable | null>(null);
@@ -194,19 +26,25 @@ export function VinylPlayer() {
   const [{ pass, side }, setPosition] = useState<Position>({ pass: 0, side: 0 });
 
   useEffect(() => {
-    const t = new Turntable(TRACK.preview);
+    const t = theDeck();
     deck.current = t;
-    void t.play().then((on) => {
-      if (t.closed) return;
-      setPlaying(on);
+    // Already turning — the opening started it — so show where it is rather
+    // than dropping a second needle on the same record.
+    if (deckPlaying()) {
+      setPlaying(true);
       setKind(t.kind);
-    });
+    } else {
+      void t.play().then((on) => {
+        if (t.closed) return;
+        setPlaying(on);
+        setKind(t.kind);
+      });
+    }
     const tick = window.setInterval(() => setPosition(t.position()), 250);
-    return () => {
-      window.clearInterval(tick);
-      t.close();
-      deck.current = null;
-    };
+    // The deck is NOT closed here. Leaving the gallery used to stop the music,
+    // which is wrong once it can start before the gallery exists; the card's
+    // own control is how somebody stops it.
+    return () => window.clearInterval(tick);
   }, []);
 
   // Called straight from the tap, so play() can still start the context.

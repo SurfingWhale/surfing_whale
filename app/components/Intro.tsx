@@ -47,6 +47,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { TRACK, theDeck } from "@/app/lib/turntable";
 
 // The crest only. ChromeWord's SWELL in shape, stretched to a 1200-wide box so
 // the high point sits off-centre rather than dead middle.
@@ -143,6 +144,80 @@ function Digit({ d }: { d: number }) {
   );
 }
 
+/**
+ * The offer to start the record.
+ *
+ * Its own element, not part of the overlay: the opening is over in 2.2
+ * seconds, which is not long enough for anybody to notice a control, read it
+ * and decide. This stays for nine, across the sweep and onto the page, then
+ * takes itself away. If it is tapped the record plays from there and keeps
+ * playing — the deck belongs to the page, so the turntable beside the
+ * photographs is the same side still turning when you reach it.
+ *
+ * An OFFER and not a gate. A browser will not play sound without a tap — iOS
+ * Safari has no exception at all — so the alternative to asking is silence,
+ * not autoplay. Untapped, nothing waits for it and nothing is behind it.
+ *
+ * Ink pill, paper type, paper ring: legible both over the opening's ink and
+ * over the page it is left standing on, with one rule instead of two.
+ */
+const OFFER_MS = 9000;
+
+function SoundOffer() {
+  const [state, setState] = useState<"off" | "starting" | "on" | "refused">("off");
+  const [here, setHere] = useState(true);
+
+  useEffect(() => {
+    if (state === "on") return;
+    const t = setTimeout(() => setHere(false), OFFER_MS);
+    return () => clearTimeout(t);
+  }, [state]);
+
+  // Once it is playing the pill says so for a moment, then goes — the
+  // turntable is the control from then on.
+  useEffect(() => {
+    if (state !== "on") return;
+    const t = setTimeout(() => setHere(false), 3500);
+    return () => clearTimeout(t);
+  }, [state]);
+
+  if (!here) return null;
+
+  const start = async () => {
+    if (state !== "off") return;
+    setState("starting");
+    // Straight out of the tap, so the audio context can still open.
+    const on = await theDeck().play().catch(() => false);
+    setState(on ? "on" : "refused");
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={() => void start()}
+      disabled={state !== "off"}
+      className="fixed z-[10000] flex items-center gap-2 h-10 pl-3 pr-3.5
+        rounded-full bg-fg text-bg ring-1 ring-bg/30
+        text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5]
+        shadow-[0_2px_10px_rgba(24,24,24,.18)]
+        transition-opacity duration-500 disabled:opacity-70"
+      style={{
+        right: "max(1.25rem, env(safe-area-inset-right))",
+        bottom: "max(1.5rem, env(safe-area-inset-bottom))",
+      }}
+    >
+      <span aria-hidden="true" className="inline-block w-2 h-2 rounded-full bg-bg" />
+      {state === "on"
+        ? TRACK.title
+        : state === "refused"
+          ? "Sound blocked"
+          : state === "starting"
+            ? "Starting\u2026"
+            : "Play the record"}
+    </button>
+  );
+}
+
 export function Intro() {
   // Rendered only once the class the pre-paint script may have added is
   // confirmed, so the server and the first client render agree on nothing
@@ -193,12 +268,23 @@ export function Intro() {
     };
   }, []);
 
+  // A browser will not play sound without a tap, on any platform worth
+  // counting — iOS Safari has no exception at all. So this is an OFFER, not a
+  // gate: untapped, the opening runs exactly as it did, silently, and the site
+  // is never behind a thing somebody has to agree to.
+  //
+  // Tapped, the record starts here and keeps going — the deck belongs to the
+  // page (app/lib/turntable.ts), so three screens later the turntable beside
+  // the photographs is the same side still turning, at the place it has got
+  // to. That continuity is the whole reason to start it this early.
   if (!on) return null;
 
   const digits = String(n).padStart(n === 100 ? 3 : 2, "0").split("").map(Number);
 
   return (
-    <div
+    <>
+      <SoundOffer />
+      <div
       aria-hidden="true"
       // Not a dialog and not announced: it carries no information a reader
       // needs, and the page behind it is already complete.
@@ -252,6 +338,7 @@ export function Intro() {
         </svg>
         <div className="absolute inset-0 bg-bg" />
       </div>
-    </div>
+      </div>
+    </>
   );
 }

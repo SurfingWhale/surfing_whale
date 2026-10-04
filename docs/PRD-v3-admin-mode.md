@@ -1033,3 +1033,59 @@ Three failures in the first pass were the test, not the site — a panel with
 no `role="dialog"` was not recognised (that became finding 3), and the
 phone menu's state was read before it closed. Each was re-checked by
 screenshot before being ruled out.
+
+## 20. The record starts at the opening — 2026-10-04
+
+Asked for: play the song from the intro, thirty seconds forward, more than
+the current option.
+
+### 20.1 The constraint, stated rather than worked around
+
+**A browser will not play sound without a tap.** iOS Safari has no exception;
+Chrome allows it only with user activation or a high media-engagement score.
+So "play it during an automatic intro" is not available, and the alternative
+to asking is silence, not autoplay.
+
+This was **not measurable here.** Headless Chromium does not enforce the
+policy — checked, including with `--autoplay-policy=user-gesture-required`,
+which changed nothing: audible `play()` was ALLOWED with no gesture in both
+runs. The button exists because of the platform rule, reasoned from the rule
+and not from a measurement, and `scripts/verify-sound.mjs` says so in its
+header rather than implying it tested something it could not.
+
+### 20.2 What was built
+
+**An offer, not a gate.** A pill in the opening's bottom-right: *Play the
+record*. Untapped, the opening runs exactly as it did, silently, and nothing
+waits for it. It outlives the overlay by design — the opening is over in 2.2
+seconds, which is not enough time to notice a control, read it and decide, so
+the pill stays nine seconds, across the sweep and onto the page, then goes.
+
+**The deck belongs to the page now**, not to the gallery. `Turntable` moved to
+`app/lib/turntable.ts` with a module singleton. It used to be constructed
+inside `VinylPlayer` and closed on unmount — fine when the gallery was the only
+place sound happened, wrong once the opening can start the same record.
+
+That is the part worth having: tap at the opening, scroll three screens, and
+the turntable beside the photographs is **the same side still turning**, at the
+place it has got to — not a second needle on a second copy.
+
+### 20.3 Proven, including the counter-case
+
+`scripts/verify-sound.mjs`:
+
+| | |
+| --- | --- |
+| the opening offers the record | PASS |
+| the tap starts it | PASS |
+| **the preview is fetched once, not twice** | PASS — and **FAILS at 2 fetches** against the old per-component deck, checked by putting it back |
+
+Nothing else moved: verify-intro ALL PASS, verify-contrast 76/77 nodes 0 below
+AA in both themes, verify-headings 6/6, verify-chrome-effect 11/11,
+verify-rhythm ALL PASS, audit-seo 0 blocking.
+
+### 20.4 Still Apple's preview
+
+Thirty seconds, Apple's own asset, used the way Apple provides it — to sample
+a track and point at the full one. The full song is not hosted here and will
+not be; it is not ours to host.
