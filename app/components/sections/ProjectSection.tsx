@@ -136,7 +136,7 @@ export function ProjectSection({ projects }: Props) {
             </div>
 
             {/* ── Tier two: everything else, as a list ──────────────────── */}
-            <div data-reveal style={{ ["--reveal-delay" as string]: "90ms" }} className="mt-20 frame-split">
+            <div data-reveal style={{ ["--reveal-delay" as string]: "90ms" }} className="mt-16 frame-split">
             <div data-spot className="frame-rail frame-sticky">
             <SectionLabel note={`${projects.length + WRITTEN_UP.length} projects.`}>
                 Other work

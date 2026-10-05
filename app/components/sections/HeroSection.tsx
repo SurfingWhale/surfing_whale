@@ -1,16 +1,29 @@
 // app/components/sections/HeroSection.tsx
-// No display type: the name runs at body size in medium weight, exactly as
-// the reference site does. Hierarchy comes from weight and colour, not scale.
 //
-// No call to action either. This is a showcase, and a page that opens by
-// asking for an introduction is asking before it has shown anything. The
-// ways to reach me are at the end, where someone who wants them will be.
+// THE PLATE: the evidence first, the name as its label.
+//
+// Chosen out of three directions built thin and rendered side by side rather
+// than out of the first idea (PRD 24). The other two:
+//
+//   the name as the object — a 70px wordmark with a picture inlaid in its own
+//     cap box. The handsomest of the three at 1440 and the emptiest at 390,
+//     where it left the bottom 40% of the screen blank and scattered its three
+//     pieces into three corners.
+//   the logbook header — the first screen as the top of a ledger. Read well on
+//     a phone, broke at 1440, where a label and its value ended up 1800px
+//     apart and stopped reading as a pair.
+//
+// This one opens with the work. A stranger sees what was made before they see
+// who made it, which is the order a site arguing "this person does the
+// analysis" should use. The cost is real and was accepted knowingly: the
+// wordmark, which was the most distinctive object on the site.
+//
+// Still no call to action. This is a showcase, and a page that opens by asking
+// for an introduction is asking before it has shown anything.
 "use client";
 
-import { AvatarPicker, ModeSwitch } from "@/app/components/AvatarPicker";
+import { ModeSwitch } from "@/app/components/AvatarPicker";
 import { useProfileMode, MODE_KICKER } from "@/app/components/ProfileMode";
-import { EmbedFrame } from "@/app/components/EmbedFrame";
-import { HeroWordmark } from "@/app/components/HeroWordmark";
 import { DecodeText } from "@/app/components/DecodeText";
 
 // These are observations about how the work actually goes, drawn from a
@@ -35,15 +48,10 @@ const COPY = {
         "Drive-time bands around every Tomoro branch in Jabodetabek, laid over where people live. The finding was not the coffee — it was that almost every branch sits on a road you drive rather than a corridor you commute along.",
       href: "/work/coffee-access",
       cta: "Read how it was made",
-    },
-    // The picture set into the name. Deliberately not the map that runs full
-    // width below it: at 130px the two read as the same picture printed twice
-    // rather than as two things. The dashboard is a different piece of work
-    // and a different colour, so the first screen carries two projects instead
-    // of one and an echo.
-    inlay: {
-      image: "/avatar-analyst-inlay.jpg",
-      alt: "Fauzy, set into his own name.",
+      plate: "Plate 01 — drive-time bands, Jabodetabek",
+      // The dense half of this map is left of centre; a centred cover crop on
+      // a phone cut every branch out of it.
+      focus: "34% 46%",
     },
   },
   capture: {
@@ -56,14 +64,8 @@ const COPY = {
       caption: "One frame, and the reason the other half of this site exists.",
       href: "#photography",
       cta: "See the rest",
-    },
-    inlay: {
-      // A dedicated cut, not the archive file. The archive keeps its 1400px
-      // original for the lightbox; the slot needs 400px at the slot's own
-      // ratio, and shipping the full frame to fill a 130px hole was 174KB
-      // spent on pixels nobody sees.
-      image: "/capture-inlay.jpg",
-      alt: "A night market, set into the name.",
+      plate: "Plate 01 — Cilincing, 35mm",
+      focus: "50% 42%",
     },
   },
 } as const;
@@ -103,116 +105,116 @@ const FACTS: Record<string, [string, string][]> = {
   ],
 };
 
-const FLASH = [
-  "/work/flash/a2.jpg",
-  "/work/flash/a3.jpg",
-  "/work/flash/a4.jpg",
-  "/work/flash/a5.jpg",
-  "/work/flash/a6.jpg",
-  "/work/flash/a7.jpg",
-];
-
 export function HeroSection() {
   const { mode } = useProfileMode();
   const copy = COPY[mode];
 
   return (
     <section data-spot id="hero" className="w-full">
-      {/* The first screen: kicker, name, the one sentence, the switch. On a
-          wide screen it fills the viewport (globals.css, .hero-stage); on a
-          phone it is the same column it always was. */}
-      <div data-reveal className="frame hero-stage pt-16 sm:pt-20">
-        {/* What this is, before who it is. A stranger deciding whether to keep
-            reading wants the second question answered first, and the toggle
-            above already knows the answer — it was just saying it to screen
-            readers only. Set as a label rather than a heading: it is the same
-            11px the section labels use, so it reads as a caption on the
-            photographs rather than as a title competing with the name. */}
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mt-5">
-          {MODE_KICKER[mode]}
+      {/* THE PLATE.
+          
+          The evidence arrives before the claim. Three directions were built
+          and rendered side by side before this one was chosen (PRD 24); the
+          one it beat opened with the name set at 70px and the picture inlaid
+          in its own cap box, which was the most distinctive thing on this
+          site. That is what this costs, and it buys one thing: a stranger
+          sees the WORK before they see the person. For a site whose job is to
+          say "this person does the analysis", that is the right order.
+
+          What is deliberately NOT here is the thing the reference direction
+          had — a soft black gradient fading up from the bottom of the photo
+          with white type on it. Measured, its label ran at 2.23:1 against the
+          pale half of the map, which is unreadable; and it is the single most
+          applied-by-default treatment in the whole vocabulary. A real plate
+          does not fade into its label. It has a printed card under it. So the
+          image is an image, the card is on the page's own surface, and the
+          contrast is whatever the page's contrast already is. */}
+      <figure data-reveal className="hero-plate">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={copy.frame.image}
+          alt={copy.frame.alt}
+          // The crop is named per image rather than centred. At 390 a centred
+          // cover crop on the isochrone map landed on empty suburb and cut
+          // every branch out of the picture — the one thing the plate exists
+          // to show.
+          style={{ objectPosition: copy.frame.focus ?? "50% 50%" }}
+          fetchPriority="high"
+        />
+
+        <figcaption className="frame hero-card">
+          <div className="hero-card-head">
+            <span className="hero-card-label">{copy.frame.plate}</span>
+            <span className="hero-card-year">&rsquo;26</span>
+          </div>
+
+          {/* One column on a phone; on a wide screen the name hangs on the
+              left of the same rule and the sentence on the right, because a
+              72px name alone on a 1440px line leaves a 700px gutter of
+              nothing beside it — which is the fault the direction this beat
+              had at the same width. */}
+          <div className="hero-card-body">
+            <div className="hero-card-id">
+              <h1 className="hero-card-name">Muhammad Fauzy</h1>
+              <p className="hero-card-kicker">{MODE_KICKER[mode]}</p>
+            </div>
+
+            <div className="hero-card-say">
+              {/* The one sentence that says what the work is for. It resolves
+                  the way the prose elsewhere does, so the front page and the
+                  rest of the site speak at the same speed. */}
+              <DecodeText
+                key={`tagline-${mode}`}
+                text={copy.tagline}
+                className="hero-card-line"
+              />
+
+              <div className="hero-card-foot">
+            {/* The switch stays. It is not decoration — it is what makes the
+                two halves of this site one site, and every section below reads
+                the mode it sets. */}
+                {/* Only the switch, not the avatar card that used to sit
+                    beside it. Both set the same state — the avatar is a
+                    swipe, the switch is two words — so nothing is lost but a
+                    photograph of the author on the first screen, which is the
+                    exact thing this direction decided not to lead with. */}
+                <ModeSwitch />
+                <dl className="hero-card-facts">
+                  {FACTS[mode].map(([k, v]) => (
+                    <div key={k} className="flex gap-2">
+                      <dt className="sr-only">{k}</dt>
+                      <dd>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
+          </div>
+        </figcaption>
+      </figure>
+
+      {/* What the plate shows, and where to read how it was made. The old
+          hero carried an EmbedFrame here holding this same picture; with the
+          picture now the first thing on the page, keeping it was printing it
+          twice. */}
+      <div data-reveal className="frame frame-split frame-flush pb-24 min-[66rem]:pb-16 pt-12 min-[66rem]:pt-16">
+        <p className="text-[15px] leading-[1.7] text-fg max-w-[46ch]">
+          {copy.frame.caption}
         </p>
 
-        {/* The greeting used to live here at 13px. The name now says itself at
-            the top of the page, so saying it twice was the only thing the
-            greeting was still doing. */}
-        {/* The name runs to about 520px at its largest, and the column is 720,
-            so the second line — the short word plus the picture — used to end
-            in a 300px rectangle of nothing. The switch and the standing facts
-            move into it and sit on the name's own baseline, which turns the
-            gap from something left over into the right-hand half of a block.
-            Below the breakpoint there is no gap to fill, so they stack. */}
-        <div className="hero-row flex flex-col md:flex-row md:items-end md:gap-7">
-          <HeroWordmark
-            first="Muhammad"
-            second="Fauzy"
-            image={copy.inlay.image}
-            alt={copy.inlay.alt}
-            flash={FLASH}
-          />
-
-          <div className="hero-side shrink-0 md:pb-[0.9em] flex flex-col gap-3">
-            {/* The switch changes the face inside the name, so it belongs
-                within reach of it rather than a paragraph below. */}
-            <AvatarPicker />
-            {/* The deck says nothing a reader can read. This does. */}
-            <ModeSwitch />
-            {/* The facts a stranger checks first, and the only place on the
-                page that answers them without scrolling. Set at the kicker's
-                size so the two read as one voice bracketing the name. */}
-            <dl className="text-[11px] leading-[1.7] tracking-[0.06em] uppercase text-fg-label">
-              {FACTS[mode].map(([k, v]) => (
-                <div key={k} className="flex gap-2">
-                  <dt className="sr-only">{k}</dt>
-                  <dd>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </div>
-
-        {/* The two passages resolve in sequence, the second picking up where
-            the first lands, so the front reads as one movement down the page
-            rather than two that happen to fire together. Keyed on the mode so
-            switching modes runs the new copy in rather than swapping it.
-
-            The tagline used to be 13px, the same size as the paragraph under
-            it, stretched as a single thin line across the full 720px column.
-            Under a 112px name that reads as a caption someone forgot to
-            delete. It is the one sentence that says what the work is for, so
-            it now runs at display-adjacent size on a measure short enough to
-            break over two lines — the line break is what gives it presence,
-            not the point size alone. */}
-        <DecodeText
-          key={`tagline-${mode}`}
-          text={copy.tagline}
-          className="hero-line text-[clamp(19px,2.1vw,26px)] leading-[1.45] tracking-[-0.011em] text-fg mt-9 max-w-[19ch] sm:max-w-[23ch]"
-        />
-      </div>
-
-      {/* Below the fold on a wide screen, on the first screen's own edge — the
-          bio carries on from the sentence above it. */}
-      <div data-reveal className="frame frame-split frame-flush pb-24 min-[66rem]:pb-16 min-[66rem]:pt-16">
         <DecodeText
           key={`bio-${mode}`}
           text={copy.bio}
           delay={420}
-          className="text-[13px] leading-[2] text-fg-body mt-6 max-w-[560px]"
+          className="text-[13px] leading-[2] text-fg-body mt-8 max-w-[560px]"
         />
 
-        <EmbedFrame
-          image={copy.frame.image}
-          alt={copy.frame.alt}
-          title={copy.frame.title}
-          caption={copy.frame.caption}
-          ratio="16 / 9"
-        />
-
-        <p className="text-[13px] leading-[2]">
+        <p className="text-[13px] leading-[2] mt-8">
           <a
             href={copy.frame.href}
             className="font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
           >
-            {copy.frame.cta} →
+            {copy.frame.cta} &rarr;
           </a>
         </p>
       </div>

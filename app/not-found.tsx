@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-bg text-fg grid place-items-center px-6 py-20">
+    <main className="min-h-screen bg-bg text-fg grid place-items-center px-6 py-16">
       <div className="max-w-[420px] text-center">
         {/* The number IS the artwork here, so it is not also set as a label
             underneath — saying 404 twice on a page with four lines on it. */}

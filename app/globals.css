@@ -1309,3 +1309,150 @@ html[data-foot] .visitor-card {
   -webkit-mask: url("/logo-mark.webp") center / contain no-repeat;
   mask: url("/logo-mark.webp") center / contain no-repeat;
 }
+
+/* ── The hero plate ──────────────────────────────────────────────────────
+   The evidence, then a card under it. See HeroSection.tsx for why this shape
+   and not the other two.
+
+   The picture is a picture and the card is on the page's own surface. The
+   direction this was drawn from floated the card on the photo over a black
+   gradient — which measured 2.23:1 for the label against the pale half of the
+   map, and is also the single most default-applied treatment in the whole
+   vocabulary. Separating them means the type sits on the same background as
+   every other line on the site, so its contrast is the site's contrast and
+   there is nothing new to check. */
+.hero-plate {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-plate > img {
+  display: block;
+  width: 100%;
+  /* Tall enough on a phone to be a plate rather than a banner, short enough
+     that the card under it is on the first screen. The card is the half that
+     says who this is; a picture that fills the whole screen on a phone makes
+     the name something you have to scroll for. */
+  height: 46svh;
+  object-fit: cover;
+  background: var(--bg-muted);
+}
+
+.hero-card {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-4);
+}
+
+.hero-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--fg);
+}
+
+/* The same 11px uppercase at 0.14em the section labels and the index rows are
+   set in, and the same mono tabular year. The front page is written in the
+   site's own alphabet rather than in a hero's. */
+.hero-card-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  color: var(--fg-label);
+}
+.hero-card-year {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-muted);
+  flex-shrink: 0;
+}
+
+/* The serif, because every other place a person speaks on this site is set in
+   the serif — the guest notes, the pull quotes. The name is a caption here,
+   and a caption in the voice of the person is the point. */
+.hero-card-name {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(38px, 8.5vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  margin-top: var(--space-3);
+}
+
+.hero-card-kicker {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  color: var(--fg-label);
+  margin-top: var(--space-2);
+}
+
+.hero-card-line {
+  font-size: clamp(17px, 1.9vw, 22px);
+  line-height: 1.5;
+  letter-spacing: -0.011em;
+  color: var(--fg);
+  margin-top: var(--space-4);
+  max-width: 30ch;
+}
+
+/* The gap above this is var(--space-4); the gap inside each half of it is
+   var(--space-2). Two steps apart, which is the rule the rest of the page is
+   held to. */
+.hero-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.hero-card-facts {
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-label);
+}
+
+@media (min-width: 66rem) {
+  .hero-plate > img {
+    /* Most of the first screen, with the top of the card showing under it —
+       enough that the page reads as "a picture AND something below it" rather
+       than as a full-bleed photo a reader has to guess has more under it. */
+    height: calc(100svh - 3.5rem - 11rem);
+    min-height: 420px;
+  }
+  .hero-card {
+    padding-top: var(--space-4);
+  }
+  /* On a wide screen the card is a row: the name and its label on the left,
+     the sentence and the switch on the right, both hung off the same rule.
+     Stacked, they left a 700px gutter of nothing beside a 72px name. */
+  .hero-card-body {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+  .hero-card-id {
+    grid-column: 1 / span 5;
+  }
+  .hero-card-say {
+    grid-column: 7 / span 6;
+  }
+  /* The sentence already has the whole right-hand half; the step that opened
+     a gap under the name on a phone has nothing to clear up here. */
+  .hero-card-line {
+    margin-top: 0;
+  }
+}

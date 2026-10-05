@@ -62,7 +62,7 @@ export function DocPreview({
             className="relative"
             style={open ? undefined : { maxHeight: peek, overflow: "hidden" }}
           >
-            <div className="doc px-6 sm:px-9 py-7 sm:py-9">{children}</div>
+            <div className="doc px-6 sm:px-8 py-7 sm:py-8">{children}</div>
 
             {!open && (
               <div

@@ -1229,3 +1229,78 @@ sitting beside a scale it had no reason to miss. Now `var(--space-1)`.
 The rest is left alone and recorded here instead. The footer being on its own
 rhythm is a decision someone could defend; what could not be defended is not
 knowing it was true.
+
+## 24. The hero, chosen out of three — 2026-10-05
+
+The hero's typeface had been an open question for weeks: Oswald condensed
+against the reference's wide grotesque. Three directions were built thin and
+rendered side by side with the new `design-directions` skill, and the question
+dissolved — it was never a typeface question.
+
+### 24.1 The three
+
+| | made of | hierarchy from | read as | at rest |
+|---|---|---|---|---|
+| A the name as object | type | scale | one column, down | the name, alone |
+| B the logbook header | data | position and rule | a form scanned | everything |
+| C the plate | image | contrast, then a card | one picture, then its label | one thing |
+
+What the renders said, which is not what was expected:
+
+- **A looked good at 1440.** Its fault was never the face. At 390 it left the
+  bottom 40% of the screen empty, and at 1440 its three pieces sat in three
+  separate corners — which is the "forced apart" the design critique in §16
+  was about, measured instead of argued.
+- **B read well on a phone and broke at 1440**, where `NAME` and
+  `Muhammad Fauzy` ended up ~1800px apart and stopped reading as a pair.
+- **C was chosen**, for one reason: it is the only one that puts the work
+  before the person. For a site arguing "he does the analysis", a stranger
+  should see the analysis first.
+
+### 24.2 What it cost, stated before it was built
+
+The wordmark: the name at 70px with a picture inlaid in its own cap box,
+changing every second, taking colour when pressed. The most distinctive object
+on the site. `HeroWordmark.tsx` is left in the repository, now unused.
+
+The avatar card went with it. It and `ModeSwitch` set the same state — a swipe
+and two words — so nothing is lost but a photograph of the author on the first
+screen, which is the thing this direction decided not to lead with.
+
+### 24.3 What was taken from C and what was refused
+
+Taken: evidence first, name as its label, the serif that every other speaking
+voice on this site is set in.
+
+**Refused: the gradient.** The direction as drawn floated the card on the photo
+over a black fade. Measured, its label ran at **2.23:1** against the pale half
+of the map — unreadable — and the soft gradient over a photograph is the single
+most applied-by-default treatment in the whole vocabulary. A real plate does
+not fade into its label; it has a printed card under it. So the picture is a
+picture, the card is on the page's own surface, and the type sits on the same
+background as every other line on the site. Contrast after: **79 nodes, 0 below
+AA, in both themes** — nothing new to check, which is the point.
+
+The crop is named per image (`focus`), not centred: a centred cover crop on the
+isochrone map at 390 landed on empty suburb and cut every branch out of the
+picture.
+
+### 24.4 The checker caught a consequence
+
+`verify-rhythm` went from ALL PASS to **2 FAILED** after the hero changed —
+`36px` and `80px` dropped to two uses each once the old hero stopped using
+them. Confirmed against HEAD that the failures were new, and the right answer
+was not to invent a third use: `DocPreview` went 36→32, `ProjectSection` and
+`not-found` went 80→64. Back to ALL PASS.
+
+Suite: contrast 0 below AA both themes, headings ok, rhythm ALL PASS,
+tap-targets 8/8, intro ALL PASS, sound ALL PASS, guest-note ALL PASS,
+chrome 11/11.
+
+### 24.5 Open, and his to decide
+
+`HalloSection` renders **before** `HeroSection`, and it fills the first screen.
+So the plate is the second screen, and "the work before the person" is behind a
+full-screen greeting. That greeting was added deliberately in another session
+(`6fb33e7`) and has not been touched here. Either it moves below the plate or
+the plate is not first; both are choices, and neither is mine.
