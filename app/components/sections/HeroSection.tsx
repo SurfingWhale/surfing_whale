@@ -22,7 +22,7 @@
 // for an introduction is asking before it has shown anything.
 "use client";
 
-import { ModeSwitch } from "@/app/components/AvatarPicker";
+import { AvatarPicker, ModeSwitch } from "@/app/components/AvatarPicker";
 import { useProfileMode, MODE_KICKER } from "@/app/components/ProfileMode";
 import { DecodeText } from "@/app/components/DecodeText";
 
@@ -170,15 +170,21 @@ export function HeroSection() {
               />
 
               <div className="hero-card-foot">
-            {/* The switch stays. It is not decoration — it is what makes the
-                two halves of this site one site, and every section below reads
-                the mode it sets. */}
-                {/* Only the switch, not the avatar card that used to sit
-                    beside it. Both set the same state — the avatar is a
-                    swipe, the switch is two words — so nothing is lost but a
-                    photograph of the author on the first screen, which is the
-                    exact thing this direction decided not to lead with. */}
-                <ModeSwitch />
+                {/* The deck and the words are one control, so they sit as one
+                    cluster rather than at opposite ends of a row.
+
+                    The deck was taken out when this hero became a plate, on the
+                    argument that a photograph of the author does not belong on
+                    the screen that is meant to lead with the work. That was
+                    mine to argue and his to decide, and he decided: the swipe
+                    is the thing people actually touch. It is back. What is NOT
+                    back is its old placement — floating beside the switch with
+                    space-between pushing them apart, which made two halves of
+                    one control read as two unrelated things. */}
+                <div className="hero-card-switch">
+                  <AvatarPicker />
+                  <ModeSwitch />
+                </div>
                 <dl className="hero-card-facts">
                   {FACTS[mode].map(([k, v]) => (
                     <div key={k} className="flex gap-2">

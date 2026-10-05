@@ -1568,3 +1568,28 @@ footers missing.
 The build now measures every page after rendering and **exits 2 rather than
 publishing** when one overflows, naming it and by how much. Proved by putting
 the old swatch size back: `1 page(s) overflow A4 and would be cut: 09 +86px`.
+
+## 30. The swipe deck comes back — 2026-10-05
+
+Reported with a screenshot: the card you swipe to move between Data and
+Photographs is gone from the hero.
+
+It is gone because **I removed it** in §24, on the argument that the plate
+direction leads with the work and a photograph of the author on that screen
+walks it back. The argument was stated at the time and it was mine to make, not
+mine to settle — the swipe is the thing people actually touch, and he said so.
+It is back.
+
+What is **not** back is where it used to sit. The old hero put the deck and
+`ModeSwitch` at opposite ends of a `space-between` row, which rendered two
+halves of one control as two unrelated objects floating beside each other —
+visible in the §24 render as a card hanging in the card's own white space.
+
+They are one control: swipe the photographs or press a word, same state either
+way. So they are now one stack, `var(--space-2)` apart, with `var(--space-4)`
+to the standing facts beside them — the gap between groups beating the gap
+inside one, which is the page's own rule and exactly what the old placement
+broke.
+
+Suite after: tap-targets, rhythm, hallo, guest-note and intro ALL PASS;
+contrast 85 nodes, 0 below AA, both themes.
