@@ -1443,3 +1443,45 @@ the values can be copied out rather than retyped. 328 KB.
 
 `docs/brand/brand-book.html` is the intermediate and is ignored; the script and
 the PDF are what the repository keeps.
+
+## 27. The book checks itself — 2026-10-05
+
+"Rebuild it with this command" is not a plan when the person it is addressed to
+cannot run the command. So the book no longer depends on anyone remembering.
+
+- `npm run brand-book` builds it.
+- Every build writes `docs/brand/brand-book.lock.json`: every token the book
+  publishes, the contrast ratios it printed, and a content hash of each face it
+  embedded.
+- `scripts/verify-brand-book.mjs` compares that fingerprint against
+  `app/globals.css` as it is now and fails when they have drifted, naming each
+  token and both values. Proved by changing a token and watching it fail.
+
+### 27.1 The lock found a real fault within minutes of existing
+
+The book had been publishing **the light palette in its dark column, and the
+light ratios in both halves of its contrast table.**
+
+`app/globals.css` opens with a custom-media definition that also contains the
+words `prefers-color-scheme: dark`, forty lines above the theme itself. Both
+the builder and the checker indexed the *first* match and sliced the light
+`:root`.
+
+Three things are worth keeping about this:
+
+- **Both files had the same bug, so they agreed with each other.** The check
+  passed. A shared assumption between a generator and its checker cancels out
+  and produces confident, matching, wrong output. Only reading the lock file by
+  eye — `dark--fg = #111111` — found it.
+- **The first fix did not work either.** Testing that a window "contains
+  `--bg`" still matched the mixin, because a 2400-character window from it
+  reaches the light `:root`. The discriminator has to be the *value*: the dark
+  block is the one whose `--bg` differs from light's.
+- **The build now refuses rather than publishes.** If dark `--fg` parses the
+  same as light `--fg`, the script exits 2 with a message saying the book would
+  print the light palette twice. That assertion costs two lines and would have
+  caught this at the first build.
+
+The corrected table also matches an independent calculation made earlier in a
+separate script — 18.09 / 16.57, 8.36 / 9.52, 4.54 / 4.65, 4.81 / 7.86,
+4.52 / 7.86, 7.01 / 8.51 — which is the only reason to believe either of them.

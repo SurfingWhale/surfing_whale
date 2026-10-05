@@ -13,6 +13,7 @@
 // system cannot set a fifteen-page document about itself, it is not a system.
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'fs';
 import { createRequire } from 'module';
+import { createHash } from 'crypto';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -57,8 +58,27 @@ const lightBlock = css.slice(css.indexOf(':root {'), css.indexOf('--ease-out'));
 // first block silently produced a Space page with its scale missing, which is
 // the failure mode of every generator that reads its source by offset.
 const spaceBlock = css;
-const darkStart = css.indexOf('prefers-color-scheme: dark');
-const darkBlock = css.slice(darkStart, darkStart + 2000);
+// Pick the dark block by what is IN it, not by the first mention of the
+// media query. The stylesheet opens with a custom-media definition that also
+// says `prefers-color-scheme: dark`, forty lines above the theme itself — so
+// indexing the first match sliced the LIGHT :root and the book published the
+// light values in its dark column and in half its contrast table. The
+// assertion below is the cheap invariant that would have caught it.
+const darkBlock = (() => {
+  // The right block is the one whose --bg is not the light --bg. Testing only
+  // that a window "contains --bg" is not enough: the first match here is a
+  // custom-media definition forty lines above the light :root, and a window
+  // from it reaches that :root and passes. The value is the discriminator.
+  const lightBgRaw = (lightBlock.match(/--bg\s*:\s*([^;]+);/) || [])[1];
+  const re = /prefers-color-scheme:\s*dark/g;
+  let m;
+  while ((m = re.exec(css))) {
+    const block = css.slice(m.index, m.index + 2400);
+    const bg = (block.match(/--bg\s*:\s*([^;]+);/) || [])[1];
+    if (bg && bg.trim() !== (lightBgRaw || '').trim()) return block;
+  }
+  return '';
+})();
 
 const TEXT_TOKENS = ['--fg', '--fg-secondary', '--fg-muted', '--fg-body', '--fg-label', '--brand-ink'];
 const SURFACE_TOKENS = ['--bg', '--bg-subtle', '--bg-muted', '--doc', '--folder'];
@@ -87,6 +107,13 @@ const ratio = (fg, bg) => {
 
 const lightBg = parse(tokenIn(lightBlock, '--bg'));
 const darkBg = parse(tokenIn(darkBlock, '--bg'));
+// If the two themes read the same, a block was sliced wrong and every colour
+// page below is a lie. Refuse to build rather than publish it.
+if (!darkBg || tokenIn(darkBlock, '--fg') === tokenIn(lightBlock, '--fg')) {
+  console.error('The dark block did not parse: dark --fg reads the same as light.');
+  console.error('The book would publish the light palette twice. Fix the parser, not this message.');
+  process.exit(2);
+}
 const contrastRows = TEXT_TOKENS.map((n) => {
   const l = parse(tokenIn(lightBlock, n)), d = parse(tokenIn(darkBlock, n));
   return { n, l: l && ratio(l, lightBg), d: d && ratio(d, darkBg) };
@@ -718,3 +745,29 @@ await p.pdf({ path: pdfPath, format: 'A4', printBackground: true, preferCSSPageS
 await browser.close();
 const { statSync } = await import('fs');
 console.log(`pdf   -> ${pdfPath}  (${(statSync(pdfPath).size / 1024).toFixed(0)} KB, ${PAGES.length} pages)`);
+
+// A fingerprint of everything the book claims, written beside it.
+//
+// The book is only worth keeping while it agrees with the code, and nobody is
+// going to remember to rebuild it after changing a token. verify-brand-book.mjs
+// reads this file and the current stylesheet and fails when they have drifted,
+// so the suite says the book is stale rather than a reader finding out.
+const lock = {
+  built: new Date().toISOString().slice(0, 10),
+  pages: PAGES.length,
+  tokens: Object.fromEntries([
+    ...read([...TEXT_TOKENS, ...SURFACE_TOKENS, ...LINE_TOKENS], lightBlock).map(([n, v]) => [`light${n}`, v]),
+    ...read(TEXT_TOKENS, darkBlock).map(([n, v]) => [`dark${n}`, v]),
+    ...read(SPACE_TOKENS, spaceBlock),
+  ]),
+  contrast: Object.fromEntries(contrastRows.map((r) => [r.n, [+r.l.toFixed(2), +r.d.toFixed(2)]])),
+  // The faces by CONTENT, not by filename. Next's media filenames carry a
+  // build hash that can change while the font does not, and a check that
+  // fires on a renamed-but-identical file is a false alarm about the book's
+  // truth — the kind that teaches people to ignore the check.
+  faces: Object.fromEntries(Object.entries(FACES).map(([k, f]) =>
+    [k, createHash('sha256').update(readFileSync(join(MEDIA, f))).digest('hex').slice(0, 16)])),
+};
+const lockPath = join(OUT, 'brand-book.lock.json');
+writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
+console.log(`lock  -> ${lockPath}  (${Object.keys(lock.tokens).length} tokens fingerprinted)`);
