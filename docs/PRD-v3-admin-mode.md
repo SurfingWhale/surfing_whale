@@ -1485,3 +1485,55 @@ Three things are worth keeping about this:
 The corrected table also matches an independent calculation made earlier in a
 separate script — 18.09 / 16.57, 8.36 / 9.52, 4.54 / 4.65, 4.81 / 7.86,
 4.52 / 7.86, 7.01 / 8.51 — which is the only reason to believe either of them.
+
+## 28. Parts A and B — 2026-10-05
+
+Fauzy's reading of the book: strong on C through E — colour, type, spacing,
+surface, components, motion, photography, refusals, checks — and missing A and
+B as chapters. Brand strategy and verbal identity were present, but written as
+design decisions rather than as what they are.
+
+He is right, and his recommendation was right too: not twenty pages of logo
+rules, but one layer in front of what exists. The book is now
+**A Foundation → B Verbal identity → C Design system → D Governance**, 21 pages.
+
+### 28.1 Part A did not need writing
+
+The Testament is already his own statement, unedited, in the repository. So
+Part A quotes `app/data/testament.ts` the same way the colour pages read
+`globals.css` — the purpose, the belief the archive rests on, and the tension
+he states himself:
+
+> "I still want recognition. … But I do not want attention to become the
+> authority that decides whether something mattered. I want meaning to exist
+> before the audience arrives."
+
+That sentence governs more of this site than any design rule, and it was
+already written before any of the design decisions it explains.
+
+A brand foundation composed about somebody by somebody else is a guess with a
+letterhead. The build enforces the alternative: `sentence()` pulls a quote by
+its opening words and **exits 2 if the Testament no longer contains it**, so a
+quote cannot drift into a paraphrase, and the book cannot be built with his
+beliefs written for him.
+
+### 28.2 Part B is extracted, not invented
+
+Every voice rule is paired with live copy, and the do/do-not page quotes only
+real strings — "Could not reach the server.", "Add your name so I know who
+stopped by.", "Anyone can write in here — a hello, a question, a correction."
+Nothing was composed to make the example work.
+
+### 28.3 One thing deliberately left blank
+
+Who the site is for, beyond "a stranger". The page states what the copy already
+assumes and then stops, marked as his to answer. Inventing an audience would
+have put a stranger's assumptions into his own brand book, which is the exact
+failure Part A exists to avoid.
+
+### 28.4 A fault the render caught
+
+One voice example printed `${esc(String(TEST_PARAS.length))} paragraphs`
+literally: the line sat in a single-quoted array entry inside a template
+literal, so it never interpolated. Visible only by opening the page. The
+example is now three real figures from the site.

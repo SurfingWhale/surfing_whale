@@ -48,6 +48,26 @@ const face = (family, file, weight = '400', style = 'normal') =>
 
 /* ── the tokens, read from the stylesheet they live in ─────────────────── */
 const css = readFileSync(join(ROOT, 'app/globals.css'), 'utf8');
+
+// Part A is not invented. It is read out of app/data/testament.ts — Fauzy's own
+// statement of what this site is for, in his words, unedited — the same way the
+// colours are read out of the stylesheet. A brand foundation written ABOUT
+// somebody by somebody else is a guess with a letterhead; this one quotes him.
+const testamentSrc = readFileSync(join(ROOT, 'app/data/testament.ts'), 'utf8');
+const TEST_PARAS = [...testamentSrc.matchAll(/^\s{4}"((?:[^"\\]|\\.)*)",$/gm)].map((m) => m[1]);
+const TEST_PULL = (testamentSrc.match(/pull:\s*"((?:[^"\\]|\\.)*)"/) || [, ''])[1];
+if (TEST_PARAS.length < 5 || !TEST_PULL) {
+  console.error(`Could not read the Testament (${TEST_PARAS.length} paragraphs, pull="${TEST_PULL}").`);
+  console.error('Part A quotes it directly — building without it would mean writing his beliefs for him.');
+  process.exit(2);
+}
+// One sentence out of a paragraph, by its opening words, so a quote is always
+// his sentence and never a paraphrase that drifted.
+const sentence = (i, starts) => {
+  const hit = (TEST_PARAS[i].match(/[^.]+\./g) || []).find((x) => x.trim().startsWith(starts));
+  if (!hit) { console.error(`Testament paragraph ${i} no longer contains: "${starts}"`); process.exit(2); }
+  return hit.trim();
+};
 const tokenIn = (block, name) => {
   const m = block.match(new RegExp(`${name}\\s*:\\s*([^;]+);`));
   return m ? m[1].trim() : null;
@@ -267,22 +287,25 @@ page('How to read this', `
   stale — rebuild it with <span class="spec">node scripts/build-brand-book.mjs</span>.</p>
 
   <div class="rule"></div>
-  <h3>What is in it</h3>
+  <h3>Four layers, in order of what settles first</h3>
+  <p style="margin-bottom:var(--s2)"><strong>A</strong> says why the site exists
+  and <strong>B</strong> says how it talks; both are quoted from what he has
+  already written. <strong>C</strong> is how it looks and behaves, read out of
+  the code. <strong>D</strong> is what keeps the three from drifting. A decision
+  taken at a lower letter may not contradict a higher one.</p>
   <div style="margin-top:var(--s2)">
-    ${[['01', 'The five decisions everything else follows from'],
-       ['02', 'Colour — light'],
-       ['03', 'Colour — dark, and the measured contrast'],
-       ['04', 'Type — the four faces and what each is for'],
-       ['05', 'Type — the scale, and the label alphabet'],
-       ['06', 'Space — the scale, and the one rule about gaps'],
-       ['07', 'Surface — rules, not shadows'],
-       ['08', 'The parts, and how they are built'],
-       ['09', 'Motion'],
-       ['10', 'Pictures'],
-       ['11', 'What this site refuses'],
-       ['12', 'What is checked automatically'],
-       ['13', 'Colophon']].map(([n, t]) =>
-      `<div class="row"><span style="font-size:9pt;color:var(--fg)">${t}</span><span class="fig">${n}</span></div>`).join('')}
+    ${[['A', 'Foundation', 'Why this exists · what it is and is not · who it is for · personality'],
+       ['B', 'Verbal identity', 'How it speaks · do and do not · names and numbers'],
+       ['C', 'Design system', 'The five decisions · colour · type · space · surface · parts · motion · pictures · refusals'],
+       ['D', 'Governance', 'What is checked automatically · colophon'],
+      ].map(([k, t, d]) =>
+      `<div style="border-bottom:1px solid var(--border);padding:8px 0">
+         <div style="display:flex;align-items:baseline;gap:var(--s3)">
+           <span class="fig-strong" style="font-size:9pt;min-width:8mm">${k}</span>
+           <span style="font-size:10pt;color:var(--fg)">${t}</span>
+         </div>
+         <p class="note" style="margin:2px 0 0 8mm">${d}</p>
+       </div>`).join('')}
   </div>
 
   <p class="note">The site is a logbook kept in the open: work, photographs and
@@ -290,8 +313,196 @@ page('How to read this', `
   It is not a job application and must never read as one.</p>
 `);
 
+/* ── PART A · FOUNDATION ────────────────────────────────────────────────
+   Every line in this part is quoted from app/data/testament.ts, which is his
+   own statement, unedited. Nothing here is written about him. */
+
+page('A · Foundation — why this exists', `
+  <h2>It is already written. This page only quotes it.</h2>
+  <p>A brand foundation composed by somebody else about somebody else is a
+  guess with a letterhead. This one does not need writing: the statement exists
+  in the repository, in his words, and the site is built on it. Everything
+  below is lifted from <span class="spec">app/data/testament.ts</span> when this
+  book is built.</p>
+
+  <div style="margin-top:var(--s4);border-top:1px solid var(--fg);padding-top:var(--s3)">
+    <p class="lab" style="margin-bottom:var(--s3)">The purpose, in one sentence</p>
+    <p style="font-family:SR,Georgia,serif;font-size:17pt;line-height:1.3;letter-spacing:-.012em;color:var(--fg);max-width:38ch">
+      &ldquo;${esc(sentence(2, 'It is a place where I can leave traces'))}&rdquo;
+    </p>
+  </div>
+
+  <div style="margin-top:var(--s4);border-top:1px solid var(--border);padding-top:var(--s3)">
+    <p class="lab" style="margin-bottom:var(--s2)">The belief the whole archive rests on</p>
+    <p style="font-family:SR,Georgia,serif;font-size:14pt;line-height:1.35;color:var(--fg);max-width:42ch">
+      &ldquo;${esc(TEST_PULL)}&rdquo;
+    </p>
+  </div>
+
+  <div style="margin-top:var(--s4);border-top:1px solid var(--border);padding-top:var(--s3)">
+    <p class="lab" style="margin-bottom:var(--s2)">The tension it refuses to hide</p>
+    <p>&ldquo;${esc(sentence(3, 'I still want recognition'))} &hellip;
+    ${esc(sentence(3, 'But I do not want attention'))}
+    ${esc(sentence(3, 'I want meaning to exist'))}&rdquo;</p>
+    <p class="note">This is the sentence that governs more of the site than any
+    design rule: it is why there is no availability notice, no call to action on
+    the first screen, and no counter that exists to look impressive.</p>
+  </div>
+`);
+
+page('A · Foundation — what it is, and is not', `
+  <h2>&ldquo;${esc(sentence(2, 'It is not only a portfolio'))}&rdquo;</h2>
+
+  <div class="do-dont" style="margin-top:var(--s4)">
+    <div class="box">
+      <p class="lab" style="margin-bottom:var(--s2)">It is</p>
+      <ul>
+        <li>A logbook kept in the open: dated, numbered, counted</li>
+        <li>A record that something was chosen and cared about</li>
+        <li>Two sides of one person &mdash; the data and the photographs</li>
+        <li>Allowed to hold things that are unfinished or small</li>
+      </ul>
+    </div>
+    <div class="box no">
+      <p class="lab" style="margin-bottom:var(--s2)">It is not</p>
+      <ul>
+        <li>A job application, or a site arranged around one</li>
+        <li>A portfolio of only the impressive things</li>
+        <li>A claim to be a photographer, or a programmer</li>
+        <li>A place where reach decides whether something mattered</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+  <h3>Why the two halves are one site</h3>
+  <p>&ldquo;${esc(sentence(0, 'I can choose photography without becoming a photographer'))}
+  ${esc(sentence(0, 'I can learn to code without becoming a programmer'))}&rdquo;</p>
+  <p>That is the argument the mode switch makes. <em>Data</em> and
+  <em>Photographs</em> are two things one person cares about, not two careers
+  being advertised &mdash; which is why they share a page, a palette and a
+  voice, and why neither is a sub-site of the other.</p>
+`);
+
+page('A · Foundation — who it is for', `
+  <h2>A stranger, three paragraphs in, deciding whether to keep reading.</h2>
+  <p>The site makes one assumption about its reader and it is visible in every
+  section note: that they arrived without context, owe nothing, and will leave
+  the moment it asks for something before it has shown anything.</p>
+
+  <div style="margin-top:var(--s4)">
+    <p class="lab" style="margin-bottom:var(--s2)">What the copy already assumes</p>
+    ${[['They do not know who he is', 'The work is shown before the name, and the name carries a trade beside it.'],
+       ['They might disagree', '&ldquo;If something here is useful, wrong, or worth arguing about &mdash; say so. I answer everything.&rdquo;'],
+       ['They might only want one thing', 'Every section says what it is in a note, so any of them can be the only one read.'],
+       ['They owe nothing', 'No sign-up, no gate on the work, no notice asking for an opportunity.']].map(([a, b]) =>
+      `<div style="border-bottom:1px solid var(--border);padding:7px 0">
+         <p style="font-size:9pt;color:var(--fg)">${a}</p>
+         <p class="note" style="margin-top:2px">${b}</p>
+       </div>`).join('')}
+  </div>
+
+  <p class="note" style="margin-top:var(--s4)"><strong>Open, and his to answer:</strong>
+  whether there is a narrower reader than &ldquo;a stranger&rdquo; &mdash; a hiring manager,
+  a fellow analyst, a friend &mdash; that the site should be arranged around. It is
+  not written here because it has not been decided, and guessing it would put a
+  stranger&rsquo;s assumptions into his book.</p>
+`);
+
+page('A · Foundation — personality', `
+  <h2>Five traits, each with the evidence that it is true.</h2>
+  <p>Not adjectives chosen because they sound good. Each one is a pattern
+  already visible in the site or in the way it was built.</p>
+
+  <div style="margin-top:var(--s3)">
+  ${[
+    ['Plain', 'Says the thing and stops.', 'Error messages read &ldquo;Could not save that. Try again in a moment.&rdquo; &mdash; no apology, no blame, what to do next.'],
+    ['Specific', 'Prefers a number to an adjective.', '&ldquo;15 minutes to coffee&rdquo;, &lsquo;26, Plate 01, 4.52:1. Never &ldquo;beautifully crafted&rdquo;.'],
+    ['Unhurried', 'Does not chase.', 'No call to action on the first screen. The ways to reach him are at the end, where someone who wants them will be.'],
+    ['Self-correcting', 'Says when it was wrong.', 'The PRD records every over-count and every failed check by name, including the ones nobody would have found.'],
+    ['Unimpressed by itself', 'Refuses the flourish that would flatter it.', 'No superlatives, nothing &ldquo;featured&rdquo;, and a counter that says how many rather than how good.'],
+  ].map(([t, d, e], i) => `
+    <div style="border-top:1px solid ${i === 0 ? 'var(--fg)' : 'var(--border)'};padding:var(--s3) 0">
+      <div style="display:flex;align-items:baseline;gap:var(--s3)">
+        <span class="fig-strong" style="font-size:8pt">(${i + 1})</span>
+        <h3 style="margin:0;font-size:10.5pt">${t}</h3>
+        <span style="font-size:9pt;color:var(--fg-body)">${d}</span>
+      </div>
+      <p class="note" style="margin-top:4px">${e}</p>
+    </div>`).join('')}
+  </div>
+`);
+
+/* ── PART B · VERBAL IDENTITY ──────────────────────────────────────────── */
+
+page('B · Voice — how it speaks', `
+  <h2>First person, past tense, no adjectives doing a number&rsquo;s job.</h2>
+  <p>The site already has a voice and it is consistent enough to write down.
+  Every rule below is taken from copy that is live.</p>
+
+  <div style="margin-top:var(--s3)">
+  ${[
+    ['Write as a person, not as a site', '&ldquo;I answer everything.&rdquo; &mdash; not &ldquo;All enquiries are responded to.&rdquo;'],
+    ['Say what happened, not what it proves', '&ldquo;The finding was not the coffee &mdash; it was that almost every branch sits on a road you drive.&rdquo;'],
+    ['Let the number carry the claim', '&ldquo;07 entries&rdquo;, &ldquo;15 minutes to coffee&rdquo;, &ldquo;4.52:1&rdquo;. An adjective standing where a figure belongs is a hole in the argument.'],
+    ['Never promise what has not happened', 'A note shows &ldquo;once I have read them&rdquo;, not &ldquo;we will get back to you shortly&rdquo;.'],
+    ['Admit the limit in the same breath', '&ldquo;A picture of a map is not a map.&rdquo; The caption says what the thing is not.'],
+    ['Short sentences when it matters', 'The heaviest lines on the site are the shortest ones.'],
+  ].map(([r, e]) => `
+    <div style="border-bottom:1px solid var(--border);padding:7px 0">
+      <p style="font-size:9pt;color:var(--fg)">${r}</p>
+      <p class="note" style="margin-top:2px">${e}</p>
+    </div>`).join('')}
+  </div>
+
+  <div class="rule"></div>
+  <h3>Tone, by situation</h3>
+  <div class="row"><span style="font-size:9pt">Showing work</span><span class="fig">flat, specific, no selling</span></div>
+  <div class="row"><span style="font-size:9pt">Asking for something</span><span class="fig">once, with a reason, never twice</span></div>
+  <div class="row"><span style="font-size:9pt">Something broke</span><span class="fig">what failed, what to do, no apology</span></div>
+  <div class="row"><span style="font-size:9pt">Writing about himself</span><span class="fig">past tense, no claim to a title</span></div>
+`);
+
+page('B · Voice — do and do not', `
+  <h2>Taken from live copy, not invented for the example.</h2>
+  <div class="do-dont" style="margin-top:var(--s3)">
+    <div class="box">
+      <p class="lab" style="margin-bottom:var(--s2)">Written</p>
+      <ul>
+        <li>&ldquo;Anyone can write in here &mdash; a hello, a question, a correction.&rdquo;</li>
+        <li>&ldquo;Could not reach the server.&rdquo;</li>
+        <li>&ldquo;Add your name so I know who stopped by.&rdquo;</li>
+        <li>&ldquo;Learning it in the open&rdquo;</li>
+        <li>&ldquo;Read how it was made&rdquo;</li>
+        <li>&ldquo;It will show up below once I have had a look.&rdquo;</li>
+      </ul>
+    </div>
+    <div class="box no">
+      <p class="lab" style="margin-bottom:var(--s2)">Not written</p>
+      <ul>
+        <li>&ldquo;We&rsquo;d love to hear from you!&rdquo;</li>
+        <li>&ldquo;Oops! Something went wrong.&rdquo;</li>
+        <li>&ldquo;Name is required&rdquo;</li>
+        <li>&ldquo;Passionate about data&rdquo;</li>
+        <li>&ldquo;Learn more&rdquo;</li>
+        <li>&ldquo;Thanks! We&rsquo;ll be in touch soon.&rdquo;</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+  <h3>Names and numbers</h3>
+  <div class="row"><span style="font-size:9pt">The site</span><span class="fig">Surfing Whale &mdash; two words</span></div>
+  <div class="row"><span style="font-size:9pt">The person</span><span class="fig">Muhammad Fauzy; Fauzy after first use</span></div>
+  <div class="row"><span style="font-size:9pt">A year beside a name</span><span class="fig">&rsquo;26, never 2026</span></div>
+  <div class="row"><span style="font-size:9pt">A counter</span><span class="fig">01, zero-padded, mono</span></div>
+  <div class="row"><span style="font-size:9pt">A plate or an entry</span><span class="fig">Plate 01 &mdash; what it shows</span></div>
+  <p class="note">Sentence case everywhere except the label alphabet, which is
+  uppercase by specification. Headings never take a full stop; a standfirst does.</p>
+`);
+
 /* 01 */
-page('Foundations', `
+page('C · System — the five decisions', `
   <h2>Five decisions. Everything else follows.</h2>
   <div style="margin-top:var(--s4)">
   ${[
@@ -325,7 +536,7 @@ const swatch = (n, v, bgForChip) =>
      <span class="use">${USE[n] ?? ''}</span>
    </div>`;
 
-page('Colour · light', `
+page('C · Colour — light', `
   <h2>Paper and ink, and one blue that is only ever the whale.</h2>
   <p>There is no brand colour on this site in the usual sense. The page is paper,
   the type is ink at five strengths, and the only chroma on a default screen is the
@@ -347,7 +558,7 @@ page('Colour · light', `
 `);
 
 /* 03 — colour dark + contrast */
-page('Colour · dark', `
+page('C · Colour — dark', `
   <h2>The dark theme is not the light one inverted.</h2>
   <p>Ink goes to <span class="spec">#f0f0f0</span> rather than white, the page to
   <span class="spec">#111111</span> rather than black, and the muted step is
@@ -382,7 +593,7 @@ page('Colour · dark', `
 `);
 
 /* 04 — the faces */
-page('Type · the faces', `
+page('C · Type — the faces', `
   <h2>Four faces, each with one job.</h2>
   <p>All four are self-hosted at build time. No request leaves this site for a font
   CDN, which is also why this book can embed the identical files.</p>
@@ -420,7 +631,7 @@ const SCALE = [
   ['30–38', 'Section headings', ''],
   ['51–72', 'The name, the plate', 'Serif. One per screen, never two.'],
 ];
-page('Type · the scale', `
+page('C · Type — the scale', `
   <h2>Seven steps, and a floor.</h2>
   <div style="margin-top:var(--s3)">
     <div class="row"><span class="lab">Size</span><span class="lab">Where</span></div>
@@ -454,7 +665,7 @@ page('Type · the scale', `
 `);
 
 /* 06 — space */
-page('Space', `
+page('C · Space', `
   <h2>Six steps, each twice the one below.</h2>
   <div style="margin-top:var(--s3)">
     ${read(SPACE_TOKENS, spaceBlock).map(([n, v], i) => {
@@ -489,7 +700,7 @@ page('Space', `
 `);
 
 /* 07 — surface */
-page('Surface', `
+page('C · Surface', `
   <h2>A rule, not a shadow.</h2>
   <p>The site separates things with hairlines. Shadow is kept for the two or three
   objects that are genuinely floating above the page, and a radius is a decision
@@ -530,7 +741,7 @@ page('Surface', `
 `);
 
 /* 08 — parts */
-page('The parts', `
+page('C · The parts', `
   <h2>Six things this site is built from.</h2>
   <div style="margin-top:var(--s3)">
   ${[
@@ -559,7 +770,7 @@ page('The parts', `
 `);
 
 /* 09 — motion */
-page('Motion', `
+page('C · Motion', `
   <h2>Motion says something is happening, or it does not happen.</h2>
   <div class="do-dont">
     <div class="box">
@@ -597,7 +808,7 @@ page('Motion', `
 `);
 
 /* 10 — pictures */
-page('Pictures', `
+page('C · Pictures', `
   <h2>A photograph is evidence, so it is captioned and it is not decoration.</h2>
   <div style="margin-top:var(--s3)">
     <div class="row"><span style="font-size:9pt">Crop</span><span class="fig">named per image, never centred by default</span></div>
@@ -628,7 +839,7 @@ page('Pictures', `
 `);
 
 /* 11 — refusals */
-page('Refusals', `
+page('C · Refusals', `
   <h2>What this site will not do, and why each one is here.</h2>
   <p>Every item below was proposed, built or nearly shipped. They are written down
   because the reason is easy to forget and the thing is easy to do again.</p>
@@ -672,7 +883,7 @@ const CHECKS = [
   ['verify-studio-photos', 'The gesture that puts a photograph on the site.'],
   ['audit-seo', 'Titles, descriptions, canonicals, structured data, orphans, measured layout shift.'],
 ];
-page('What is checked', `
+page('D · Governance — what is checked', `
   <h2>The parts of this book a script will defend.</h2>
   <p>Rules that are only written down drift. These run against a production build in
   a real browser and exit non-zero when they fail.</p>
@@ -691,7 +902,7 @@ page('What is checked', `
 `);
 
 /* 13 — colophon */
-page('Colophon', `
+page('D · Governance — colophon', `
   <h2>How this book is made.</h2>
   <p>Generated by <span class="spec">scripts/build-brand-book.mjs</span>. The colour
   values are parsed out of <span class="spec">app/globals.css</span> at build time,
