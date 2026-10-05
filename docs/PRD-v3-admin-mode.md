@@ -1169,3 +1169,63 @@ The header still looks undimmed over the backdrop while a dialog is open. It
 is only how it looks: its controls were checked with `elementFromPoint` while
 the card was open and neither the theme toggle nor the menu is reachable — the
 backdrop has them. Left alone.
+
+## 23. design-directions, and what it said about this site — 2026-10-05
+
+A new skill in `claude-config` (`feat/design-directions`): three structurally
+different directions before one gets built, rendered side by side, with the
+page's visual vocabulary reported as counts. Explicitly not a score — there is
+no measurement in it for taste, and it says so in its own second paragraph.
+
+### 23.1 It was validated against a control, not asserted
+
+A deliberately generic dashboard was written to be the thing the skill is for,
+and the two separate cleanly:
+
+| | generic control | this site, `/` |
+|---|---|---|
+| radii | 1 distinct, on 100% of boxes | 10 distinct, top on 38% |
+| type | 5 sizes, 12–28px, ratio 2.3 | 13 sizes, 11–70px, ratio 6.4 |
+| gradients | 3, all the same two stops | 6, none repeated |
+| most repeated signature | 6 boxes across **2 parents** | 13 boxes in **1 parent** — a list |
+
+`/photo` has **one** surface and no card at all; `/work/crime-la` has eleven
+boxes and a single radius, which is `0`. Whatever this site's problems are,
+being a pile of rounded cards is not one of them.
+
+### 23.2 Four over-counts, found before it shipped
+
+Running it on a real page rather than the control caught every one:
+
+- any element with a background colour counted as a card, so the commonest
+  "signature" came back as *no radius, no border, no shadow, no padding* on
+  **137%** of the page — a figure that cannot exist, from summing nested boxes
+  against the page's own area
+- a transparent `box-shadow` layer per unset utility variable made one drawn
+  shadow read as five
+- `9999px`, `50%` and the `3.3e7px` a clamp resolves to are one decision
+- the hero's per-letter tinting reported **90** text colours; the real number
+  is **11**
+
+That is the fifth, sixth, seventh and eighth over-count in this project's
+history of measuring design. The difference is that these four were found
+before anyone read the output as true.
+
+### 23.3 The one real finding about this site
+
+Spacing. The page measures **15 distinct gaps** against a declared scale of
+4 / 8 / 16 / 32 / 64 / 128 in `--space-1..6`. Checked rather than assumed —
+the off-scale values were traced to their owners, and they cluster:
+
+- the **footer** carries 3, 14 and 28 — it was written in rem (`0.875rem`,
+  `1.75rem`) while the rest of the site runs on the tokens
+- the **hero** carries 36 and 28
+- CV and contact grids carry 20 and 40
+
+One of them was mine, from §22 this morning: `.foot-list li + li` got
+`margin-top: 0.2rem` — 3px, a number invented to offset the padding above it,
+sitting beside a scale it had no reason to miss. Now `var(--space-1)`.
+
+The rest is left alone and recorded here instead. The footer being on its own
+rhythm is a decision someone could defend; what could not be defended is not
+knowing it was true.

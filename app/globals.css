@@ -1150,7 +1150,11 @@ html.intro-out .sw-intro-wave {
   padding-block: 0.3rem;
 }
 .foot-list li + li {
-  margin-top: 0.2rem;
+  /* var(--space-1), not 0.2rem. The audit that counted the page's spacing
+     found 3px in this one rule and nowhere else — a value invented this
+     morning to offset the padding above, sitting beside a declared scale it
+     had no reason to miss. 4px does the same job and is on it. */
+  margin-top: var(--space-1);
 }
 
 .site-footer a {
