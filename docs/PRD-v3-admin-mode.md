@@ -1304,3 +1304,64 @@ So the plate is the second screen, and "the work before the person" is behind a
 full-screen greeting. That greeting was added deliberately in another session
 (`6fb33e7`) and has not been touched here. Either it moves below the plate or
 the plate is not first; both are choices, and neither is mine.
+
+## 25. The greeting becomes a pinboard — 2026-10-05
+
+With the hero opening on evidence (§24), the greeting in front of it was a
+single word on an empty screen — a full screen of nothing before any of the
+work. A reference was handed over: small captioned photographs pinned at
+irregular positions around a centred line, each labelled in a diary-sized note.
+
+### 25.1 Borrowed and not borrowed
+
+Taken: the arrangement. Pictures scattered rather than gridded, each with its
+own note, around a word that holds the middle.
+
+**Not taken: the deep red ground and the serif it is set in.** Dropping a
+reference's palette in would make the first screen the one place on this site
+that belongs to a different site. The plates sit on the same paper, the notes
+are in the 11px uppercase at 0.14em that every other label here uses, and the
+edge round each picture is a hairline — this site separates things with rules,
+not with shadows.
+
+### 25.2 Where the screensaver went
+
+Choosing the plate for the hero cost the wordmark, and with it the slot that
+kept cycling pictures. It lands here instead: six slots rather than one.
+
+### 25.3 Two faults the checker found, one of which it nearly missed
+
+**The stagger was a no-op.** The first version advanced each plate by
+`(tick + i * 2) % frames.length`. For a two-frame list that is `tick % 2` for
+every plate — all six flipped in unison, which is precisely what the comment
+above the line claimed it prevented.
+
+Worse, the first check could not see it reliably. With every plate on one
+parity and a 1000ms period, the 3.4-second sample window straddled a boundary:
+the test returned "identical" or "changed" depending on timing. **A test that
+cannot fail consistently is not evidence**, and this one was reporting a real
+fault as a flake.
+
+Both were fixed together. One plate changes per 700ms tick in a loop round the
+board, so a plate holds for about four seconds and exactly one moves at a time.
+The window is now 2.5s, which must contain two changes and cannot contain six.
+The checker asserts both: at least two moved, and **not all of them**.
+
+**The overlap check measured the wrong box.** `.hallo-word` is a full-width
+block, so four plates were reported "on the word" with none of them touching a
+letter. It now measures the `<text>` node's own rect, which is the ink.
+
+`scripts/verify-hallo.mjs`: six plates wide / four on a phone, none on the word,
+none under the header, no note truncated, pictures move, and under
+`prefers-reduced-motion: reduce` they do not — the same page, the same code,
+opposite results, which is what makes that last line worth anything.
+
+### 25.4 Captions
+
+Every note is its photograph's own alt text cut short, from
+`app/data/photography.ts`. Nothing here is invented copy about a picture nobody
+looked at. At 390 a single capped line turned each one into
+"A PLANK IN CILI…"; the picture can be cropped, the note cannot, so notes wrap.
+
+Suite: contrast 0 below AA both themes, rhythm ALL PASS, tap-targets 8/8,
+intro / sound / guest-note / hallo ALL PASS, chrome 11/11, SEO 0 blocking.

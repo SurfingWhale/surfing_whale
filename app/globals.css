@@ -1456,3 +1456,106 @@ html[data-foot] .visitor-card {
     margin-top: 0;
   }
 }
+
+/* ── The greeting's pinboard ─────────────────────────────────────────────
+   Plates scattered round the word. A twelve-by-twelve grid rather than
+   absolute percentages: the positions still read as irregular, and no two
+   plates can land on each other or on the word at a size nobody tested. The
+   word owns the middle rows; nothing else is allowed in them. */
+.hallo-scatter {
+  position: absolute;
+  inset: 3.5rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  padding: 0 1.5rem;
+  pointer-events: none;
+}
+
+/* Centred in its cell and capped, not stretched to fill it. Filling the cell
+   made each plate 470px wide, which is a gallery; the arrangement only reads
+   as a pinboard while the pictures are the size of pictures somebody pinned.
+   Centring also keeps the captions off the top and bottom edges, where the
+   first version had them sliced by the header and by the fold. */
+.hallo-plate {
+  margin: 0;
+  align-self: center;
+  justify-self: center;
+  width: clamp(104px, 30vw, 150px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.hallo-plate > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* A photograph on a pale ground needs an edge or it bleeds into the page.
+     A hairline, not a shadow: the site draws separation with rules. */
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+/* The slot keeps its shape when the picture inside it changes. Without this
+   a landscape frame following a portrait one resizes its plate, and six
+   plates nudging the page every second is not a screensaver, it is a fault. */
+.hallo-plate-1 > img,
+.hallo-plate-2 > img,
+.hallo-plate-5 > img { aspect-ratio: 3 / 2; }
+.hallo-plate-3 > img { aspect-ratio: 2 / 3; }
+.hallo-plate-4 > img,
+.hallo-plate-6 > img { aspect-ratio: 4 / 5; }
+
+/* The note, in the same alphabet as every other label here — 11px uppercase
+   at 0.14em. The reference sets its notes in a handwriting size; this site
+   has one label voice already and does not need a second. */
+.hallo-note {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  color: var(--fg-label);
+  /* Allowed to wrap, not truncated. At 390 a capped single line turned every
+     note into "A PLANK IN CILI…", which is the one part of this arrangement
+     that is supposed to be readable — the picture can be cropped, the note
+     cannot. */
+  text-wrap: balance;
+}
+
+/* Four plates on a phone, not six: at 390 a sixth lands either under the word
+   or under the Scroll line, and a pinboard with something tucked behind the
+   thing it surrounds is just clutter. Rows 1 and 12 stay empty — that is the
+   header's edge and the fold. */
+.hallo-plate-1 { grid-area: 2 / 1 / 5 / 6; }
+.hallo-plate-2 { grid-area: 3 / 8 / 6 / 13; }
+.hallo-plate-3 { grid-area: 8 / 1 / 11 / 5; }
+.hallo-plate-4 { grid-area: 9 / 8 / 12 / 13; }
+.hallo-plate-5,
+.hallo-plate-6 { display: none; }
+
+.hallo-word {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 48rem) {
+  .hallo-scatter { padding: 0 2.5rem; }
+  .hallo-plate { width: clamp(132px, 13vw, 184px); }
+  /* Six, and no two of them on the same horizon as a neighbour — the whole
+     effect is that no two were pinned by the same hand at the same moment. */
+  .hallo-plate-1 { grid-area: 3 / 2 / 5 / 5; }
+  .hallo-plate-2 { grid-area: 2 / 6 / 4 / 9; }
+  .hallo-plate-3 { grid-area: 2 / 10 / 5 / 13; }
+  /* Staggered sideways as well as down. With plates 1 and 4 in the same
+     columns and 3 and 6 in the same columns, six scattered pictures came out
+     as two neat columns and two in the middle — an arrangement, but not the
+     one being drawn from. Each lower plate now sits a column off the upper
+     one above it, and 3 and 6 are four rows apart so they stop reading as a
+     stack. */
+  .hallo-plate-4 { grid-area: 8 / 1 / 10 / 4; }
+  .hallo-plate-5 { grid-area: 9 / 5 / 12 / 8; display: flex; }
+  .hallo-plate-6 { grid-area: 8 / 9 / 11 / 12; display: flex; }
+}
