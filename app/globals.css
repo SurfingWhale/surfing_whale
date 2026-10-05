@@ -1508,6 +1508,28 @@ html[data-foot] .visitor-card {
 .hallo-plate-4 > img,
 .hallo-plate-6 > img { aspect-ratio: 4 / 5; }
 
+/* The number, and the note when it rides above the frame. */
+.hallo-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* (1) — the site's own numerals, not a bold sans figure. Mono and tabular is
+   how every other counter here is set: the index rows, the guest-note cards,
+   the plate on the hero. The weight comes from full ink against the note's
+   grey rather than from a heavier face. */
+.hallo-num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  color: var(--fg);
+  flex-shrink: 0;
+}
+
 /* The note, in the same alphabet as every other label here — 11px uppercase
    at 0.14em. The reference sets its notes in a handwriting size; this site
    has one label voice already and does not need a second. */
@@ -1518,6 +1540,7 @@ html[data-foot] .visitor-card {
   letter-spacing: 0.14em;
   line-height: 1.4;
   color: var(--fg-label);
+  min-width: 0;
   /* Allowed to wrap, not truncated. At 390 a capped single line turned every
      note into "A PLANK IN CILI…", which is the one part of this arrangement
      that is supposed to be readable — the picture can be cropped, the note

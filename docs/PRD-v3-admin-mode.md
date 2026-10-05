@@ -1365,3 +1365,24 @@ looked at. At 390 a single capped line turned each one into
 
 Suite: contrast 0 below AA both themes, rhythm ALL PASS, tap-targets 8/8,
 intro / sound / guest-note / hallo ALL PASS, chrome 11/11, SEO 0 blocking.
+
+### 25.5 Numbering — 2026-10-05
+
+Each plate now carries `(1)` through `(6)` directly above its frame, the
+editorial convention the reference material uses.
+
+Set in the **mono, tabular, at full ink** — not a bold sans figure. This site
+already numbers things one way: the index rows, the guest-note cards, the
+plate label on the hero. A bold sans `(1)` would have been a fourth numeric
+voice on a page that has one. The weight comes from full `--fg` against the
+note's `--fg-label` grey rather than from a heavier face, which is also why it
+still measures: 85 nodes, 0 below AA, both themes.
+
+The number sits above the frame on every plate, whichever side that plate's
+note takes — when the note is above, it rides the same line after the number;
+when below, the number has the line to itself.
+
+The hidden plates are last in source order, so a phone showing four of six
+reads 1,2,3,4 rather than 1,2,4,6. `verify-hallo.mjs` asserts exactly that: the
+numbers read in order for however many are on screen, and each one's box ends
+above its own picture's.

@@ -85,7 +85,16 @@ function Plate({ frames, i, tick, of }: { frames: Frame[]; i: number; tick: numb
   const above = NOTE_ABOVE[i];
   return (
     <figure className={`hallo-plate hallo-plate-${i + 1}`}>
-      {above && <figcaption className="hallo-note">{f.note}</figcaption>}
+      {/* The number always sits on the frame, whichever side the note takes.
+          Set in the mono at full ink against the note's muted grey, which is
+          where the weight comes from — the site already numbers things this
+          way (the index rows, the note cards, the plate in the hero), and a
+          bold sans figure here would have been a fourth numeric voice on a
+          page that has one. */}
+      <figcaption className="hallo-head">
+        <span className="hallo-num">({i + 1})</span>
+        {above && <span className="hallo-note">{f.note}</span>}
+      </figcaption>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={f.src} alt={f.alt} loading={i < 3 ? "eager" : "lazy"} />
       {!above && <figcaption className="hallo-note">{f.note}</figcaption>}
