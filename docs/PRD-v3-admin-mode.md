@@ -1537,3 +1537,34 @@ One voice example printed `${esc(String(TEST_PARAS.length))} paragraphs`
 literally: the line sat in a single-quoted array entry inside a template
 literal, so it never interpolated. Visible only by opening the page. The
 example is now three real figures from the site.
+
+## 29. The brand on every page — 2026-10-05
+
+Fauzy again: positioning and personality appeared once and then gave way to
+twelve pages of specifications, so the thing read as a technical document.
+
+Three changes, no new pages:
+
+- **A spine on every page.** The site's own public line — *"A place where I can
+  leave traces of the things I chose to care about."* — read out of
+  `SiteFooter.tsx` so the book cannot claim a line the site does not print, and
+  set at the foot of all 21 pages. Not in the label alphabet: at that length it
+  truncated to `…I CHOSE TO CARE ABOU…`, the identical fault as the greeting's
+  notes. A running epigraph is not a label, so it takes the serif italic and
+  keeps all of its words.
+- **A statement at the head of each part**, saying what that layer is for.
+- **A `Why` line on every page of C and D**, naming which decision in Part A the
+  page is the consequence of. Colour answers to *the work comes before the
+  person*; motion to *meaning exists before the audience arrives*; the checks to
+  *the measurement is the finding*.
+
+### 29.1 Two pages were being cut and nothing said so
+
+Adding the lines pushed `C · Colour — light` 89px and `D · Governance` 42px past
+the A4 edge. A page here is a fixed box: anything past it is simply not in the
+PDF. The first two readers of that file would have found a book with its
+footers missing.
+
+The build now measures every page after rendering and **exits 2 rather than
+publishing** when one overflows, naming it and by how much. Proved by putting
+the old swatch size back: `1 page(s) overflow A4 and would be cut: 09 +86px`.

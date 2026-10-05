@@ -53,6 +53,17 @@ const css = readFileSync(join(ROOT, 'app/globals.css'), 'utf8');
 // statement of what this site is for, in his words, unedited — the same way the
 // colours are read out of the stylesheet. A brand foundation written ABOUT
 // somebody by somebody else is a guess with a letterhead; this one quotes him.
+// The one line the site says about itself in public, read from the footer it
+// is printed in. It is the spine of this book: it opens every part and closes
+// the last page, so no chapter can be read without it.
+const footerSrc = readFileSync(join(ROOT, 'app/components/SiteFooter.tsx'), 'utf8');
+const SPINE = (footerSrc.match(/foot-tagline">\s*\n?\s*([^<]+?)\s*\n?\s*<\/p>/) || [, ''])[1].replace(/\s+/g, ' ').trim();
+if (!SPINE) {
+  console.error('Could not read the site tagline out of SiteFooter.tsx.');
+  console.error('It is the line this book is built around; writing a replacement would be inventing one.');
+  process.exit(2);
+}
+
 const testamentSrc = readFileSync(join(ROOT, 'app/data/testament.ts'), 'utf8');
 const TEST_PARAS = [...testamentSrc.matchAll(/^\s{4}"((?:[^"\\]|\\.)*)",$/gm)].map((m) => m[1]);
 const TEST_PULL = (testamentSrc.match(/pull:\s*"((?:[^"\\]|\\.)*)"/) || [, ''])[1];
@@ -192,19 +203,35 @@ p + p{margin-top:var(--s2)}
 p.lead{color:var(--fg);font-size:11pt;line-height:1.55;max-width:48ch}
 em{font-family:SR,Georgia,serif;font-style:italic;font-size:1.08em;color:var(--fg)}
 strong{font-weight:600;color:var(--fg)}
-.foot{margin-top:auto;padding-top:var(--s3);border-top:1px solid var(--border);
-      display:flex;justify-content:space-between;align-items:baseline}
+.why-foot{margin-top:auto}
+.foot{padding-top:var(--s3);border-top:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3)}
+/* The spine runs on every page, so it is not set in the label alphabet: that
+   alphabet is for short labels, and at this length it truncated to
+   "...I CHOSE TO CARE ABOU…". A running epigraph is a different thing from a
+   label, so it takes the serif italic and keeps all of its words. */
+.foot .spine{font-family:SR,Georgia,serif;font-style:italic;font-size:8.5pt;
+             letter-spacing:0;text-transform:none;color:var(--fg-muted);line-height:1.3}
+
+/* The part's own statement, at the head of its first page. */
+.opener{border-top:1px solid var(--fg);padding-top:var(--s2);margin:-16px 0 var(--s4)}
+.opener-line{font-family:SR,Georgia,serif;font-size:13pt;line-height:1.3;
+             letter-spacing:-.012em;color:var(--fg);max-width:50ch;margin-top:6px}
+
+/* One line tying a page of specifications back to a decision in Part A. */
+.why{font-size:8pt;line-height:1.55;color:var(--fg-body);max-width:66ch;
+     padding-bottom:var(--s2)}
 
 .rule{border-top:1px solid var(--border);margin:var(--s4) 0 var(--s3)}
 .cols{display:grid;grid-template-columns:repeat(12,1fr);gap:6mm}
 .row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);
-     padding:5px 0;border-bottom:1px solid var(--border)}
+     padding:4px 0;border-bottom:1px solid var(--border)}
 .row:first-of-type{border-top:1px solid var(--border-strong)}
 
 /* Swatches. A hairline round each, never a shadow — a shadow would make the
    page claim a depth the site does not have. */
-.sw{display:flex;align-items:center;gap:var(--s3);padding:5px 0;border-bottom:1px solid var(--border)}
-.chip{width:22mm;height:11mm;flex-shrink:0;box-shadow:0 0 0 1px var(--border-strong) inset}
+.sw{display:flex;align-items:center;gap:var(--s3);padding:3px 0;border-bottom:1px solid var(--border)}
+.chip{width:20mm;height:8.5mm;flex-shrink:0;box-shadow:0 0 0 1px var(--border-strong) inset}
 .sw .name{font-family:MN,monospace;font-size:8pt;color:var(--fg);min-width:34mm}
 .sw .val{font-family:MN,monospace;font-size:7.5pt;color:var(--fg-muted);min-width:34mm}
 .sw .use{font-size:8pt;color:var(--fg-body)}
@@ -227,12 +254,23 @@ const PAGES = [];
 // Filled in once every page exists, so the folio can say "07 / 13" instead of
 // carrying a dash where the total should be.
 const FOLIO = '@@TOTAL@@';
-const page = (label, html, { noNumber = false } = {}) => {
+// `opener` prints the part's own statement at the head of its first page, and
+// `why` ties the page back to a decision in Part A. Both exist because a brand
+// book whose strategy appears once and then gives way to twelve pages of
+// specifications stops being a brand book on page three.
+const page = (label, html, { noNumber = false, opener = null, why = null } = {}) => {
   if (!noNumber) pageNo++;
   PAGES.push(`<section class="page">
   <div class="rh"><span class="lab">${label}</span><span class="fig">${noNumber ? '' : String(pageNo).padStart(2, '0')}</span></div>
+  ${opener ? `<div class="opener">
+      <p class="lab" style="color:var(--fg)">${opener.part}</p>
+      <p class="opener-line">${opener.line}</p>
+    </div>` : ''}
   ${html}
-  <div class="foot"><span class="lab">Surfing Whale</span><span class="fig">${noNumber ? '' : `${String(pageNo).padStart(2, '0')} / ${FOLIO}`}</span></div>
+  <div class="why-foot">
+    ${why ? `<p class="why"><span class="lab" style="color:var(--fg)">Why</span> ${why}</p>` : ''}
+    <div class="foot"><span class="spine">${esc(SPINE)}</span><span class="fig">${noNumber ? '' : `${String(pageNo).padStart(2, '0')} / ${FOLIO}`}</span></div>
+  </div>
 </section>`);
 };
 
@@ -348,7 +386,7 @@ page('A · Foundation — why this exists', `
     design rule: it is why there is no availability notice, no call to action on
     the first screen, and no counter that exists to look impressive.</p>
   </div>
-`);
+`, { opener: { part: 'A · Foundation', line: 'Why this exists, in his words. Nothing on the pages after this may contradict them.' } });
 
 page('A · Foundation — what it is, and is not', `
   <h2>&ldquo;${esc(sentence(2, 'It is not only a portfolio'))}&rdquo;</h2>
@@ -461,7 +499,7 @@ page('B · Voice — how it speaks', `
   <div class="row"><span style="font-size:9pt">Asking for something</span><span class="fig">once, with a reason, never twice</span></div>
   <div class="row"><span style="font-size:9pt">Something broke</span><span class="fig">what failed, what to do, no apology</span></div>
   <div class="row"><span style="font-size:9pt">Writing about himself</span><span class="fig">past tense, no claim to a title</span></div>
-`);
+`, { opener: { part: 'B · Verbal identity', line: 'How it speaks. Extracted from copy that is live, so the book cannot describe a voice the site does not have.' } });
 
 page('B · Voice — do and do not', `
   <h2>Taken from live copy, not invented for the example.</h2>
@@ -525,7 +563,7 @@ page('C · System — the five decisions', `
       <p style="margin-top:var(--s2);margin-left:0">${d}</p>
     </div>`).join('')}
   </div>
-`);
+`, { opener: { part: 'C · Design system', line: 'How it looks and behaves. Every rule here is the consequence of something in Part A, and says which.' }, why: 'These five are Part A translated into things a page can be checked against. They are the hinge of the book: above them, what this site is for; below them, what that costs in pixels.' });
 
 /* 02 — colour light */
 const swatch = (n, v, bgForChip) =>
@@ -555,7 +593,7 @@ page('C · Colour — light', `
     <p class="lab" style="margin-bottom:var(--s2)">Line</p>
     ${read(LINE_TOKENS, lightBlock).map(([n, v]) => swatch(n, v)).join('')}
   </div>
-`);
+`, { why: 'A &mdash; the work comes before the person. Colour arrives in a map or a photograph; a page that competes with the work is a page advertising itself.' });
 
 /* 03 — colour dark + contrast */
 page('C · Colour — dark', `
@@ -590,7 +628,7 @@ page('C · Colour — dark', `
   and <span class="spec">--fg-label</span> ${contrastRows.find((r) => r.n === '--fg-label').l.toFixed(2)}:1. That is two
   hundredths of headroom. Do not lighten either token, and do not darken
   <span class="spec">--bg</span>, without re-running the contrast check.</p>
-`);
+`, { why: 'A &mdash; the measurement is the finding. Both themes are measured and neither assumed, for the same reason every claim on this site is a number rather than an adjective.' });
 
 /* 04 — the faces */
 page('C · Type — the faces', `
@@ -619,7 +657,7 @@ page('C · Type — the faces', `
   were put where they are on purpose and both are wrong everywhere else: Oswald at
   26px inside a small card reads as a label, and the serif in a button reads as a
   mistake.</p>
-`);
+`, { why: 'A &mdash; one alphabet for labels, one for figures. A face borrowed for a second job becomes a second voice, and a logbook written in two voices stops reading as one person&rsquo;s record.' });
 
 /* 05 — the scale */
 const SCALE = [
@@ -662,7 +700,7 @@ page('C · Type — the scale', `
   <p class="note">Smart punctuation throughout: curly quotes, an en dash in ranges,
   <span class="spec">&rsquo;26</span> and not <span class="spec">2026</span> in any
   row that also carries a name.</p>
-`);
+`, { why: 'A &mdash; it is a logbook, not a portfolio. The label alphabet and the mono counter are what make seven unrelated sections read as pages of one document rather than a set of showcases.' });
 
 /* 06 — space */
 page('C · Space', `
@@ -697,7 +735,7 @@ page('C · Space', `
   <p class="note">A split section runs its content at <span class="spec">4 / span 7</span>
   with the label in the rail beside it. Sub-grids inside a section are allowed to
   have their own columns — they are not a breach of the twelve.</p>
-`);
+`, { why: 'A &mdash; a thing does not need to be impressive to deserve a place. Air is what lets a small thing be looked at instead of scanned past on the way to a big one.' });
 
 /* 07 — surface */
 page('C · Surface', `
@@ -738,7 +776,7 @@ page('C · Surface', `
   document they outranked the dialog at <span class="spec">z-50</span>, and a note
   card landed on top of the form that asks for notes — 40% of it covered, measured.
   <strong>A component that counts in z-index gets <span class="spec">isolation: isolate</span>.</strong></p>
-`);
+`, { why: 'A &mdash; separation is drawn with rules. Depth means <em>above</em>, and this site has almost nothing that is genuinely above anything, so it spends shadow almost nowhere.' });
 
 /* 08 — parts */
 page('C · The parts', `
@@ -767,7 +805,7 @@ page('C · The parts', `
       <p class="note" style="margin-top:3px">${how}</p>
     </div>`).join('')}
   </div>
-`);
+`, { why: 'A &mdash; it is a logbook. One shape doing four jobs is not a template applied four times; it is a vocabulary, and a vocabulary is what a record needs to stay legible as it grows.' });
 
 /* 09 — motion */
 page('C · Motion', `
@@ -805,7 +843,7 @@ page('C · Motion', `
   clock is a strobe. The first attempt flipped all six together because the offset
   was a no-op, and the check that was supposed to catch it could not fail
   consistently — a test that cannot fail is not evidence.</p>
-`);
+`, { why: 'A &mdash; meaning exists before the audience arrives. Nothing here moves to be noticed. It moves because something happened, and it stops when nobody is looking at it.' });
 
 /* 10 — pictures */
 page('C · Pictures', `
@@ -836,7 +874,7 @@ page('C · Pictures', `
   <p><strong><span class="spec">alt=""</span> is an instruction.</strong> It means
   <em>ignore this, it is ornament</em>. Correct for a flourish; wrong for a chart,
   a screenshot or a photograph.</p>
-`);
+`, { why: 'A &mdash; the work comes before the person. A photograph on this site is evidence, and evidence is captioned, cropped on purpose, and described in words somebody actually checked.' });
 
 /* 11 — refusals */
 page('C · Refusals', `
@@ -866,7 +904,7 @@ page('C · Refusals', `
       <p class="note" style="margin-top:3px;font-size:8pt">${d}</p>
     </div>`).join('')}
   </div>
-`);
+`, { why: 'A &mdash; meaning exists before the audience arrives. Every item on this page would have made the site ask for something before it had shown anything.' });
 
 /* 12 — checks */
 const CHECKS = [
@@ -890,7 +928,7 @@ page('D · Governance — what is checked', `
   <div style="margin-top:var(--s3)">
     <div class="row"><span class="lab">Script</span><span class="lab">What it holds</span></div>
     ${CHECKS.map(([s, w]) => `
-      <div style="border-bottom:1px solid var(--border);padding:6px 0">
+      <div style="border-bottom:1px solid var(--border);padding:4px 0">
         <span class="spec" style="color:var(--fg);font-size:8pt">${s}</span>
         <p style="margin-top:2px;font-size:8pt">${w}</p>
       </div>`).join('')}
@@ -899,7 +937,7 @@ page('D · Governance — what is checked', `
   Before a checker is trusted, the fault is put back and the checker is made to fail
   on it. Several here were written, passed, and were then found to pass on the broken
   code too — those were rewritten, not kept.</p>
-`);
+`, { opener: { part: 'D · Governance', line: 'How the three above are kept from drifting — by scripts, not by memory.' }, why: 'A &mdash; the measurement is the finding. A rule that lives only in a document is a rule that drifts; these are the ones a script will defend without being asked.' });
 
 /* 13 — colophon */
 page('D · Governance — colophon', `
@@ -927,7 +965,7 @@ page('D · Governance — colophon', `
     already exists. Where the two disagree, <em>the site is right</em> — and this
     page tells you how to make the book agree again.</p>
   </div>
-`);
+`, { why: 'A &mdash; the measurement is the finding. The book is generated from the code for the same reason the site is checked by scripts: so that being out of date is something that gets caught rather than something nobody notices.' });
 
 /* ── write ─────────────────────────────────────────────────────────────── */
 const total = String(pageNo).padStart(2, '0');
@@ -951,6 +989,24 @@ const p = await browser.newPage();
 await p.goto('file://' + htmlPath, { waitUntil: 'networkidle' });
 await p.evaluate(() => document.fonts.ready);
 await p.waitForTimeout(400);
+const spill = await p.evaluate(() => {
+  const out = [];
+  document.querySelectorAll('.page').forEach((pg, i) => {
+    const over = pg.scrollHeight - pg.clientHeight;
+    if (over > 1) out.push(`${String(i).padStart(2, '0')} +${over}px  ${pg.querySelector('.rh .lab')?.textContent ?? ''}`);
+  });
+  return out;
+});
+if (spill.length) {
+  // An A4 page is a fixed box: anything past its edge is not in the PDF at
+  // all, and the first version of this lost the footer off two pages without
+  // anything saying so. Refuse rather than publish a book with pieces missing.
+  console.error(`${spill.length} page(s) overflow A4 and would be cut:`);
+  spill.forEach((l) => console.error('  ' + l));
+  await browser.close();
+  process.exit(2);
+}
+
 const pdfPath = join(OUT, 'brand-book.pdf');
 await p.pdf({ path: pdfPath, format: 'A4', printBackground: true, preferCSSPageSize: true });
 await browser.close();
