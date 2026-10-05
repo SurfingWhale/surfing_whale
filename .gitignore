@@ -53,3 +53,7 @@ CLAUDE.md
 
 # verification screenshots (scripts/verify-*.mjs working output)
 scripts/.shots/
+
+# the brand book's intermediate — regenerate with
+# node scripts/build-brand-book.mjs ; the PDF is the deliverable
+docs/brand/brand-book.html

@@ -1386,3 +1386,60 @@ The hidden plates are last in source order, so a phone showing four of six
 reads 1,2,3,4 rather than 1,2,4,6. `verify-hallo.mjs` asserts exactly that: the
 numbers read in order for however many are on screen, and each one's box ends
 above its own picture's.
+
+## 26. The brand book — 2026-10-05
+
+A fifteen-page A4 PDF at `docs/brand/brand-book.pdf`, built by
+`scripts/build-brand-book.mjs`.
+
+### 26.1 The rule it is built on
+
+**Nothing in it is typed from memory.** The colour values are parsed out of
+`app/globals.css` at build time, the contrast ratios are computed from those
+values here, and the four faces are the same `.woff2` files the site serves,
+read out of `.next/static/media` and embedded. If a value in the book and a
+value in the code disagree, the book is stale and says so on its last page,
+with the command to fix it.
+
+That is the only thing that makes a brand book worth keeping. One that is
+hand-written drifts from the site within a month and then quietly teaches the
+wrong rules.
+
+### 26.2 It is held to its own rules
+
+No gradient anywhere. Hairlines rather than shadows. The 11px/0.14em label
+alphabet for every label and the mono tabular for every figure, including the
+folios. The site's own `--space-*` scale for its margins. If the system could
+not set a fifteen-page document about itself, it would not be a system.
+
+### 26.3 What it contains
+
+Cover, how to read it, the five decisions everything follows from, colour in
+both themes with measured contrast, the four faces, the type scale and the
+label alphabet, the spacing scale and the one rule about gaps, surfaces and
+stacking, the six parts the site is built from, motion, pictures, **what this
+site refuses**, what is checked automatically, and a colophon.
+
+The refusals page is the one worth re-reading: every item on it was proposed,
+built or nearly shipped, with the reason it was dropped.
+
+### 26.4 Two faults found by looking at the output
+
+- **The spacing scale was missing entirely.** The tokens live in a *second*
+  `:root` block in `globals.css` and the parser sliced only the first, so the
+  Space page rendered its heading over nothing. This is the failure mode of
+  every generator that reads its source by offset, and only opening the pages
+  caught it.
+- **The folio said `07 / —`.** The total was a placeholder that was never
+  filled.
+
+### 26.5 What the PDF actually is, measured
+
+15 pages. Chromium converts variable fonts to Type3 — glyph outlines drawn
+into the file — so the book renders identically on any reader with nothing to
+download. 19 `ToUnicode` maps are present, and extraction confirms it: the hex
+codes `#2154a4`, `#111111`, `#fafafa` and `#76736f` all come back as text, so
+the values can be copied out rather than retyped. 328 KB.
+
+`docs/brand/brand-book.html` is the intermediate and is ignored; the script and
+the PDF are what the repository keeps.
