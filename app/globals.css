@@ -520,11 +520,17 @@ h1, h2, h3, h4 {
   }
 }
 
-@media (max-width: 640px) {
-  .photo-masonry {
-    columns: 2;
-  }
-}
+/* No phone override: three columns all the way down.
+   
+   Two columns at 390px made every tile 189px wide, so each pair of
+   photographs cost 190px of scrolling and fifteen of them ran 2.55 screens.
+   Three columns is 1.84 — 28% less — and it is pure geometry, so the saving
+   holds whatever shape the photographs are. Nothing is cropped to get it.
+   
+   The alternative measured was capping the tiles' aspect ratio, which saves
+   about 0.17 screens on a portrait-heavy set and crops every photograph to do
+   it. A photograph on this site is evidence; 64px of scrolling is not worth
+   cutting the edges off one. */
 
 /* Both break out past the page width; clip rather than scroll. */
 body:has(.photo-masonry),

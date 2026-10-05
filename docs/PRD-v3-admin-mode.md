@@ -1593,3 +1593,41 @@ broke.
 
 Suite after: tap-targets, rhythm, hallo, guest-note and intro ALL PASS;
 contrast 85 nodes, 0 below AA, both themes.
+
+## 31. Three columns on a phone — 2026-10-05
+
+"The length soo high so the image feel so far to scroll on mobile."
+
+Measured before changing anything, at 390×844 with 15 frames:
+
+| | photography section | tile | whole page |
+|---|---|---|---|
+| 2 columns (was) | **2.55 screens** | 189px | 7.9 screens |
+| 3 columns | **1.62 screens** | 125px | 7.0 screens |
+| cap tiles at 4:5 | 3.59 screens | 189px | 9.0 screens |
+| 3 columns + 1:1 | 2.08 screens | 125px | 7.5 screens |
+
+Three columns wins by 36%, and it wins by **geometry** — two columns to three
+cuts the number of rows by a third whatever shape the photographs are. Nothing
+is cropped to get it.
+
+### 31.1 One row of that table cannot be trusted, and it is the one that
+looks most interesting
+
+Capping the tiles' aspect measured **worse** — 3.59 screens — because the local
+fixture is fifteen identical 3:2 landscapes, and capping those to 4:5 makes them
+*taller*. On a portrait-heavy set it would go the other way. The honest figure
+for his real set is arithmetic, not measurement: a 2:3 portrait at 189px is
+283px tall and 236px capped, so about 0.17 screens across twelve photographs —
+and it crops every one of them. A photograph here is evidence; 64px of
+scrolling does not buy cutting the edges off one.
+
+### 31.2 The framing that matters more than the fix
+
+The page is **7.9 screens** at 390px and the photographs were 2.55 of it. Even
+at zero the reader still scrolls six screens of everything else: Hallo 1.00,
+hero 1.66, footer 1.00, and one section at 2.36. If "too long" is about the
+page rather than the grid, that is where it is.
+
+Suite after: tap-targets, rhythm, hallo, photo-viewer ALL PASS; contrast 85
+nodes, 0 below AA, both themes.
