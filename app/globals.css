@@ -1139,8 +1139,18 @@ html.intro-out .sw-intro-wave {
   font-size: 1rem;
   line-height: 1.3;
 }
+/* The links were 21px tall with 7px between them — on a phone that is a
+   column of destinations each thinner than the finger aiming at it, and the
+   neighbour is 7px away. Padding on the anchor is what makes the target, so
+   it goes on the anchor and not on the row; the margin comes down by most of
+   what the padding adds, so the column reads a little airier rather than
+   half again as tall. */
+.foot-list a {
+  display: inline-block;
+  padding-block: 0.3rem;
+}
 .foot-list li + li {
-  margin-top: 0.45rem;
+  margin-top: 0.2rem;
 }
 
 .site-footer a {

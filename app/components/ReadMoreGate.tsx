@@ -10,8 +10,10 @@ import { useAccess } from "./AccessGate";
 import type { AccessReason } from "@/app/lib/accessRequests";
 
 // Same underline as the dialog's fields, so the two gates look like one gate.
+// 16px: under that, Safari on iOS zooms the page in when the field takes
+// focus, and the form arrives magnified with its own buttons off screen.
 const FIELD =
-  "bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
+  "bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[16px] leading-[1.6] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
 
 export function ReadMoreGate({ reason }: { reason: AccessReason }) {
   const { grantAccess, gate } = useAccess();

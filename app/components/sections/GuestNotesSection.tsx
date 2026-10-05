@@ -34,9 +34,16 @@ function formatDate(iso: string) {
 }
 
 // Bottom hairline only — a ruled line to write on, not a box to fill in.
+//
+// 16px, not the 13px the rest of the card is set in. Safari on iOS zooms the
+// page in when a field smaller than 16px takes focus, and this card focuses
+// the name field the moment it opens — so the form arrived already magnified,
+// with the wordmark cropped and the send button off the right of the screen.
+// Nobody had typed anything. The only way to not be zoomed is to not be
+// under 16px.
 const FIELD =
   "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 " +
-  "text-[13px] leading-[2] text-fg placeholder:text-fg-muted " +
+  "text-[16px] leading-[1.6] text-fg placeholder:text-fg-muted " +
   "focus:outline-none focus:border-fg transition-colors duration-200";
 
 const SOLID =
@@ -254,7 +261,13 @@ export function GuestNotesSection() {
                     Thank you for visiting my website
                   </p>
 
-                  <div className="mt-3 space-y-1 text-left">
+                  {/* mt-6, not mt-3. The gap that separates the heading
+                      from the form was 12px while the gap inside the heading
+                      — title to its line of copy — was 8px. Two groups a
+                      hair further apart than the lines within one group do
+                      not read as two groups; they read as one block with no
+                      air in it. */}
+                  <div className="mt-6 space-y-1 text-left">
                     <input
                       ref={nameRef}
                       type="text"

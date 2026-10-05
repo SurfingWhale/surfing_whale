@@ -109,7 +109,16 @@ export function NotesFan({ notes }: { notes: FanNote[] }) {
         onPointerCancel={onUp}
         // overflow-hidden so a wide fan bleeds off its own box rather than
         // off the page — verified at 0 horizontal page overflow.
-        className="relative h-[286px] sm:h-[310px] overflow-hidden touch-pan-y select-none
+        //
+        // `isolate` so it does not bleed off the page in DEPTH either. The
+        // z-indexes below run to 100 because that is what it takes to deal a
+        // hand of cards; they were never meant to mean anything outside this
+        // box. Without a stacking context of its own they are read against
+        // the whole document, where the guest-note card ranks above the
+        // dialog that asks for a guest note (z-50) — and the front card lands
+        // on top of the open form, over the name field and over the send
+        // button. Isolating keeps the fan's bookkeeping the fan's business.
+        className="relative isolate h-[286px] sm:h-[310px] overflow-hidden touch-pan-y select-none
           rounded-[18px] focus-visible:outline-2 focus-visible:outline-offset-4"
       >
         {notes.map((note, i) => {

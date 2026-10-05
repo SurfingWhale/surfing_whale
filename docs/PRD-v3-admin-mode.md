@@ -1089,3 +1089,83 @@ verify-rhythm ALL PASS, audit-seo 0 blocking.
 Thirty seconds, Apple's own asset, used the way Apple provides it — to sample
 a track and point at the full one. The full song is not hosted here and will
 not be; it is not ours to host.
+
+## 22. The guest book opened under a pile of guest notes — 2026-10-05
+
+Reported with one screenshot from a phone: the card that asks for a note had
+opened magnified, its wordmark cropped and the send button off the right edge,
+with a guest-note card sitting on top of the name field. Two faults, with
+nothing in common but the screen they landed on.
+
+### 22.1 The fan's z-indexes were never scoped
+
+`NotesFan` deals its cards with `zIndex: 100 - away * 10`. Inside a fan those
+numbers mean "this card is in front of that one". They were being read against
+the whole document, where the dialog that asks for a guest note sits at z-50 —
+so the front guest-note card outranked the form by fifty.
+
+Measured at 390×844 with three notes on the page: **1638 of 4130 sampled
+points on the open card, 40% of it, were painted by something outside the
+dialog** — the name field and the send button among them.
+
+The fix is one word: `isolate` on the fan's track. A stacking context of its
+own means the fan's bookkeeping stays the fan's business. Same measurement
+after: 0 of 4189.
+
+### 22.2 The card arrived zoomed because its fields were 13px
+
+Safari on iOS zooms the page when a field under 16px takes focus. This card
+focuses the name field 60ms after it opens, so it zoomed before anybody had
+typed anything — and a zoomed page is exactly the screenshot that was sent:
+cropped wordmark, button past the right edge.
+
+This is a platform rule, not something measured here. Headless Chromium does
+not zoom, so `verify-guest-note.mjs` reads the font size and trusts the rule,
+and says so in its header rather than implying it reproduced the zoom.
+
+The same 13px field is in `AccessGate` and `ReadMoreGate` — all three are now
+16px. That is the whole fix; there is no way to be under 16px and not zoom.
+
+### 22.3 What the checker is worth
+
+`scripts/verify-guest-note.mjs`, on a phone viewport with notes on the page.
+Put both faults back and rebuild, and it reports:
+
+```
+1638 of 4130 points on the card painted by something outside it
+FAIL  A. nothing on the page paints over the open card
+FAIL  B. every field is 16px or more (iOS will not zoom)
+FAIL  C. the form is further from the heading than the heading is from its copy
+```
+
+Check C caught a third thing while it was there: the gap between the heading
+group and the form was 12px while the gap inside the heading group was 8px.
+Two groups one third further apart than the lines inside one group do not read
+as two groups. Now 24px.
+
+### 22.4 The sweep that followed, and the one metric that was honest
+
+A phone-width sweep of eight public pages found **0px horizontal overflow and
+0 pieces of text crowding the gutter** — the page itself is not cramped. The
+first tap-target pass reported 26 failures on the home page, and most were
+nonsense: inline links inside sentences, which WCAG 2.5.8 exempts by name.
+Counting them would have meant setting body copy at 24px.
+
+Narrowed to standalone controls, two were real and both are fixed:
+
+| control | was | now |
+|---|---|---|
+| hero mode switch (`Data · Photographs`) | 19px tall | 31px (`py-1.5 -my-1.5`, line unmoved) |
+| footer link columns | 21px tall, 7px apart | 31px, and a little airier |
+
+`scripts/verify-tap-targets.mjs` holds the line at 24×24 across those eight
+pages, and its header records why inline links are not counted — the fifth
+time a metric here over-counted, and the first one written with the exemption
+in it from the start.
+
+### 22.5 Not changed
+
+The header still looks undimmed over the backdrop while a dialog is open. It
+is only how it looks: its controls were checked with `elementFromPoint` while
+the card was open and neither the theme toggle nor the menu is reachable — the
+backdrop has them. Left alone.

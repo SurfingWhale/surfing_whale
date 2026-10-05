@@ -164,7 +164,13 @@ export function ModeSwitch() {
             type="button"
             onClick={() => setMode(m)}
             aria-pressed={mode === m}
-            className={`cursor-pointer transition-colors duration-200 rounded-sm
+            // py-1.5 -my-1.5: the target grows, the line does not move. At
+            // 11px uppercase the box around this label was 19px tall, which
+            // is under the 24px a standalone control needs, so on a phone the
+            // two sides of the site were switched by a strip thinner than a
+            // fingertip. The negative margin gives the padding back to the
+            // layout, so the kicker still sits where it sat.
+            className={`cursor-pointer transition-colors duration-200 rounded-sm py-1.5 -my-1.5
               focus-visible:outline-2 focus-visible:outline-offset-2 ${
                 mode === m
                   ? "text-fg underline decoration-border-strong underline-offset-[3px]"

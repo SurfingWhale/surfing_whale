@@ -29,8 +29,10 @@ const STORAGE_KEY = "sw-access-granted";
 
 // One underline for every field, so three of them read as one form rather
 // than three widgets that happen to be stacked.
+// 16px: under that, Safari on iOS zooms the page in when the field takes
+// focus, and the form arrives magnified with its own buttons off screen.
 const FIELD =
-  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[13px] leading-[2] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
+  "w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-2 text-[16px] leading-[1.6] text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg transition-colors duration-200";
 
 export type GateMode = "open" | "approval";
 
