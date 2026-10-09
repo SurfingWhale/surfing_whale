@@ -15,7 +15,7 @@
 //                                                   leaves the viewport.
 //
 // Until somebody presses play there is no video at all: `preload="none"` means
-// the 382 KB mp4 is never fetched, and what is painted is a 28 KB still. The
+// the 390 KB mp4 is never fetched, and what is painted is a 31 KB still. The
 // page costs a poster to anyone who does not ask for the film.
 //
 // Native controls appear only after the first press. Before it, the poster
@@ -94,7 +94,7 @@ export function Showreel({
           {/* mp4 first, and the order is the whole point. A browser takes
               the first source it can decode, so Chrome, Safari, Firefox and
               Edge get the h264 file, which measured SMALLER than the vp9 one
-              here (382 KB against 490 KB — flat vector frames are not where
+              here (390 KB against 509 KB — flat vector frames are not where
               vp9 wins). The webm is the fallback for a Chromium built without
               proprietary codecs, which is not a hypothetical: the Chromium
               this site's checkers drive is one, and a page that only shipped

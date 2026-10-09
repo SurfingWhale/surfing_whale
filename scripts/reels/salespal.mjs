@@ -1,9 +1,18 @@
 // scripts/reels/salespal.mjs
 //
 // SalesPal's reel: canvas → spec → code → audit, the order the app was
-// actually built in. Every figure in Act 4 is from the context document that
-// came with the screenshots, which took them from the repository and its test
-// runs:
+// actually built in.
+//
+// The counts in stages 01, 02 and 06 are read off the design canvas itself,
+// not off the summary that came with the screenshots. That summary said "5
+// artboards", which is the five screens; the canvas holds fourteen boards in
+// four groups — the five screens, a screen-and-flow map, a data-relations
+// matrix, six per-button specification sheets totalling 96 rows, and a 78-row
+// deploy check. Counted twice, by badge and by grid structure, and the two
+// agree.
+//
+// Every figure in Act 4 is from the context document that came with the
+// screenshots, which took them from the repository and its test runs:
 //
 //   12   Playwright flows against the Firebase emulator, at 390px and 1280px
 //   123  Firestore rules tests, one per role per path
@@ -17,16 +26,16 @@
 export default {
   slug: 'salespal',
   kicker: 'SalesPal &middot; how it was built',
-  title: 'Five artboards<br>to a shipped app.',
-  sub: 'Canvas, spec, code, audit. Six stages, about two weeks, 41 merges.',
+  title: 'Five screens.<br>Every button written down.',
+  sub: 'Fourteen artboards, 96 rows of specification, 41 merges. About two weeks.',
 
   stages: [
-    ['01', 'Canvas', 'five artboards, before any code'],
-    ['02', 'Spec', 'PRD-008 — what each screen owes'],
+    ['01', 'Canvas', 'fourteen boards, five of them screens'],
+    ['02', 'Spec', '96 rows — one per control'],
     ['03', 'Build', 'six pull requests, staged'],
     ['04', 'Reconcile', 'one pass to make the visuals agree'],
     ['05', 'Audit', 'keyboard, errors, 12px, 320px reflow'],
-    ['06', 'Checklist', '78 lines, six of them mandatory'],
+    ['06', 'Check', '78 rows, six mandatory every deploy'],
   ],
 
   metrics: [

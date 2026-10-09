@@ -1827,3 +1827,72 @@ page, 0 below AA in both themes; tap-targets ALL PASS including
 images on the page, 0 missing alt — the `<img>` inside `<video>` describes the
 title card, because where `<video>` is unsupported that image is the only thing
 there.
+
+## 34. Reading the artifacts, and what they corrected — 2026-10-09
+
+Fauzy opened the two SalesPal design artifacts and asked that all of their
+content be on the page. Both were previously described from a summary; both are
+still private, so they are quoted and not linked.
+
+### What was actually in them
+
+`SalesPal Redesign` is not five artboards. It is **fourteen**, in four groups:
+
+| Group | Boards |
+|---|---|
+| Arah desain baru | Beranda at 1440 and 390, Leads with its panel, the customer profile, the WhatsApp pull |
+| Spesifikasi — alur & relasi data | A screen-and-flow map, a screen-against-collection matrix, the header and menu spec |
+| Spesifikasi — tiap layar, tiap tombol | Five more per-button sheets |
+| Uji tiap deploy | The checklist, 78 rows in 12 groups |
+
+The six specification sheets carry **96 rows**, each with the same five
+columns: the badge number on the screenshot, the element, the action, where it
+leads, and *data yang berubah* — what it writes.
+
+The second artifact is **PRD-005**, the monthly client report. Its own closing
+note says the mechanism is planned and **not built**.
+
+### What that corrected on the page
+
+1. **"Five artboards" was the five screens, not the canvas.** The film said
+   "Five artboards to a shipped app" and stage 01 said "five artboards, before
+   any code". Both were re-cut: the title is now "Five screens. Every button
+   written down.", and the stages read fourteen boards, 96 rows, 78 rows of
+   deploy check.
+2. **The client report read as shipped.** §06 listed it beside four other
+   parts with no status. The existing report is built — the checklist has a
+   whole group of rows for it — but PRD-005's content-to-revenue version is
+   not, and the page now says which is which.
+
+### Counted twice, on purpose
+
+96 is not a number from a summary. It was counted two ways that do not share an
+assumption: the numbered badges in each sheet, and the grid rows minus each
+sheet's header row. Both give 28 + 19 + 10 + 16 + 13 + 10. The badge count
+alone was wrong by one on two boards, because the sheets with a legend draw a
+badge-styled chip in it.
+
+### What went onto the page
+
+- **§03** gained the scoring chain as the canvas draws it: button → field →
+  signal → max → how it is measured, for all five signals, with the bands and
+  the five places the score is used. The page previously had the weights but
+  not the chain, so the claim "a score that can be argued with" had nothing
+  under it that could be argued with.
+- **§06** gained PRD-005, stated as unbuilt, including the arithmetic it
+  refuses — a first month written "baseline" rather than ▲100%, no percentage
+  under ten events, rate changes in percentage points, reach never summed.
+- **§07 is new.** The canvas's four groups, the five specification columns,
+  five quoted rows, and the twelve collections the write column names, under
+  `users/{uid}/…` or `guilds/{g}/…` — the one decision that makes personal and
+  team mode the same code.
+- **§08** gained the checklist's real shape, and the rule worth stealing: it
+  does not ask for all 78 rows every time. It asks which files changed, and a
+  table of fourteen source paths turns that into the rows to re-test. A
+  checklist nobody can finish is a checklist nobody runs.
+
+### Suite
+
+verify-showreel 11/11; contrast 145 nodes (up from 71 — the page roughly
+doubled), 0 below AA in both themes; tap-targets ALL PASS; rhythm ALL PASS;
+headings 1×h1, 10×h2, no level skipped; SEO 12 images, 0 missing alt.

@@ -1,24 +1,39 @@
 // app/work/salespal/page.tsx
 //
-// SalesPal, written up from the context document and the screenshots Fauzy
-// exported on 9 October 2026.
+// SalesPal, written up from four sources: the context document and the
+// screenshots Fauzy exported on 9 October 2026, and the two design artifacts
+// he opened afterwards —
+//
+//   the 14-artboard canvas "SalesPal Redesign" (five screens, a screen-and-flow
+//   map, a screen-against-collection data matrix, six per-button specification
+//   sheets, and the 78-row deploy check), and
+//
+//   PRD-005, "Tarik report bulanan dari HP", the monthly client report that
+//   joins content numbers to revenue.
+//
+// Reading them corrected two things this page used to say. "Five artboards" is
+// the five screens, not the canvas: there are fourteen boards. And the PRD-005
+// report flow is NOT BUILT — its own closing note says so — so section 06 says
+// so too, rather than letting the parts list imply it shipped.
+//
+// The per-button counts here were taken from the canvas twice, by two methods
+// that do not share an assumption: counting the numbered badges in each sheet,
+// and counting the grid rows minus each sheet's header. 96 both ways.
 //
 // Two things are deliberately NOT on this page:
 //
-//   The design canvas and the report-flow artifact are still private. A
-//   portfolio that links a page the reader cannot open is worse than one that
-//   does not mention it, so they are described and not linked. The same goes
-//   for the claude-config repository, which is private: the checklist it holds
-//   is quoted by its numbers rather than linked.
+//   Links to those artifacts. Both are private, and a portfolio that links a
+//   page the reader cannot open is worse than one that does not mention it, so
+//   they are quoted and not linked — their own row labels, not paraphrase. The
+//   same goes for the claude-config repository, which holds the checklist: it
+//   is quoted by its structure rather than linked.
 //
 //   Anything that would read as a sales page for the product. This is a
 //   logbook entry about how a thing was built and what was measured, not a
 //   landing page for it.
 //
-// Every figure below comes from the context document, which took them from the
-// repository and its test runs. Where something is built but not yet live —
-// Threads Radar waits on a Meta app review — the page says so rather than
-// letting the list imply it shipped.
+// Where something is built but not yet live — Threads Radar waits on a Meta
+// app review — the page says so rather than letting the list imply it shipped.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CaseHeader } from "@/app/components/CaseHeader";
@@ -160,6 +175,74 @@ function Rows({ head, rows }: { head: [string, string]; rows: [string, string][]
   );
 }
 
+// A specification row, quoted from the canvas: the control, what pressing it
+// does, and what it writes. Three columns at 13px inside a 680px measure is a
+// table nobody can read on a phone, so it stacks instead — the control on its
+// own line, the consequence under it, the write target last and in the mono
+// face, because that is the column somebody scans for.
+function Spec({
+  rows,
+}: {
+  rows: { el: string; does: string; writes?: string }[];
+}) {
+  return (
+    <div className="my-6 border-t border-border-strong">
+      {rows.map((r) => (
+        <div key={r.el} className="py-3 border-b border-border">
+          <p className="text-[13px] leading-[1.7] font-medium text-fg">{r.el}</p>
+          <p className="text-[13px] leading-[1.8] text-fg-body mt-0.5">{r.does}</p>
+          {r.writes && (
+            <p className="font-mono text-[11px] leading-[1.7] text-fg-muted mt-1">
+              {r.writes}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Five signals, each a measurement of one field, each field written by named
+// buttons. Quoted from the canvas's data board, which draws it as a chain:
+// button → field → signal → score → where the score is used.
+const SIGNALS: { signal: string; max: string; field: string; how: string; by: string }[] = [
+  {
+    signal: "Respons",
+    max: "30",
+    field: "lastReplyAt",
+    how: "Replied today 30, falling to 0 past thirteen days",
+    by: "“Mereka bales hari ini”, a WhatsApp pull, or a reply to a hunt",
+  },
+  {
+    signal: "Langkah berikutnya",
+    max: "20",
+    field: "nextActionDate",
+    how: "Scheduled 20, overdue 10",
+    by: "Jadwalkan, or Tunda on the home screen",
+  },
+  {
+    signal: "Nilai deal",
+    max: "20",
+    field: "value",
+    how: "Value ÷ Rp 20 jt × 20",
+    by: "Adding a lead, an import, or a quotation being approved",
+  },
+  {
+    signal: "WhatsApp",
+    max: "10",
+    field: "phone",
+    how: "A number on file, 10",
+    by: "Adding a lead, a shared contact, or a scanned business profile",
+  },
+  {
+    signal: "Kontak terakhir",
+    max: "20",
+    field: "lastContact",
+    how: "Contacted today 20, falling to 0 past thirteen days",
+    by: "“Mereka bales hari ini”, marking a follow-up done, or a WhatsApp pull",
+  },
+];
+
 export default function SalesPalPage() {
   return (
     <main className="min-h-screen bg-bg text-fg">
@@ -186,6 +269,7 @@ export default function SalesPalPage() {
             claim="Selling services in Indonesia happens in WhatsApp and DMs, not in a CRM — so this one reads the chat that already exists, and opens on the handful of things that need doing today."
             made={[
               { label: "Role", value: "Product owner, design and build, with Claude Code as a pair" },
+              { label: "Specified", value: "A 14-artboard design canvas: five screens, a screen-and-flow map, a screen-against-collection data matrix, six per-button sheets totalling 96 rows, and the 78-row deploy check" },
               { label: "Stack", value: "Next.js 14 App Router and TypeScript; Firebase Auth and Firestore with per-role rules; Vercel for deploys and cron; Web Push over VAPID; a service worker for the Android share target" },
               { label: "Tested", value: "12 Playwright flows against the Firebase emulator at 390px and 1280px, every screen re-checked at 320px; 123 Firestore rules tests" },
               { label: "Span", value: "Late September to 9 October 2026 — 41 pull requests to main" },
@@ -202,15 +286,16 @@ export default function SalesPalPage() {
             src="/work/salespal/showreel"
             poster="/work/salespal/showreel-poster.webp"
             posterSmall="/work/salespal/showreel-poster-960.webp"
-            posterAlt="The film's title card: “Five artboards to a shipped app.”, and under it “Canvas, spec, code, audit. Six stages, about two weeks, 41 merges.”"
+            posterAlt="The film's title card: “Five screens. Every button written down.”, and under it “Fourteen artboards, 96 rows of specification, 41 merges. About two weeks.”"
             seconds={15}
-            label="How SalesPal was built: canvas, spec, build, reconcile, audit, checklist — with the project's own figures."
+            label="How SalesPal was built: canvas, spec, build, reconcile, audit, check — with the project's own figures."
           >
-            Fifteen seconds, the whole build in order: five artboards, PRD-008,
-            six staged pull requests, a pass to make the visuals agree, the
-            interface audit, the deploy checklist. The figures that land at the
-            end are the ones in section 07 below — 12 flows, 123 rules tests,
-            130 strings raised, nothing left open. Generated frame by frame from{" "}
+            Fifteen seconds, the whole build in order: fourteen artboards,
+            ninety-six rows of specification, six staged pull requests, a pass
+            to make the visuals agree, the interface audit, and the 78-row
+            deploy check. The figures that land at the end are the ones in
+            section 08 below — 12 flows, 123 rules tests, 130 strings raised,
+            nothing left open. Generated frame by frame from{" "}
             <code className="font-mono text-[11px]">scripts/build-showreel.mjs</code>,
             in this site&rsquo;s faces rather than the app&rsquo;s.
           </Showreel>
@@ -295,6 +380,40 @@ export default function SalesPalPage() {
             alt="The leads list beside a detail panel. The panel shows a score of 90 out of 100, a breakdown of five signals with their points out of their maximums, and a suggestion line naming the one action that would raise the score."
             caption="Twelve sample leads, filtered by potential tier. The panel shows the whole arithmetic: +24 of 30 for response, +20 of 20 for next step, and a line saying which action is worth six more points."
           />
+          <p>
+            The canvas draws the mechanism as a chain rather than a formula —
+            a named button writes one field, each field is measured into one
+            signal, the five signals sum. The point of drawing it that way is
+            that every signal can be traced back to something a person did:
+          </p>
+          <div className="my-6 border-t border-border-strong">
+            {SIGNALS.map((x) => (
+              <div key={x.signal} className="py-3 border-b border-border">
+                <p className="text-[13px] leading-[1.7] text-fg">
+                  <span className="font-medium">{x.signal}</span>
+                  <span className="font-mono text-[12px] text-fg-muted">
+                    {" "}· max {x.max} ·{" "}
+                  </span>
+                  <span className="font-mono text-[12px] text-fg-body">{x.field}</span>
+                </p>
+                <p className="text-[13px] leading-[1.8] text-fg-body mt-0.5">{x.how}</p>
+                <p className="text-[12px] leading-[1.7] text-fg-muted mt-0.5">
+                  Written by: {x.by}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p>
+            The total is banded rather than left as a bare number — 85 and over
+            is <em>Sangat tinggi</em>, 70 to 84 <em>Tinggi</em>, 50 to 69{" "}
+            <em>Sedang</em>, 30 to 49 <em>Rendah</em>, under 30{" "}
+            <em>Sangat rendah</em> — and the same figure drives four other
+            things: the five coloured dots on a lead card, the{" "}
+            <em>Potensi tinggi</em> count on the home screen, the horizontal
+            axis of the lead map, and the <em>Kejar sekarang</em> cut at a score
+            of 60 and Rp 10 jt. One number, computed on open, used in five
+            places and stored in none of them.
+          </p>
         </Section>
 
         <Section number="04" title="Reading the chat without keeping it">
@@ -370,11 +489,30 @@ export default function SalesPalPage() {
             rows={[
               ["Hunting Mode", "Logs which template each DM used, so the one that actually gets replies is visible"],
               ["Quotes and invoices", "Package to quotation to invoice to deposit, sent over WhatsApp or printed to PDF"],
-              ["Client report", "Traces each thread through to payment and freezes a monthly report"],
+              ["Client report", "Traces each thread through to payment and freezes a monthly report. Built."],
               ["Morning push", "Web Push at 08:00 WIB over Vercel cron — only when something needs doing"],
               ["Threads Radar", "Built and waiting on a Meta app review. Not live."],
             ]}
           />
+          <p>
+            A second artifact specifies where the client report goes next, and
+            it is worth saying plainly that <strong className="font-medium text-fg">
+            this part is not built</strong>. PRD-005 joins the content numbers
+            to the revenue: every post gets a code, a nightly job stores its
+            views and engagement — Instagram only keeps ninety days, so it has
+            to be collected daily rather than at report time — and the month
+            closes with a funnel from views to paid, revenue split by source,
+            and the part nobody shows: how much came in with no source at all.
+          </p>
+          <p>
+            The interesting work there is the arithmetic it refuses. A first
+            month is written &ldquo;baseline&rdquo;, never ▲100%. Under ten
+            events it prints X → Y and no percentage. A change in a rate is
+            given in percentage points. Reach is reported per platform and
+            never summed. It is staged so that everything needing no
+            platform permission can ship first, and only the automatic
+            collection waits on a Meta review.
+          </p>
           <Shot
             src="tabs"
             alt="The floating navigation bar on a phone, over the leads list: five tabs — Beranda, Hunting, Leads, Jualan and Lainnya — with Leads selected, and a round chat button at the right edge."
@@ -382,9 +520,89 @@ export default function SalesPalPage() {
           />
         </Section>
 
-        <Section number="07" title="How it was checked">
+        <Section number="07" title="Every button, written down before it was built">
           <p>
-            The order was canvas, then spec, then code, then audit — five
+            The design canvas is not five pictures of screens. It is fourteen
+            artboards in four groups: the five screens, a map of where every
+            button goes, a matrix of which screen reads or writes which
+            collection, six specification sheets, and the deploy check. The
+            sheets are the part that made the build go quickly — before any of
+            it was coded, every control on every screen had a row.
+          </p>
+          <Rows
+            head={["Group", "What is in it"]}
+            rows={[
+              ["Arah desain baru", "Five screens — Beranda at 1440 and at 390, Leads with its panel, the customer profile, the WhatsApp pull"],
+              ["Alur & relasi data", "The screen map, the data matrix, and the header and menu spec"],
+              ["Tiap layar, tiap tombol", "Five more sheets — Beranda, Leads, Beranda on a phone, the profile, the WhatsApp pull"],
+              ["Uji tiap deploy", "78 rows in 12 groups, 6 of them mandatory"],
+            ]}
+          />
+          <p>
+            Every specification row carries the same five columns: the number
+            on the screenshot, the element, the action, where it leads, and —
+            the column that made this worth doing —{" "}
+            <em>data yang berubah</em>, what it writes. Ninety-six rows across
+            the six sheets, counted twice and by two different methods, because
+            the summary that came with the screenshots said five artboards and
+            that is only the screens.
+          </p>
+          <Spec
+            rows={[
+              {
+                el: "Ruang kerja (Pribadi / guild)",
+                does: "Pick one, and every screen's data follows the workspace chosen.",
+                writes: "users/{uid} ↔ guilds/{g}",
+              },
+              {
+                el: "Tunda",
+                does: "Pushes a follow-up to tomorrow — one tap, from the card, without opening the lead.",
+                writes: "leads.nextActionDate +1",
+              },
+              {
+                el: "Titik lead (on the map)",
+                does: "Press to select and get a frosted card; hover for a tooltip of name, score and value.",
+              },
+              {
+                el: "Simpan N bagian ke {lead}",
+                does: "Saves only the sections that are switched on, closes the sheet, fills the profile.",
+                writes: "leads.profile, phone, lastReplyAt",
+              },
+              {
+                el: "Screenshot profil bisnis",
+                does: "Reads a photo on the server — and spends one of the scan quota, which is why the quota is in the row.",
+                writes: "usage/ (kuota)",
+              },
+            ]}
+          />
+          <p>
+            That last column is also the data map. Twelve collections —{" "}
+            <code className="font-mono text-[12px]">leads</code>,{" "}
+            <code className="font-mono text-[12px]">hunts</code>,{" "}
+            <code className="font-mono text-[12px]">quotes</code>,{" "}
+            <code className="font-mono text-[12px]">invoices</code>,{" "}
+            <code className="font-mono text-[12px]">clients/&#123;c&#125;/deals</code>,{" "}
+            <code className="font-mono text-[12px]">guilds/&#123;g&#125;/deals</code>,{" "}
+            <code className="font-mono text-[12px]">rejections</code>,{" "}
+            <code className="font-mono text-[12px]">pushSubs</code>,{" "}
+            <code className="font-mono text-[12px]">usage</code> and three
+            settings paths — against nine screens, each cell saying read, write,
+            or neither, and naming the button that does it. Everything sits
+            under the active workspace, either{" "}
+            <code className="font-mono text-[12px]">users/&#123;uid&#125;/…</code>{" "}
+            or <code className="font-mono text-[12px]">guilds/&#123;g&#125;/…</code>,
+            which is the single decision that makes personal and team mode the
+            same code.
+          </p>
+          <p className="text-[11px] leading-[1.7] text-fg-muted">
+            The canvas itself is private, so it is quoted here rather than
+            linked. Nothing above is paraphrase: the row labels are its own.
+          </p>
+        </Section>
+
+        <Section number="08" title="How it was checked">
+          <p>
+            The order was canvas, then spec, then code, then audit — fourteen
             artboards to a PRD, six staged pull requests, a pass to make the
             visuals agree, then an interface audit.
           </p>
@@ -400,6 +618,32 @@ export default function SalesPalPage() {
             ]}
           />
           <p>
+            The checklist is the fourteenth artboard, and it is not a list of
+            good intentions. Seventy-eight rows in twelve groups — sign-in and
+            session, header and navigation, the home screen, leads, the
+            WhatsApp pull, hunting, selling, the client report, guild, morning
+            push, and appearance — each row an ID, a step, what has to be
+            visible, and a box for phone and for desktop. Six of them are
+            marked smoke and run on every deploy without exception.
+          </p>
+          <Rows
+            head={["Rule", "What it says"]}
+            rows={[
+              ["Before anything", "Vercel shows the newest deploy READY on the right commit, and Profil → Cek update reports that version"],
+              ["What to re-test", "git diff --name-only <last tested commit>..origin/main, matched against a table of fourteen source paths"],
+              ["components/LeadDetail.tsx, lib/score.ts", "→ re-run rows L4–L12"],
+              ["app/globals.css, or any colour or font change", "→ rows X1–X4, and a look at every screen in both themes"],
+              ["firestore.rules", "→ rows G1–G9 and L1–L2, and run the rules tests before deploying them"],
+              ["A failure in smoke", "Roll back in Vercel — promote the previous deploy. Any other failure opens an issue under that row's ID."],
+            ]}
+          />
+          <p>
+            That middle rule is the one worth stealing: the checklist does not
+            ask for all 78 rows every time. It asks which files changed, and
+            the table turns that into the rows that have to be re-tested. A
+            checklist nobody can finish is a checklist nobody runs.
+          </p>
+          <p>
             Eight PRDs sit in the repository under{" "}
             <code className="font-mono text-[12px]">docs/prd/</code>, each
             naming what it covers and whether it is built, partly built, or
@@ -407,12 +651,12 @@ export default function SalesPalPage() {
           </p>
           <Shot
             src="stages"
-            alt="Six stages in a row, each numbered: 01 Canvas, five artboards before any code; 02 Spec, PRD-008 and what each screen owes; 03 Build, six pull requests staged; 04 Reconcile, one pass to make the visuals agree; 05 Audit, keyboard, errors, 12px and 320px reflow; 06 Checklist, 78 lines, six of them mandatory."
+            alt="Six stages in a row, each numbered: 01 Canvas, fourteen boards, five of them screens; 02 Spec, 96 rows, one per control; 03 Build, six pull requests staged; 04 Reconcile, one pass to make the visuals agree; 05 Audit, keyboard, errors, 12px and 320px reflow; 06 Check, 78 rows, six mandatory every deploy."
             caption="The order, as a still — the same six the film at the top of this page runs through. It is also the loop this site is built with, one project wide instead of one component wide."
           />
         </Section>
 
-        <Section number="08" title="See it">
+        <Section number="09" title="See it">
           <p>
             <a
               href="https://salespal-alpha.vercel.app"
@@ -443,12 +687,13 @@ export default function SalesPalPage() {
           </p>
           <p className="text-[11px] leading-[1.7] text-fg-muted">
             Every screenshot on this page is a test account with sample data.
-            The design canvas and the monthly-report walkthrough are not linked
-            because they are still private.
+            The design canvas and the monthly-report specification are quoted
+            throughout and not linked, because both are private — a link a
+            reader cannot open is worse than no link.
           </p>
         </Section>
 
-        <Section number="09" title="Related">
+        <Section number="10" title="Related">
           <p>
             The other thing on this site built around a question rather than a
             dataset is{" "}

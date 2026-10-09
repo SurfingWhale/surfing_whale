@@ -295,8 +295,8 @@ const { statSync } = await import('fs');
 console.log(`mp4    -> ${mp4} (${(statSync(mp4).size/1024/1024).toFixed(2)} MB, ${SECONDS}s)`);
 
 // A vp9 encode as well, and the page lists it SECOND. The assumption going in
-// was that vp9 would win on flat vector-ish frames; measured, it loses — 490 KB
-// against 382 KB for the same fifteen seconds. So the mp4 goes first and
+// was that vp9 would win on flat vector-ish frames; measured, it loses — 509 KB
+// against 390 KB for the same fifteen seconds. So the mp4 goes first and
 // everything mainstream takes it; this file exists for a Chromium built
 // without proprietary codecs, which is what the checkers here drive.
 const webm = join(OUT, `${P.slug}-showreel.webm`);
