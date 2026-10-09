@@ -9,7 +9,8 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "brand-book": "node scripts/build-brand-book.mjs"
+    "brand-book": "node scripts/build-brand-book.mjs",
+    "showreel": "node scripts/build-showreel.mjs"
   },
   "dependencies": {
     "@netlify/plugin-nextjs": "^5.15.9",

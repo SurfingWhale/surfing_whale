@@ -22,6 +22,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CaseHeader } from "@/app/components/CaseHeader";
+import { Showreel } from "@/app/components/Showreel";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 
@@ -80,10 +81,41 @@ const SHOT: Record<string, [number, number]> = {
   profile: [1280, 900],
   "wa-choose": [1280, 900],
   "wa-result": [1280, 900],
+  // Cut out of the same exports. A crop is the honest way to point at one
+  // control without a red circle drawn over a whole screen.
+  ask: [455, 270],
+  panel: [455, 415],
+  "lead-map": [1280, 630],
+  tabs: [780, 480],
+  stages: [1740, 195],
 };
+
+// How wide a shot is allowed to be drawn. Absent, it fills the column. A crop
+// 455px wide stretched to 680 is a 1.5x upscale of a 1x screenshot, which puts
+// soft type on a page whose whole argument is that the type was checked.
+const CAP: Record<string, number> = { ask: 455, panel: 455, tabs: 390 };
 
 function Shot({ src, alt, caption }: { src: string; alt: string; caption: string }) {
   const [w, h] = SHOT[src] ?? [1280, 900];
+  const cap = CAP[src];
+  if (cap) {
+    return (
+      <figure className="my-6" style={{ maxWidth: cap }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/work/salespal/${src}.webp`}
+          alt={alt}
+          width={w}
+          height={h}
+          loading="lazy"
+          className="w-full h-auto block bg-white border border-border rounded-lg"
+        />
+        <figcaption className="text-[11px] leading-[1.7] text-fg-muted mt-2">
+          {caption}
+        </figcaption>
+      </figure>
+    );
+  }
   return (
     <figure className="my-6 -mx-6 sm:mx-0">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -161,6 +193,29 @@ export default function SalesPalPage() {
           />
         </div>
 
+        {/* The film sits between the header and the first section, which is
+            where the reader is still deciding whether to read. It is offered,
+            not played: nothing below waits for it, and the poster is what the
+            page actually costs unless somebody presses. */}
+        <div className={column}>
+          <Showreel
+            src="/work/salespal/showreel"
+            poster="/work/salespal/showreel-poster.webp"
+            posterSmall="/work/salespal/showreel-poster-960.webp"
+            posterAlt="The film's title card: “Five artboards to a shipped app.”, and under it “Canvas, spec, code, audit. Six stages, about two weeks, 41 merges.”"
+            seconds={15}
+            label="How SalesPal was built: canvas, spec, build, reconcile, audit, checklist — with the project's own figures."
+          >
+            Fifteen seconds, the whole build in order: five artboards, PRD-008,
+            six staged pull requests, a pass to make the visuals agree, the
+            interface audit, the deploy checklist. The figures that land at the
+            end are the ones in section 07 below — 12 flows, 123 rules tests,
+            130 strings raised, nothing left open. Generated frame by frame from{" "}
+            <code className="font-mono text-[11px]">scripts/build-showreel.mjs</code>,
+            in this site&rsquo;s faces rather than the app&rsquo;s.
+          </Showreel>
+        </div>
+
         <Section number="01" title="The tools ask for data. The work is already in the chat.">
           <p>
             Every CRM starts the same way: a form. Add the lead, set the stage,
@@ -174,6 +229,11 @@ export default function SalesPalPage() {
             record is not something you fill in — it is read out of the chat
             export you already have.
           </p>
+          <Shot
+            src="ask"
+            alt="The Profil block of an empty lead record. Instead of input fields it reads 'Belum diisi. Tarik dari chat WhatsApp, atau isi sendiri setelah chat pertama' above two buttons: a filled 'Tarik dari WhatsApp' and an outlined 'Isi manual'."
+            caption="The whole inversion is in one block. Where a CRM puts a form, this puts an offer to read the chat — and typing it in by hand is the second button, not the first."
+          />
         </Section>
 
         <Section number="02" title="A home screen that gives an instruction">
@@ -208,6 +268,11 @@ export default function SalesPalPage() {
               ["Cepat closing", "High score, low value — quick to close, small"],
               ["Nanti", "Low on both — leave it"],
             ]}
+          />
+          <Shot
+            src="lead-map"
+            alt="The lead map: twelve leads plotted as dots, potential score along the bottom from 60 to 100 and deal value up the side from Rp 10 jt to Rp 25 jt, with the four quadrants labelled and counted. One dot is selected and shows a card reading 'Kedai Senja, 83 skor, Rp 12,5 jt' with buttons to open the lead or to chat. Beside it, a 'Kejar sekarang' list of the three leads in that quadrant."
+            caption="The table above, drawn. Both axes are labelled with their real units, the quadrants carry their counts, and selecting a point gives the lead rather than a tooltip — the chart is a way into the record, not a picture of one."
           />
         </Section>
 
@@ -261,6 +326,11 @@ export default function SalesPalPage() {
             alt="A customer profile: 26 messages since September, a 20-minute average reply time, peak activity between 10 and 12, a weekly message chart, a who-talks-more comparison, an archetype card reading 'Singa — dominant, decides fast', and a list of questions the customer asked, one flagged as unanswered since 8 October."
             caption="The profile from 26 sample messages. The last block is the useful one: a question asked on 8 October and still marked unanswered."
           />
+          <Shot
+            src="panel"
+            alt="The same Profil block as in section 01, now filled: a brief reading '26 messages since 9 September. They reply in about 20 minutes, most active between 10 and 12. Their style is Singa — short, direct, focused on results. 2 questions still unanswered.' Underneath, a line reading 'Dari chat WhatsApp, 9 Okt' with a 'Tarik ulang' link."
+            caption="The same block as section 01, after the parse. Four sentences where there was a form, with the date it was read and a link to read it again — and the chat it came from is still only on the phone."
+          />
         </Section>
 
         <Section number="05" title="Team permissions live in the database">
@@ -276,6 +346,22 @@ export default function SalesPalPage() {
             are <strong className="font-medium text-fg">123 rules tests</strong>{" "}
             that assert what each role can and cannot read or write.
           </p>
+          {/* Every other section on this page carries a picture. This one
+              cannot, and saying so is better than finding something adjacent
+              to photograph: a screenshot here would show a button missing,
+              which is the one piece of evidence that proves nothing. */}
+          <figure className="my-6 border border-border rounded-lg p-5 bg-bg-subtle">
+            <figcaption className="text-[11px] uppercase tracking-[0.14em] leading-[1.5] text-fg-label">
+              No screenshot
+            </figcaption>
+            <p className="text-[12px] leading-[1.9] text-fg-body mt-2">
+              There is nothing to photograph. What enforces a role is a rule in{" "}
+              <code className="font-mono text-[12px]">firestore.rules</code>,
+              and a screenshot of a screen with one button missing would be
+              evidence of the interface rather than of the permission. The 123
+              tests are the picture.
+            </p>
+          </figure>
         </Section>
 
         <Section number="06" title="What else is in it">
@@ -288,6 +374,11 @@ export default function SalesPalPage() {
               ["Morning push", "Web Push at 08:00 WIB over Vercel cron — only when something needs doing"],
               ["Threads Radar", "Built and waiting on a Meta app review. Not live."],
             ]}
+          />
+          <Shot
+            src="tabs"
+            alt="The floating navigation bar on a phone, over the leads list: five tabs — Beranda, Hunting, Leads, Jualan and Lainnya — with Leads selected, and a round chat button at the right edge."
+            caption="Where the list above lives. Five tabs, within thumb reach: Hunting holds the templates, Jualan the quotations and invoices, Lainnya the reports and the team. The chat button is the one control that is always on screen, because the work is always in WhatsApp."
           />
         </Section>
 
@@ -314,6 +405,11 @@ export default function SalesPalPage() {
             naming what it covers and whether it is built, partly built, or
             waiting on something outside the project.
           </p>
+          <Shot
+            src="stages"
+            alt="Six stages in a row, each numbered: 01 Canvas, five artboards before any code; 02 Spec, PRD-008 and what each screen owes; 03 Build, six pull requests staged; 04 Reconcile, one pass to make the visuals agree; 05 Audit, keyboard, errors, 12px and 320px reflow; 06 Checklist, 78 lines, six of them mandatory."
+            caption="The order, as a still — the same six the film at the top of this page runs through. It is also the loop this site is built with, one project wide instead of one component wide."
+          />
         </Section>
 
         <Section number="08" title="See it">

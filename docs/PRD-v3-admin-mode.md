@@ -1700,3 +1700,130 @@ cause a Restricted row to appear. And it is loud — the build log now carries
 Suite on a production build: tap-targets, rhythm, hallo, guest-note and intro
 ALL PASS; contrast 91 nodes on the home page and 70 on the case page, 0 below
 AA in both themes; SEO 0 blocking.
+
+## 33. The film on the SalesPal page — 2026-10-09
+
+The ask was for the SalesPal write-up to *be* the content: a film at the top,
+and an attachment in every section drawn from the artifact assets. The first
+attempt built a `/method` page about how this site makes a component, which was
+a misread and is not in the repository.
+
+### The film
+
+`scripts/build-showreel.mjs` was one file with its content hard-coded, and a
+second reel was going to be that file copied with the words changed — which is
+how two reels drift apart on timings that were tuned once. It is now an engine
+plus a programme:
+
+```
+node scripts/build-showreel.mjs salespal      # or surfing-whale
+```
+
+A programme in `scripts/reels/` supplies the kicker, the title, the six stages,
+the four measurements, the three Act-3 wireframes, which one is chosen, the
+refusal and the end card. The engine refuses to render a programme that is
+missing a field or has the wrong number of stages, metrics or cards, because a
+hole in a programme renders a reel with a gap in it and no error — the kind of
+fault that only shows up in the encode.
+
+SalesPal's programme carries the project's own figures, from the context
+document that came with the screenshots: 12 Playwright flows, 123 Firestore
+rules tests, 130 UI strings raised to 12px or more, 0 of 7 audit findings left
+open. Act 3 is the home screen's three versions — four stat tiles, a pipeline
+board, and the sentence naming what has to be done today — and the third
+shipped.
+
+### A bug the storyboard hid
+
+Both reels had the end label pinned 20px under a 46px italic line, so
+`SURFING WHALE · 2026` ran straight through the sentence above it. It passed
+review in the previous session because the only picture taken of it was a
+storyboard contact sheet, at a scale where a label struck through a sentence
+looks like a sentence. The label is now placed from the line's own size.
+
+### The player, and three rules from the brand book
+
+The Motion page lists five things under **Never**. Three of them are about
+exactly this element, so `app/components/Showreel.tsx`:
+
+| Never | What the component does |
+|---|---|
+| An entrance that delays reading | No autoplay. Nothing on the page waits for it. |
+| Anything that loops in the corner of the eye while reading | No `loop`; the last frame stays. |
+| Motion that continues after its section has scrolled away | An IntersectionObserver pauses it on exit. |
+
+With `preload="none"` the 382 KB mp4 is never fetched until somebody presses;
+until then the page costs a 25 KB still.
+
+**Both encodes ship, mp4 first.** The assumption was that vp9 would win on flat
+vector frames. Measured, it loses — 490 KB against 382 KB — so the mp4 is the
+first `<source>` and everything mainstream takes it. The webm is there for a
+Chromium built without proprietary codecs, which is not hypothetical: the
+Chromium these checkers drive reports `canPlayType('…avc1…') === ''`, and an
+mp4-only page could not be tested at all.
+
+### The poster, chosen by measurement
+
+Three frames were tried, and the deciding width was 382px, which is what a
+phone column gives a 16:9 figure — a 5× downscale of a 1920-wide frame.
+
+| Frame | Why not |
+|---|---|
+| 135, the stage rail | 30px names in the bottom third; on the page it read as a figure that had failed to load |
+| 354, the measurement HUD | the film's best claim, but its 15px labels land at 3px on a phone |
+| **52, the title card** | 124px type → 25px after the downscale, and still a sentence |
+
+The play control was also moved off the centre of the frame: the poster is a
+frame of the film, so the middle of it is where the film's own content is, and
+a pill parked there covers the thing somebody is deciding on.
+
+### `scripts/verify-showreel.mjs`, and two bugs that cancelled
+
+Eleven assertions against a running build: nothing fetched before a press,
+nothing playing on arrival, no `autoplay`, no `loop`, `preload=none`, a play
+control of at least 24×24, playback on press, controls after it, and a pause on
+leaving the screen.
+
+Proved against the bug, and the second half of that was not a formality.
+Adding `autoplay loop muted preload=auto` turned six checks red as expected —
+but the off-screen check stayed **green**, because Chrome pauses an autoplaying
+muted video of its own accord when it scrolls out of view. The browser was
+doing the work the check was crediting to the component. Breaking *only* the
+observer, on an otherwise shipped build, turns it red (`paused=false, t=4.00`).
+
+Two bugs at once can cancel. Break one thing at a time.
+
+### An attachment in every section
+
+| § | Attachment | From |
+|---|---|---|
+| — | the film | `scripts/reels/salespal.mjs` |
+| 01 | the empty `Profil` block, offering to read the chat | `leads-desktop`, cropped |
+| 02 | the lead map with a point selected and the quadrants counted | `beranda-sel-desktop`, cropped |
+| 03 | the score panel and its five signals | already there |
+| 04 | the same `Profil` block after the parse | `panel-desktop`, cropped |
+| 05 | **no screenshot**, and the page says so | — |
+| 06 | the five tabs, on a phone | `panel-phone`, cropped |
+| 07 | the six stages as a still | frame 150 of the film |
+
+§01 and §04 are the same block before and after, which is the strongest thing
+in the artifact: a form becomes four sentences, with the date it was read.
+
+§05 carries a stated absence instead of a picture. What enforces a role is a
+line in `firestore.rules`, and a screenshot of a screen with one button missing
+is evidence about the interface rather than about the permission. Finding
+something adjacent to photograph would have been padding.
+
+The small crops are capped rather than stretched: 455px blown to 680 is a 1.5×
+upscale of a 1× screenshot, which puts soft type on a page whose whole argument
+is that the type was checked.
+
+### Suite
+
+`verify-showreel` 11/11; contrast 71 nodes on the case page and 91 on the home
+page, 0 below AA in both themes; tap-targets ALL PASS including
+`/work/salespal`; rhythm ALL PASS, no step used once or twice; headings 1×h1 and
+9×h2; intro, hallo and guest-note ALL PASS; brand-book drift ALL PASS; SEO 12
+images on the page, 0 missing alt — the `<img>` inside `<video>` describes the
+title card, because where `<video>` is unsupported that image is the only thing
+there.
