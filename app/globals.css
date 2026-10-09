@@ -1179,6 +1179,12 @@ html.intro-out .sw-intro-wave {
 .foot-note {
   display: none;
 }
+.foot-hello {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-2);
+}
 .foot-note {
   margin-top: 0.875rem;
   max-width: 19rem;
@@ -1212,11 +1218,70 @@ html.intro-out .sw-intro-wave {
   text-decoration: none;
 }
 
+/* Share on one side, the colophon on the other. A phone has only the
+   colophon here: it shares from the button beside "Leave a note". */
+.foot-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+  margin-top: 1.75rem;
+}
+
+.foot-share {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.foot-share-head {
+  font-style: italic;
+  font-size: 1.0625rem;
+  line-height: 1;
+}
+.foot-share-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  font-size: 1.0625rem;
+}
+/* Buttons and links alike read as the footer's other links: words in ink,
+   underlined under the pointer. */
+.foot-share-list button {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s;
+}
+.foot-share-list button:hover,
+.foot-share-list button:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+/* A phone's share: one button that opens the system sheet, set beside the
+   note button and the same height, so the footer gains no row. */
+.foot-sheet {
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid currentColor;
+  background: rgb(244 239 230 / 0.6);
+  font-style: italic;
+  font-size: 1.0625rem;
+  cursor: pointer;
+}
+
+/* The page's focus ring is drawn in --fg, which turns light in the dark
+   theme; the footer stays ink on paper in both. */
+.site-footer :focus-visible {
+  outline-color: var(--sea-ink);
+}
+
 .foot-base {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 1rem;
-  margin-top: 1.75rem;
   font-style: italic;
   font-size: 0.9375rem;
 }
@@ -1238,9 +1303,16 @@ html.intro-out .sw-intro-wave {
 
 @media (min-width: 40rem) {
   .foot-facts,
+  .foot-hello,
   .foot-hello > .foot-head,
   .foot-note {
     display: block;
+  }
+  .foot-share {
+    display: flex;
+  }
+  .foot-sheet {
+    display: none;
   }
   .foot-list {
     font-size: 1.0625rem;
@@ -1275,9 +1347,10 @@ html.intro-out .sw-intro-wave {
   .foot-list li + li {
     margin-top: 0.5rem;
   }
-  .foot-base {
-    justify-content: flex-end;
+  .foot-end {
     margin-top: 1.5rem;
+  }
+  .foot-base {
     font-size: 1rem;
   }
 }

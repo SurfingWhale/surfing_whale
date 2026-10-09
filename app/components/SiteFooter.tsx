@@ -11,6 +11,7 @@
 // page and scrolls like any other block.
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { FootShare, ShareSheetButton } from "./FootShare";
 
 type Item = { label: string; href: string; external?: boolean };
 
@@ -177,13 +178,20 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
               <span>Leave a note</span>
               <span aria-hidden="true" className="foot-cta-arrow">→</span>
             </a>
+            <ShareSheetButton />
           </div>
         </div>
 
-        <div className="foot-base">
-          <span>© {year} Muhammad Fauzy</span>
-          <span aria-hidden="true" className="foot-sep">|</span>
-          <a href="#">Back to top ↑</a>
+        {/* The end of the page, so the place to send it on: share on the
+            left, the colophon on the right. A phone shares from the button
+            beside "Leave a note" instead. */}
+        <div className="foot-end">
+          <FootShare />
+          <div className="foot-base">
+            <span>© {year} Muhammad Fauzy</span>
+            <span aria-hidden="true" className="foot-sep">|</span>
+            <a href="#">Back to top ↑</a>
+          </div>
         </div>
       </div>
 

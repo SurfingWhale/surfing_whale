@@ -2063,3 +2063,37 @@ share 8/8 on each of seven pages plus 3 for the stubbed native sheet;
 superseded, showreel, intro, hallo and guest-note ALL PASS; contrast 153 nodes
 on the case page and 12 on the Testament, 0 below AA in both themes;
 tap-targets and rhythm ALL PASS.
+
+### Later the same day: Instagram, and the end of the home page
+
+Fauzy asked again for the end of the page to go to *"IG, WA or other media,
+or a share link"*. Two things were missing.
+
+**Instagram.** It takes no link from the web — no share url, no intent — so
+its button has two behaviours. On a touch screen it opens the system sheet,
+which is where Instagram is. With a mouse there is no sheet that lists it, so
+it copies the address and the label says *Copied — paste in IG* (short, so it
+does not push LinkedIn onto a second line for four seconds). `verify-share.mjs`
+check H covers both, the touch one with `navigator.share` stubbed as in G.
+
+**The home page's footer.** The end of the scroll is the end of a visit, so it
+carries the same ways out, in the footer's ink and serif and named in words,
+like the row: `FootShare.tsx`, under the columns, with the colophon on the
+right. Not on a phone: there it is one *Share* button beside *Leave a note*,
+opening the sheet, because a row of four would add a line, and every line
+counts against the footer fitting under the page (`SiteFooter.tsx`'s `fit()`).
+The button sits in the row that was already there, so it costs nothing.
+
+The clipboard fallbacks, the sheet and the outbound links moved to
+`app/lib/share.ts`, so the two rows cannot drift apart.
+
+Checked with puppeteer against a local build (this machine has no Playwright
+for `verify-share.mjs`): both behaviours of Instagram on two pages, the home
+row's copy and links at 768/1100/1440, the phone button with the sheet stubbed
+and without one. All carry `https://surfing-whale.vercel.app/…`.
+
+Noted, not caused here: at 390×664 (an iPhone 14/15 in Safari with its toolbar
+showing) the footer no longer fits under the page and drops into it. Its
+words were 523px tall this morning and are 593px now; SalesPal in the Work
+column is 35 of that, the other 35 came with the rest of today's commits.
+The phone's Share button is 0: taken off the page, the footer is still 593px.

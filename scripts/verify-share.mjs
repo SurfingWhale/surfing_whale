@@ -131,6 +131,46 @@ for (const path of PATHS) {
   await ctx.close();
 }
 
+// H — Instagram. It takes no link from the web, so its button has two
+// behaviours and both are checked: with a mouse it copies the address and
+// says where to paste it; on a touch screen it opens the sheet Instagram is
+// in. Either way the address has to be the page's own.
+{
+  console.log('\n── Instagram');
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write']);
+  const p = await ctx.newPage();
+  await p.goto(`http://localhost:${PORT}${PATHS[0]}`, { waitUntil: 'networkidle' });
+  const ig = p.locator('section[aria-labelledby="share-head"]').getByRole('button', { name: /instagram/i });
+  await ig.scrollIntoViewIfNeeded();
+  await ig.click();
+  await p.waitForTimeout(150);
+  const live = await p.evaluate(() =>
+    document.querySelector('section[aria-labelledby="share-head"] [aria-live]')?.textContent ?? '');
+  const clip = await p.evaluate(() => navigator.clipboard.readText());
+  check(CANON.test(clip) && !clip.includes('localhost'), 'H  with a mouse, it copies the page\'s own address', clip);
+  check(/instagram/i.test(live), 'H  and says to paste it into Instagram', live || '(empty)');
+  await ctx.close();
+
+  const touch = await b.newContext({ viewport: { width: 430, height: 900 }, isMobile: true, hasTouch: true });
+  await touch.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', {
+      value: (d) => { window.__shared = d; return Promise.resolve(); },
+      configurable: true,
+    });
+  });
+  const q = await touch.newPage();
+  await q.goto(`http://localhost:${PORT}${PATHS[0]}`, { waitUntil: 'networkidle' });
+  const igt = q.locator('section[aria-labelledby="share-head"]').getByRole('button', { name: /instagram/i });
+  await igt.scrollIntoViewIfNeeded();
+  await igt.tap();
+  await q.waitForTimeout(200);
+  const sent = await q.evaluate(() => window.__shared);
+  check(!!sent && CANON.test(sent.url) && !sent.url.includes('localhost'),
+    'H  on a touch screen, it opens the sheet with that address', sent ? sent.url : '(nothing)');
+  await touch.close();
+}
+
 await b.close();
 console.log(fail ? `\n${fail} FAILED` : '\nall checks passed');
 process.exit(fail ? 1 : 0);

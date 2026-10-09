@@ -1,7 +1,7 @@
 "use client";
 // app/components/ShareRow.tsx
 //
-// The end of a written-up page. Four ways to pass it on, and one line saying
+// The end of a written-up page. Five ways to pass it on, and one line saying
 // where an argument about it can go.
 //
 // It is at the END, which is the only place the brand book allows it: the
@@ -23,8 +23,11 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { copyLink, instagramSheet, openSheet, shareLinks } from "@/app/lib/share";
 
-type Copy = "idle" | "done" | "manual";
+// "insta": copied on a desktop for pasting into Instagram, which takes no
+// link from the web.
+type Copy = "idle" | "done" | "insta" | "manual";
 
 const linkish =
   "font-medium text-fg underline decoration-border-strong underline-offset-[3px] " +
@@ -71,55 +74,23 @@ export function ShareRow({
     setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
   }, []);
 
-  // A copied link that silently did not copy is worse than no button. Three
-  // levels: the modern API, the deprecated one it replaced, and — when the
-  // page is served over plain http, where neither is allowed — selecting the
-  // address so it can be copied by hand.
-  const onCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopy("done");
-      return;
-    } catch {
-      /* fall through */
-    }
-    const input = fallback.current;
-    if (input) {
-      input.select();
-      try {
-        if (document.execCommand("copy")) {
-          setCopy("done");
-          return;
-        }
-      } catch {
-        /* fall through */
-      }
-    }
-    setCopy("manual");
+  // When neither copy works, the address is left selected in the off-screen
+  // field so it can be copied by hand (lib/share.ts).
+  const onCopy = async (done: Copy = "done") => {
+    setCopy((await copyLink(url, fallback.current)) ? done : "manual");
+  };
+
+  const onInstagram = () => {
+    if (!instagramSheet(url, title)) onCopy("insta");
   };
 
   useEffect(() => {
     if (copy === "idle") return;
-    const t = setTimeout(() => setCopy("idle"), copy === "done" ? 2400 : 8000);
+    const t = setTimeout(() => setCopy("idle"), copy === "done" ? 2400 : copy === "insta" ? 4000 : 8000);
     return () => clearTimeout(t);
   }, [copy]);
 
-  const onShare = async () => {
-    try {
-      await navigator.share({ title, url });
-    } catch {
-      /* the sheet was dismissed, which is not an error */
-    }
-  };
-
-  const out = `${title} — ${url}`;
-  const LINKS = [
-    { label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(out)}` },
-    {
-      label: "LinkedIn",
-      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-    },
-  ];
+  const [whatsapp, linkedin] = shareLinks(url, title);
 
   const chip =
     "inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 " +
@@ -136,7 +107,7 @@ export function ShareRow({
       </h2>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <button type="button" onClick={onCopy} className={chip}>
+        <button type="button" onClick={() => onCopy()} className={chip}>
           <span aria-hidden="true" className="text-fg-muted">
             {/* Two offset squares: a copy mark, drawn rather than imported. */}
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -148,25 +119,18 @@ export function ShareRow({
         </button>
 
         {canShare && (
-          <button type="button" onClick={onShare} className={chip}>
+          <button type="button" onClick={() => openSheet(url, title)} className={chip}>
             Share…
           </button>
         )}
 
-        {LINKS.map((l) => (
-          <a
-            key={l.label}
-            href={l.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={chip}
-          >
-            {l.label}
-            <span aria-hidden="true" className="text-fg-muted">
-              ↗
-            </span>
-          </a>
-        ))}
+        <Out link={whatsapp} className={chip} />
+
+        <button type="button" onClick={onInstagram} className={chip}>
+          {copy === "insta" ? "Copied — paste in IG" : "Instagram"}
+        </button>
+
+        <Out link={linkedin} className={chip} />
       </div>
 
       {/* Off screen but selectable: `hidden` and display:none cannot be
@@ -183,12 +147,29 @@ export function ShareRow({
       {/* A button whose only feedback is its own label changing says nothing
           to a screen reader, because the label is not announced on change. */}
       <p aria-live="polite" className="sr-only">
-        {copy === "done" ? "Link copied" : copy === "manual" ? "Press Control or Command C to copy" : ""}
+        {copy === "done"
+          ? "Link copied"
+          : copy === "insta"
+            ? "Link copied. Paste it into Instagram."
+            : copy === "manual"
+              ? "Press Control or Command C to copy"
+              : ""}
       </p>
 
       <p className="mt-4 text-[12px] leading-[1.9] text-fg-body max-w-[52ch]">
         {note ?? DEFAULT_NOTE}
       </p>
     </section>
+  );
+}
+
+function Out({ link, className }: { link: { label: string; href: string }; className: string }) {
+  return (
+    <a href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+      {link.label}
+      <span aria-hidden="true" className="text-fg-muted">
+        ↗
+      </span>
+    </a>
   );
 }
