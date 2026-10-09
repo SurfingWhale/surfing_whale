@@ -58,3 +58,6 @@ scripts/.shots/
 # node scripts/build-brand-book.mjs ; the PDF is the deliverable
 docs/brand/brand-book.html
 docs/brand/*.zip
+
+# showreel frames and encodes — regenerate with node scripts/build-showreel.mjs
+.showreel/
