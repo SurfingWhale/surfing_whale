@@ -1896,3 +1896,92 @@ badge-styled chip in it.
 verify-showreel 11/11; contrast 145 nodes (up from 71 — the page roughly
 doubled), 0 below AA in both themes; tap-targets ALL PASS; rhythm ALL PASS;
 headings 1×h1, 10×h2, no level skipped; SEO 12 images, 0 missing alt.
+
+## 35. Six duplicates, not one — 2026-10-09
+
+Fauzy sent a screenshot of the SalesPAL project modal: the Notion row was
+publishing as a card beside the written-up page, the same project twice. He
+asked for the duplicate to go and for that row's story to be merged into the
+page.
+
+### It was six, and the filter was the reason
+
+De-duplication already existed, in `ProjectSectionWrapper`, as two regular
+expressions on the title:
+
+```
+const FEATURED  = /finance dashboard|personal dashboard/i;
+const WRITTEN_UP = /padel|tracker.?(doc|tsm)|crime|unveiling/i;
+```
+
+A live query of the database found **seven** rows passing the publish gate
+(Visibility=Public and tagged #Finished), of which **six** have a page of their
+own. The pattern caught four. It missed:
+
+| Row | Page | Why the pattern missed it |
+|---|---|---|
+| SalesPAL | /work/salespal | no alternative spelling in the expression |
+| Kopi, Komuter, dan Komunitas… | /work/coffee-access | filed in Indonesian; shares no word with the page's name |
+
+A pattern covers the rows somebody thought of. That is the whole failure.
+
+### What replaced it
+
+`SUPERSEDED` in `app/lib/notion.ts`, keyed by slug, applied inside
+`getProjects` rather than in the component that draws the cards. Two
+consequences, both wanted:
+
+- `getProjectBySlug` and `isPublishableId` drop them too. Filtering only the
+  list left every superseded row still reachable at `/work/p/<slug>` — the same
+  duplicate, one click further in.
+- `/work/p/<slug>` **301s to the page that replaced it** instead of 404ing. The
+  modal has a Copy link button, so those addresses are in other people's chats.
+
+Only `datelogs` still publishes as a card, which is right: it has no page.
+
+### The checker that passed the bug
+
+`scripts/verify-superseded.mjs`, first version, asserted that each key was a
+well-formed slug and that it redirected. Transposing `salespal` to `salespla`
+passed **both**: it is a perfectly good slug and it redirects perfectly well.
+It simply matches no row, so the duplicate keeps publishing, looking exactly as
+it did before. The check was green and the bug was shipped.
+
+The fix is `scripts/superseded.lock.json` — every row passing the publish gate,
+captured from the database, titles and slugs only. The checker now asserts each
+key names a real row (A), each target page exists (B), each redirect lands (C),
+and every publishing row is either superseded or has no page (D). Proved
+against both failure modes: a transposed key turns A red while B and C stay
+green; a deleted entry turns D red.
+
+The lock is also checked against itself — each row's title is re-slugified and
+compared to its recorded slug — so a lock whose halves disagree exits rather
+than being used as evidence.
+
+### Merging the story, and what was left out
+
+The Notion row's `## Story` is merged into §01: the opening (what goes missing
+is never the name, it is the position), the contacts-versus-position line, the
+two jobs the product sets itself, and why a tool for one person is not a team
+tool. §04 gains the second job as shipped — the profile's *Buka script*
+control, a reply chosen by archetype against objection in a formal and a casual
+version. Archetype sets the tone, objection sets the content: two axes, not one
+list of answers. It is on the page because it has row **L9** in the deploy
+check, which is the difference between built and drawn.
+
+Three things from that row are deliberately not here:
+
+1. **Everything under its `## Technical` heading.** That page marks the section
+   *"Tidak untuk dipublikasikan"*, and the site's own `storyOnly()` has always
+   withheld it: the stack, the four archetype definitions, the objection
+   matrix, the pull-request log, the roadmap.
+2. **Its "Kondisi sebenarnya" paragraph**, from September, saying the per-user
+   login and the answer library are not built. Both are; the deploy check has
+   rows for them. Merging it would have made the page contradict itself.
+3. **The row itself.**
+
+### Suite
+
+superseded 19/19 including all six redirects; showreel 11/11; contrast 150
+nodes on the case page, 0 below AA in both themes; tap-targets, rhythm,
+headings, intro, hallo and guest-note ALL PASS.

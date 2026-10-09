@@ -1,0 +1,13 @@
+{
+  "_": "Every row in the Notion projects database that passes the site's publish gate — Visibility=Public AND tagged #Finished — recorded so that scripts/verify-superseded.mjs can tell a real slug from a typo. Notion is not reachable from the build environment, so this is the stand-in for it. Titles and slugs only: no body text, no restriction notes, and nothing here that the site does not already print on a card. Regenerate when the database changes; the query is in the checker's header.",
+  "captured": "2026-10-09",
+  "rows": [
+    { "slug": "datelogs", "title": "datelogs" },
+    { "slug": "kopi-komuter-dan-komunitas-peta-dinamika-konsumsi-di-sekitar-perumahan-bintaro", "title": "Kopi, Komuter, dan Komunitas: Peta Dinamika Konsumsi di Sekitar Perumahan Bintaro" },
+    { "slug": "padel-bintaro-isochrone-gap-analysis", "title": "Padel Bintaro — Isochrone & Gap Analysis" },
+    { "slug": "personal-dashboard-projects", "title": "Personal Dashboard Projects" },
+    { "slug": "salespal", "title": "SalesPAL" },
+    { "slug": "tracker-document-tsm", "title": "Tracker Document - TSM" },
+    { "slug": "unveiling-crime-trends-in-los-angeles", "title": "Unveiling Crime Trends in Los Angeles" }
+  ]
+}

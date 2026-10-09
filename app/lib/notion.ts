@@ -216,6 +216,32 @@ async function reach(input: string, init?: RequestInit): Promise<Response | null
     );
     }
 
+    /**
+     * Notion rows that now have a written-up page of their own on this site.
+     * A row here is not published as a project card and has no /work/p/<slug>
+     * of its own — the page superseding it is the only copy.
+     *
+     * It is keyed by slug rather than matched by a regular expression on the
+     * title, which is what this was before. Two of the six duplicates got
+     * through that: "SalesPAL" matched nothing in the pattern, and the coffee
+     * study is filed in Notion as "Kopi, Komuter, dan Komunitas", which shares
+     * no word with "coffee-access". A regular expression silently covers the
+     * rows somebody thought of; a slug map is a list you can read and count.
+     *
+     * The value is the page that replaced the row, and it is used: a shared
+     * /work/p/<slug> link redirects there rather than going to a 404, because
+     * the modal on the home page has a Copy link button and those links exist.
+     */
+    export const SUPERSEDED: Record<string, string> = {
+        salespal: "/work/salespal",
+        "personal-dashboard-projects": "/work/finance-dashboard",
+        "padel-bintaro-isochrone-gap-analysis": "/work/padel",
+        "tracker-document-tsm": "/work/tracker-doc",
+        "unveiling-crime-trends-in-los-angeles": "/work/crime-la",
+        "kopi-komuter-dan-komunitas-peta-dinamika-konsumsi-di-sekitar-perumahan-bintaro":
+        "/work/coffee-access",
+    };
+
     export async function getProjects(): Promise<NotionProject[]> {
     const configured = PROJECTS_DB();
     let res = await queryProjects(configured);
@@ -293,7 +319,16 @@ async function reach(input: string, init?: RequestInit): Promise<Response | null
         image: publicImage(page.properties.Image?.url ?? ""),
         date: page.properties.Date?.date?.start ?? "",
         subGroup: page.properties["Sub Group"]?.status?.name ?? "",
-    }));
+    }))
+    // Dropped here rather than in the component that draws the cards, so that
+    // getProjectBySlug and isPublishableId drop them too. Filtering only the
+    // list left every superseded row still reachable at its own URL, which is
+    // the same duplicate one click further in.
+    .filter((p: NotionProject) => {
+        if (!(p.slug in SUPERSEDED)) return true;
+        console.warn(`Superseded "${p.title}": ${SUPERSEDED[p.slug]} is the page for this`);
+        return false;
+    });
     }
 
     /**

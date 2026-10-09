@@ -34,6 +34,23 @@
 //
 // Where something is built but not yet live — Threads Radar waits on a Meta
 // app review — the page says so rather than letting the list imply it shipped.
+//
+// A fifth source: the Notion row "SalesPAL", which used to publish as a card
+// of its own beside this page. Its STORY half is merged into section 01 — the
+// position-not-the-name opening, the two jobs, and why a one-person tool is
+// not a team tool. Three things from it are deliberately left out:
+//
+//   Everything under its "## Technical" heading, which that page itself marks
+//   "Tidak untuk dipublikasikan" and which the site's own storyOnly() has
+//   always withheld: the stack, the four archetype definitions, the objection
+//   matrix, the pull-request log and the roadmap.
+//
+//   Its "Kondisi sebenarnya" paragraph, which is from September and says the
+//   per-user login and the answer library are not built. Both are. The deploy
+//   check has rows for them.
+//
+//   The row itself, now that its story is here. It is listed in SUPERSEDED in
+//   app/lib/notion.ts, so it no longer publishes as a card or at its own URL.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CaseHeader } from "@/app/components/CaseHeader";
@@ -303,6 +320,20 @@ export default function SalesPalPage() {
 
         <Section number="01" title="The tools ask for data. The work is already in the chat.">
           <p>
+            What goes missing is never the name. It is the position — which one
+            said &ldquo;I&rsquo;ll let you know&rdquo; three weeks ago, which
+            one needs one more number before it closes, which one is not worth
+            chasing any more. Ten conversations fit in a head. Forty do not.
+          </p>
+          <p>
+            What usually gets used to patch that is a note on the phone, a
+            spreadsheet filled in when remembered, or nothing at all, and all
+            three fail in the same place: they store{" "}
+            <strong className="font-medium text-fg">contacts</strong>, not the{" "}
+            <strong className="font-medium text-fg">position of a
+            conversation</strong>.
+          </p>
+          <p>
             Every CRM starts the same way: a form. Add the lead, set the stage,
             log the activity. The work it is meant to support, in Indonesia,
             happened hours ago in a WhatsApp thread that nobody is going to
@@ -313,6 +344,27 @@ export default function SalesPalPage() {
             report a pipeline, it names what has to be done today. And the lead
             record is not something you fill in — it is read out of the chat
             export you already have.
+          </p>
+          <p>
+            It sets itself two jobs, and the second is what makes it more than
+            a notebook. The first is to hold where each lead stands — not a
+            list of names but a list of states: who is waiting on an answer
+            from me, who am I waiting on, and for how long. The second is to
+            help at the moment of being stuck. Rejections repeat in shape — it
+            costs more than the other one, let me think about it, then silence
+            — and only the person changes, so the reply can be written before
+            it is needed rather than invented in a panic. A list of leads tells
+            you <em>who</em> to contact. It is no help at all with{" "}
+            <em>what to write</em>.
+          </p>
+          <p>
+            Tools of this shape exist, and nearly all of them are built for a
+            team: an administrator, a shared pipeline, a report that goes
+            upward. Someone selling on their own needs none of that. They need
+            one screen that opens in the gaps of a day, on a phone, and answers
+            one question — who do I contact first today. Team mode came
+            afterwards and is a switch; the workspace a new account starts in
+            is still the personal one.
           </p>
           <Shot
             src="ask"
@@ -439,6 +491,19 @@ export default function SalesPalPage() {
             What comes out is a brief, a reply-time pattern, one of four
             customer archetypes, the objections raised, and — the part that
             earns its place — the questions asked and never answered, dated.
+          </p>
+          <p>
+            That archetype is not a label for its own sake; it is the first
+            axis of the second job. The profile screen has a{" "}
+            <em>Buka script</em> control, and what it opens is a reply chosen
+            by archetype against objection — the price one, say, for a customer
+            who decides fast — in a formal and a casual version, with a button
+            to copy it and a button to send it over WhatsApp. The archetype
+            sets the <strong className="font-medium text-fg">tone</strong>; the
+            objection sets the{" "}
+            <strong className="font-medium text-fg">content</strong>. Two axes,
+            not one list of answers. It has its own row in the deploy check,
+            which is how this page knows it is built and not just drawn.
           </p>
           <Shot
             src="profile"

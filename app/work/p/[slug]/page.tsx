@@ -9,8 +9,8 @@
 // the whole thing with the tail hidden.
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getProjectBySlug, getPageBlocks, storyOnly } from "@/app/lib/notion";
+import { notFound, permanentRedirect } from "next/navigation";
+import { getProjectBySlug, getPageBlocks, storyOnly, SUPERSEDED } from "@/app/lib/notion";
 import { visualFor } from "@/app/lib/projectVisuals";
 import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
@@ -26,6 +26,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  // A superseded row has no project record any more, so this would otherwise
+  // title the redirect "Not found".
+  if (SUPERSEDED[slug]) return { alternates: { canonical: SUPERSEDED[slug] } };
   const project = await getProjectBySlug(slug);
   if (!project) return { title: "Not found — Surfing Whale" };
 
@@ -60,6 +63,10 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  // This row has a written-up page now. The modal on the home page has a Copy
+  // link button, so links to this address are in other people's chats and
+  // bookmarks; 301 them to the page that replaced it rather than 404.
+  if (SUPERSEDED[slug]) permanentRedirect(SUPERSEDED[slug]);
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
