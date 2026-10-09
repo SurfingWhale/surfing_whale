@@ -13,7 +13,7 @@ import { getProjectBySlug, getPageBlocks, storyOnly, SUPERSEDED } from "@/app/li
 import { visualFor } from "@/app/lib/projectVisuals";
 import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
-import { ReadBlock, ReadNav } from "@/app/components/Read";
+import { ReadBlock, ReadNav, ReadPage } from "@/app/components/Read";
 import { SITE } from "@/app/lib/site";
 import { AccessProvider } from "@/app/components/AccessGate";
 import { ReadMoreGate } from "@/app/components/ReadMoreGate";
@@ -98,7 +98,7 @@ export default async function ProjectPage({
   const withheldGate = locked && blocks.length > FREE_BLOCKS;
 
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <ReadNav share={{ url: `${SITE}/work/p/${slug}`, title: project.title }} />
 
       <article className="py-16">
@@ -205,6 +205,6 @@ export default async function ProjectPage({
           )}
         </ReadBlock>
       </article>
-    </main>
+    </ReadPage>
   );
 }

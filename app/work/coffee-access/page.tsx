@@ -24,7 +24,7 @@ import { FieldNote } from "./FieldNote";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { ReadBlock, ReadNav, ReadSection, prose } from "@/app/components/Read";
+import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "15 minutes to coffee";
 const DESCRIPTION =
@@ -84,7 +84,7 @@ function Rows({ head, rows }: { head: string[]; rows: string[][] }) {
 
 export default function CoffeeAccessPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/coffee-access` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "15 minutes to coffee", path: "/work/coffee-access" }])} />
       <ReadNav share={{ url: `${SITE}/work/coffee-access`, title: TITLE }} />
@@ -249,6 +249,6 @@ export default function CoffeeAccessPage() {
 
         <ShareRow url={`${SITE}/work/coffee-access`} title={TITLE} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

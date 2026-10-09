@@ -4,6 +4,7 @@
 // widths and type sizes live once, in the "Reading pages" block of
 // globals.css, and nowhere in a page.
 //
+//   <ReadPage>                  the page: scales with the screen (globals.css)
 //   <ReadNav back share />      the sticky bar: the way back, and Share
 //   <ReadBlock>…</ReadBlock>    content in the text column, nothing in the rail
 //   <ReadSection number title>  a numbered section: its name in the rail
@@ -17,6 +18,13 @@ import { ShareButton } from "./ShareButton";
 
 /** Running text. Its size steps up with the screen (globals.css). */
 export const prose = "read-prose";
+
+/** The whole reading page. On a wide screen everything in it — type, rules,
+ *  pictures, gaps — grows together, so 1920px shows the 1440px page larger
+ *  rather than the same small page with more empty paper round it. */
+export function ReadPage({ children }: { children: React.ReactNode }) {
+  return <main className="read-page min-h-screen bg-bg text-fg">{children}</main>;
+}
 
 export function ReadNav({
   href = "/#project",

@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { ReadBlock, ReadNav } from "@/app/components/Read";
+import { ReadBlock, ReadNav, ReadPage } from "@/app/components/Read";
 import { TESTAMENT, testamentWords } from "@/app/data/testament";
 
 const DESCRIPTION =
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function TestamentPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd
         data={articleGraph({
           headline: TESTAMENT.title,
@@ -63,6 +63,6 @@ export default function TestamentPage() {
 
         <ShareRow url={`${SITE}/testament`} title={TESTAMENT.title} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

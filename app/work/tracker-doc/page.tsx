@@ -10,7 +10,7 @@ import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { ReadBlock, ReadNav, ReadSection, prose } from "@/app/components/Read";
+import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "TrackerDoc";
 const DESCRIPTION =
@@ -56,7 +56,7 @@ function Flow({ steps }: { steps: [string, string][] }) {
 
 export default function TrackerDocPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/tracker-doc` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "TrackerDoc", path: "/work/tracker-doc" }])} />
       <ReadNav share={{ url: `${SITE}/work/tracker-doc`, title: TITLE }} />
@@ -192,6 +192,6 @@ export default function TrackerDocPage() {
 
         <ShareRow url={`${SITE}/work/tracker-doc`} title={TITLE} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

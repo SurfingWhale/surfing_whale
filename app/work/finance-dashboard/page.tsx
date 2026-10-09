@@ -13,7 +13,7 @@ import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { prose, ReadBlock, ReadNav, ReadSection } from "@/app/components/Read";
+import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "A ledger that behaves like a product";
 const DESCRIPTION =
@@ -119,7 +119,7 @@ function Finding({
 
 export default function FinanceDashboardCaseStudy() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/finance-dashboard` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "A ledger that behaves like a product", path: "/work/finance-dashboard" }])} />
       <ReadNav href="/" label="Back" share={{ url: `${SITE}/work/finance-dashboard`, title: TITLE }} />
@@ -550,6 +550,6 @@ export default function FinanceDashboardCaseStudy() {
 
         <ShareRow url={`${SITE}/work/finance-dashboard`} title={TITLE} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

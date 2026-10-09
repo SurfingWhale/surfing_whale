@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { prose, ReadBlock, ReadNav } from "@/app/components/Read";
+import { prose, ReadBlock, ReadNav, ReadPage } from "@/app/components/Read";
 import { getEssay, listEssays } from "@/app/lib/darkroom";
 
 export const revalidate = 60;
@@ -42,7 +42,7 @@ export default async function EssayPage({ params }: Params) {
   if (!essay || !essay.published) notFound();
 
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd
         data={articleGraph({
           headline: essay.title,
@@ -112,6 +112,6 @@ export default async function EssayPage({ params }: Params) {
 
         <ShareRow url={`${SITE}/photo/${slug}`} title={essay.title} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

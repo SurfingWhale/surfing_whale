@@ -21,7 +21,7 @@ import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { ReadBlock, ReadNav, ReadSection } from "@/app/components/Read";
+import { ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "Padel, and the moat nobody has dug";
 const DESCRIPTION =
@@ -134,7 +134,7 @@ const BOTTOM_PC = BY_PC.slice(-4);
 
 export default function PadelPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/padel` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Padel, and the moat nobody has dug", path: "/work/padel" }])} />
       <ReadNav share={{ url: `${SITE}/work/padel`, title: TITLE }} />
@@ -370,6 +370,6 @@ export default function PadelPage() {
 
         <ShareRow url={`${SITE}/work/padel`} title={TITLE} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

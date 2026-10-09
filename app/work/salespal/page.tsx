@@ -58,7 +58,7 @@ import { Showreel } from "@/app/components/Showreel";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { ReadBlock, ReadNav, ReadSection } from "@/app/components/Read";
+import { ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "The CRM opens with a form. This one opens with today.";
 const DESCRIPTION =
@@ -239,7 +239,7 @@ const SIGNALS: { signal: string; max: string; field: string; how: string; by: st
 
 export default function SalesPalPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/salespal` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "SalesPal", path: "/work/salespal" }])} />
       <ReadNav share={{ url: `${SITE}/work/salespal`, title: TITLE }} />
@@ -739,6 +739,6 @@ export default function SalesPalPage() {
 
         <ShareRow url={`${SITE}/work/salespal`} title={TITLE} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

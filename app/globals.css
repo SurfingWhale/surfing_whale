@@ -1111,6 +1111,63 @@ html.intro-out .sw-intro-wave {
   }
 }
 
+/* The whole reading page scales with the screen past 75rem. Type alone was
+   not enough: a 21px paragraph beside 13px tables, captions and labels is a
+   different design, not a bigger one. `zoom` grows all of it together —
+   text, rules, pictures, gaps — and the grid lays out in the zoomed width,
+   so each step keeps the composition of a 1200–1550px window, larger.
+   At 1920px that is body text at 21px; on a phone and a tablet, nothing.
+
+   Steps rather than a formula: a zoom that follows 100vw needs CSS typed
+   arithmetic, which not every browser this site supports can do. */
+@media (min-width: 75rem) {
+  .read-page {
+    zoom: 1.06;
+  }
+}
+
+@media (min-width: 85rem) {
+  .read-page {
+    zoom: 1.125;
+  }
+}
+
+@media (min-width: 95rem) {
+  .read-page {
+    zoom: 1.19;
+  }
+}
+
+@media (min-width: 105rem) {
+  .read-page {
+    zoom: 1.25;
+  }
+}
+
+@media (min-width: 115rem) {
+  .read-page {
+    zoom: 1.31;
+  }
+}
+
+@media (min-width: 130rem) {
+  .read-page {
+    zoom: 1.44;
+  }
+}
+
+@media (min-width: 150rem) {
+  .read-page {
+    zoom: 1.62;
+  }
+}
+
+@media (min-width: 170rem) {
+  .read-page {
+    zoom: 1.75;
+  }
+}
+
 /* ---- The page as a sheet over the footer ---------------------------------
    Everything above the footer sits on one sheet with the page colour behind
    it. The footer is pinned under it (sticky to the bottom of the window), so

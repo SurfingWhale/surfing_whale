@@ -2175,3 +2175,23 @@ the home footer all put `https://surfing-whale.vercel.app/…` on the clipboard
 or into the sheet. `verify-share.mjs` (Playwright, cloud only) still matches
 the new markup: Copy is the row's first button, the sheet button is the only
 one named *share*, Instagram is a button named *Instagram*.
+
+### The same day: the page scales with the screen
+
+At 1920px the text was still 16px — Fauzy's screenshot, and the right
+complaint: a layout that only gets wider is not a layout that scales. Type
+alone could not fix it, because a 21px paragraph beside 13px tables,
+captions and labels is a different design rather than a bigger one.
+
+`ReadPage` (the `<main>` of every reading page) takes `zoom` in steps past
+75rem — 1.06, 1.125, 1.19, 1.25, 1.31, 1.44, 1.62, 1.75 at 75, 85, 95, 105,
+115, 130, 150, 170rem — so everything grows together and the grid lays out
+in the zoomed width: each step keeps the composition of a 1200–1550px
+window. Running text measured on the page: 16px at 1100, 18 at 1440, 21 at
+1920, 26 at 2560. Phone and tablet: unchanged. Steps rather than a formula,
+because a zoom that follows `100vw` needs CSS typed arithmetic.
+
+Checked under zoom, because `zoom` is where layouts quietly break: no
+sideways scroll at any width; the bar and the rail stay sticky; the Share
+menu opens under its button; and a click on the live map's zoom control
+inside its sandboxed iframe lands on the control at 1920 as at 1100.

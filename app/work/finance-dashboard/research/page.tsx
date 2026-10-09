@@ -1,4 +1,4 @@
-import { ReadBlock, ReadNav, ReadSection, prose } from "@/app/components/Read";
+import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 // app/work/finance-dashboard/research/page.tsx
 //
 // The market research behind the finance dashboard, shown as the document it
@@ -39,7 +39,7 @@ const linkish =
 
 export default function ResearchPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/finance-dashboard/research` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Market research", path: "/work/finance-dashboard/research" }])} />
       <ReadNav href="/work/finance-dashboard" label="Case study" />
@@ -125,6 +125,6 @@ export default function ResearchPage() {
           </p>
         </ReadSection>
       </article>
-    </main>
+    </ReadPage>
   );
 }

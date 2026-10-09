@@ -17,7 +17,7 @@ import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { ReadBlock, ReadNav, ReadSection, prose } from "@/app/components/Read";
+import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "Reading Los Angeles by its crime reports";
 const DESCRIPTION =
@@ -81,7 +81,7 @@ function Chart({ src, alt, caption }: { src: string; alt: string; caption: strin
 
 export default function CrimeLAPage() {
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/crime-la` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Reading Los Angeles by its crime reports", path: "/work/crime-la" }])} />
       <ReadNav share={{ url: `${SITE}/work/crime-la`, title: TITLE }} />
@@ -225,6 +225,6 @@ export default function CrimeLAPage() {
 
         <ShareRow url={`${SITE}/work/crime-la`} title={TITLE} />
       </article>
-    </main>
+    </ReadPage>
   );
 }

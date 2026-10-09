@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
-import { ReadBlock, ReadNav, prose } from "@/app/components/Read";
+import { prose, ReadBlock, ReadNav, ReadPage } from "@/app/components/Read";
 import { type Block, getPost, listPosts, readingMinutes } from "@/app/lib/writing";
 
 export const revalidate = 60;
@@ -104,7 +104,7 @@ export default async function PostPage({ params }: Params) {
   if (!post || !post.published) notFound();
 
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <ReadPage>
       <JsonLd
         data={articleGraph({
           headline: post.title,
@@ -156,6 +156,6 @@ export default async function PostPage({ params }: Params) {
 
         <ShareRow url={`${SITE}/writing/${slug}`} title={post.title} />
       </article>
-    </main>
+    </ReadPage>
   );
 }
