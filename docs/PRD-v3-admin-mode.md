@@ -306,8 +306,9 @@ Everything known to be unfinished, in the order it costs something.
 10. **The hero typeface was never resolved.** It is Oswald — condensed — where
     the reference Fauzy sent uses a wide grotesque. Candidates offered and
     never chosen: Archivo Black, Inter Black, Figtree 900.
-11. Items 1 and 2 of §9 are still open: whether `/writing` belongs in the main
-    navigation, and whether guest notes need a reply from inside the studio.
+11. ~~Whether `/writing` belongs in the main navigation~~ — it is in it
+    (`NAV_LINKS` in `app/page.tsx`, checked 2026-10-09). Still open: whether
+    guest notes need a reply from inside the studio.
 
 ### 11.5 Housekeeping
 
@@ -327,6 +328,18 @@ Everything known to be unfinished, in the order it costs something.
     sign-in would, and the app's Google button signs in in place the first
     time the answer is yes. Until then, on an iPhone, the app's button opens
     the studio in Safari, where Google works.
+
+    **Re-checked 2026-10-09, after Fauzy said it was saved:** still refused.
+    Asked through Firebase exactly as the app asks (`createAuthUri`, then the
+    sign-in page it returns), the same client answers `redirect_uri_mismatch`
+    for `https://surfing-whale.vercel.app/__/auth/handler` and the Google
+    sign-in page for `https://surfing-whale.firebaseapp.com/__/auth/handler`;
+    the live `/api/studio/google-ready` says `{"ready":false}`. So the address
+    is not on *this* client yet. The likely slips: saved on a different OAuth
+    client (the right one's ID starts `751278619218-posj0le1`), put under
+    Authorized JavaScript origins instead of redirect URIs, a trailing slash
+    or `http://`, or the page left without pressing Save. Google also says a
+    change can take from five minutes to a few hours to apply.
 
 ## 12. Discoverability audit — 2026-10-02
 
