@@ -4,11 +4,11 @@
 // that is how they are written, but a screen reader should hear "list of
 // three items" rather than three unrelated lines.
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ReadBlock, ReadNav, prose } from "@/app/components/Read";
 import { type Block, getPost, listPosts, readingMinutes } from "@/app/lib/writing";
 
 export const revalidate = 60;
@@ -55,47 +55,27 @@ function group(blocks: Block[]): (Block | { list: "bullet" | "number"; items: Bl
   return out;
 }
 
-const column = "container mx-auto px-6 max-w-[680px]";
-const prose = "text-[13px] leading-[2] text-fg-body max-w-[560px]";
 
+// Plain elements: the page puts them all in one text column (ReadBlock),
+// which sizes the type and holds the measure.
 function Piece({ block }: { block: Block }) {
   switch (block.kind) {
     case "heading":
-      return (
-        <h2 className={`${column} text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg mt-12 mb-3`}>
-          {block.text}
-        </h2>
-      );
+      return <h2 className="read-title mt-12 mb-3">{block.text}</h2>;
     case "subheading":
-      return (
-        <h3 className={`${column} text-[13px] font-medium leading-[1.8] text-fg mt-8 mb-2`}>
-          {block.text}
-        </h3>
-      );
+      return <h3 className="font-medium text-fg mt-8 mb-2">{block.text}</h3>;
     case "quote":
       return (
-        <div className={column}>
-          <blockquote className={`${prose} border-l-2 border-border-strong pl-5 my-6 not-italic`}>
-            {block.text}
-          </blockquote>
-        </div>
+        <blockquote className="border-l-2 border-border-strong pl-5 my-6 not-italic">{block.text}</blockquote>
       );
     case "code":
       return (
-        <div className={column}>
-          <pre className="my-6 p-4 rounded-lg bg-bg-subtle border border-border overflow-x-auto">
-            <code className="font-mono text-[11px] leading-[1.8] text-fg whitespace-pre">
-              {block.text}
-            </code>
-          </pre>
-        </div>
+        <pre className="my-6 p-4 rounded-lg bg-bg-subtle border border-border overflow-x-auto">
+          <code className="font-mono text-[11px] leading-[1.8] text-fg whitespace-pre">{block.text}</code>
+        </pre>
       );
     case "divider":
-      return (
-        <div className={column}>
-          <hr className="border-0 border-t border-border my-12" />
-        </div>
-      );
+      return <hr className="border-0 border-t border-border my-12" />;
     case "image":
       return (
         <figure className="my-10 photo-row">
@@ -113,11 +93,7 @@ function Piece({ block }: { block: Block }) {
         </figure>
       );
     default:
-      return (
-        <div className={column}>
-          <p className={`${prose} mb-5`}>{block.text}</p>
-        </div>
-      );
+      return <p className="mb-5">{block.text}</p>;
   }
 }
 
@@ -138,53 +114,47 @@ export default async function PostPage({ params }: Params) {
           datePublished: post.date || undefined,
         })}
       />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className={`${column} h-14 flex items-center`}>
-          <Link href="/writing" className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300">
-            ← Writing
-          </Link>
-        </div>
-      </nav>
+      <ReadNav href="/writing" label="Writing" share={{ url: `${SITE}/writing/${slug}`, title: post.title }} />
 
       <article className="py-16">
-        <header className={`${column} mb-10`}>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-            {post.date
-              ? new Date(post.date).toLocaleDateString("en-GB", {
-                  day: "numeric", month: "long", year: "numeric",
-                })
-              : "Writing"}
-            {post.words > 0 && ` · ${readingMinutes(post.words)} min read`}
-          </p>
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {post.title}
-          </h1>
-          {post.standfirst && (
-            <p className={`${prose} mt-4`}>{post.standfirst}</p>
-          )}
-        </header>
+        <ReadBlock className="mb-10">
+          <header>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
+              {post.date
+                ? new Date(post.date).toLocaleDateString("en-GB", {
+                    day: "numeric", month: "long", year: "numeric",
+                  })
+                : "Writing"}
+              {post.words > 0 && ` · ${readingMinutes(post.words)} min read`}
+            </p>
+            <h1 className="read-h1">
+              {post.title}
+            </h1>
+            {post.standfirst && (
+              <p className={`${prose} mt-4`}>{post.standfirst}</p>
+            )}
+          </header>
+        </ReadBlock>
 
-        {group(post.blocks).map((entry, i) =>
-          "list" in entry ? (
-            <div key={i} className={column}>
-              {entry.list === "bullet" ? (
-                <ul className={`${prose} list-disc pl-5 marker:text-fg-muted mb-5 space-y-1`}>
+        <ReadBlock text>
+          {group(post.blocks).map((entry, i) =>
+            "list" in entry ? (
+              entry.list === "bullet" ? (
+                <ul key={i} className="list-disc pl-5 marker:text-fg-muted mb-5 space-y-1">
                   {entry.items.map((item, k) => <li key={k}>{item.text}</li>)}
                 </ul>
               ) : (
-                <ol className={`${prose} list-decimal pl-5 marker:text-fg-muted mb-5 space-y-1`}>
+                <ol key={i} className="list-decimal pl-5 marker:text-fg-muted mb-5 space-y-1">
                   {entry.items.map((item, k) => <li key={k}>{item.text}</li>)}
                 </ol>
-              )}
-            </div>
-          ) : (
-            <Piece key={i} block={entry} />
-          )
-        )}
+              )
+            ) : (
+              <Piece key={i} block={entry} />
+            )
+          )}
+        </ReadBlock>
 
-        <div className={column}>
-          <ShareRow url={`${SITE}/writing/${slug}`} title={post.title} />
-        </div>
+        <ShareRow url={`${SITE}/writing/${slug}`} title={post.title} />
       </article>
     </main>
   );

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ReadBlock, ReadNav, ReadSection, prose } from "@/app/components/Read";
 
 const TITLE = "TrackerDoc";
 const DESCRIPTION =
@@ -28,32 +29,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: ["/og-surfing-whale.jpg"] },
 };
 
-const column = "container mx-auto px-6 max-w-[680px]";
-const prose = "text-[13px] leading-[2] text-fg-body";
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-10 border-t border-border">
-      <div className={column}>
-        <div className="flex items-baseline gap-4 mb-4">
-          <span className="font-mono text-[11px] text-fg-muted">{number}</span>
-          <h2 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {title}
-          </h2>
-        </div>
-        <div className={`space-y-4 ${prose}`}>{children}</div>
-      </div>
-    </section>
-  );
-}
 
 /** The pipeline, as a list rather than a diagram — it is linear, so a
     diagram would only add decoration. */
@@ -83,33 +59,26 @@ export default function TrackerDocPage() {
     <main className="min-h-screen bg-bg text-fg">
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/tracker-doc` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "TrackerDoc", path: "/work/tracker-doc" }])} />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className={`${column} h-14 flex items-center`}>
-          <Link
-            href="/#project"
-            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
-          >
-            ← Work
-          </Link>
-        </div>
-      </nav>
+      <ReadNav share={{ url: `${SITE}/work/tracker-doc`, title: TITLE }} />
 
       <article className="py-16">
-        <header className={`${column} mb-6`}>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-            Internal tool · June 2026
-          </p>
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            TrackerDoc
-          </h1>
-          <p className={`${prose} mt-4 max-w-[560px]`}>
-            A document approval tracker built on top of the spreadsheet the
-            office was already using — on purpose, because taking the
-            spreadsheet away would have ended the project in week one.
-          </p>
-        </header>
+        <ReadBlock className="mb-6">
+          <header>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
+              Internal tool · June 2026
+            </p>
+            <h1 className="read-h1">
+              TrackerDoc
+            </h1>
+            <p className={`${prose} mt-4 max-w-[560px]`}>
+              A document approval tracker built on top of the spreadsheet the
+              office was already using — on purpose, because taking the
+              spreadsheet away would have ended the project in week one.
+            </p>
+          </header>
+        </ReadBlock>
 
-        <Section number="01" title="The actual problem">
+        <ReadSection number="01" title="The actual problem">
           <p>
             Documents went in for approval and then existed only in somebody&apos;s
             memory. Where is it, who has it, has it been signed — every answer
@@ -121,9 +90,9 @@ export default function TrackerDocPage() {
             that gets abandoned in a month, because it asks people who work in
             Sheets all day to go and live somewhere else.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="02" title="Keeping the spreadsheet as the database">
+        <ReadSection number="02" title="Keeping the spreadsheet as the database">
           <p>
             So the spreadsheet stayed, and became the actual store. Admins can
             still open the sheet, sort it, fix a typo, and the app reflects it.
@@ -146,9 +115,9 @@ export default function TrackerDocPage() {
             away, and the thing bought with it — nobody had to change how they
             work — was worth more than referential integrity.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="03" title="Two views, two different audiences">
+        <ReadSection number="03" title="Two views, two different audiences">
           <p>
             The requestor view answers one question — where is my document —
             and is reachable with a shared view password, because making
@@ -166,9 +135,9 @@ export default function TrackerDocPage() {
             approving at a desk is a table you scan and filter. Making one
             layout do both would have made both worse.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="04" title="What it is honestly not">
+        <ReadSection number="04" title="What it is honestly not">
           <p>
             The view password is a shared secret, which is appropriate for
             &quot;is my document signed yet&quot; and would not be appropriate
@@ -178,9 +147,9 @@ export default function TrackerDocPage() {
             tracker and both would need replacing before this held anything
             sensitive.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="05" title="What was next">
+        <ReadSection number="05" title="What was next">
           <p>
             The written-up next step was document tagging: each document
             labelled with where it came from — email, WhatsApp, walk-in,
@@ -195,9 +164,9 @@ export default function TrackerDocPage() {
             where an operations tool starts producing analysis instead of
             just status.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="06" title="Stack">
+        <ReadSection number="06" title="Stack">
           <p>
             Next.js 16 with the App Router, React 19, NextAuth for Google SSO,
             Google Apps Script as the API layer, Google Sheets as the store,
@@ -205,9 +174,9 @@ export default function TrackerDocPage() {
             it holds an internal workflow — so this page is the description
             rather than a link into it.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="07" title="Related">
+        <ReadSection number="07" title="Related">
           <p>
             The other product on this site, built for one user rather than an
             office, is the{" "}
@@ -219,11 +188,9 @@ export default function TrackerDocPage() {
             </Link>
             .
           </p>
-        </Section>
+        </ReadSection>
 
-        <div className={column}>
-          <ShareRow url={`${SITE}/work/tracker-doc`} title={TITLE} />
-        </div>
+        <ShareRow url={`${SITE}/work/tracker-doc`} title={TITLE} />
       </article>
     </main>
   );

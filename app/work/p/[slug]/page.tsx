@@ -8,17 +8,17 @@
 // not been approved is sent the opening of the page and nothing else — not
 // the whole thing with the tail hidden.
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getProjectBySlug, getPageBlocks, storyOnly, SUPERSEDED } from "@/app/lib/notion";
 import { visualFor } from "@/app/lib/projectVisuals";
 import { BlockRenderer, FREE_BLOCKS } from "@/app/components/ProjectBlocks";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
+import { ReadBlock, ReadNav } from "@/app/components/Read";
+import { SITE } from "@/app/lib/site";
 import { AccessProvider } from "@/app/components/AccessGate";
 import { ReadMoreGate } from "@/app/components/ReadMoreGate";
 import { gateEnabled, isReader } from "@/app/lib/accessSession";
 
-const column = "container mx-auto px-6 max-w-[680px]";
 
 export async function generateMetadata({
   params,
@@ -99,76 +99,69 @@ export default async function ProjectPage({
 
   return (
     <main className="min-h-screen bg-bg text-fg">
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className={`${column} h-14 flex items-center`}>
-          <Link
-            href="/#project"
-            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
-          >
-            ← Work
-          </Link>
-        </div>
-      </nav>
+      <ReadNav share={{ url: `${SITE}/work/p/${slug}`, title: project.title }} />
 
       <article className="py-16">
-        <header className={`${column} mb-8`}>
-          {project.subGroup && (
-            <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-              {project.subGroup}
-              {project.date ? ` · ${project.date.slice(0, 4)}` : ""}
-            </p>
-          )}
-          <div className="flex items-center gap-3">
-            {visual?.mark && (
-              /* The product's own icon, at the size of the text beside it.
-                 Decorative: the title says the name, so a screen reader
-                 reading both would say it twice. */
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={visual.mark}
-                alt=""
-                aria-hidden="true"
-                width={22}
-                height={22}
-                className="w-[22px] h-[22px] shrink-0 rounded-[5px]"
-              />
+        <ReadBlock className="mb-8">
+          <header>
+            {project.subGroup && (
+              <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
+                {project.subGroup}
+                {project.date ? ` · ${project.date.slice(0, 4)}` : ""}
+              </p>
             )}
-            <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-              {project.title}
-            </h1>
-          </div>
-          {project.tags.length > 0 && (
-            <div className="flex gap-2 mt-4 flex-wrap">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[11px] px-2 py-0.5 border border-border rounded-full text-fg-secondary"
-                >
-                  {tag}
-                </span>
-              ))}
+            <div className="flex items-center gap-3">
+              {visual?.mark && (
+                /* The product's own icon, at the size of the text beside it.
+                   Decorative: the title says the name, so a screen reader
+                   reading both would say it twice. */
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={visual.mark}
+                  alt=""
+                  aria-hidden="true"
+                  width={22}
+                  height={22}
+                  className="w-[22px] h-[22px] shrink-0 rounded-[5px]"
+                />
+              )}
+              <h1 className="read-h1">
+                {project.title}
+              </h1>
             </div>
-          )}
-          {project.link && project.link !== "#" && (
-            <p className="mt-5">
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-              >
-                Open project →
-              </a>
-            </p>
-          )}
-        </header>
+            {project.tags.length > 0 && (
+              <div className="flex gap-2 mt-4 flex-wrap">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[11px] px-2 py-0.5 border border-border rounded-full text-fg-secondary"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+            {project.link && project.link !== "#" && (
+              <p className="mt-5">
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
+                >
+                  Open project →
+                </a>
+              </p>
+            )}
+          </header>
+        </ReadBlock>
 
         {/* Every project gets the frame, whether or not there is anything to
             put in it. A study that opens with a picture and one that opens
             with a paragraph should still look like the same site — and the
             empty frame says what is missing instead of pretending nothing is.
             Same component the hand-written case studies use. */}
-        <div className={`${column} mb-10`}>
+        <ReadBlock className="mb-10">
           <EmbedFrame
             image={hero}
             src={live}
@@ -183,9 +176,9 @@ export default async function ProjectPage({
             }
             pending="Nothing has been exported for this project yet — no screenshot, no map, no chart."
           />
-        </div>
+        </ReadBlock>
 
-        <div className={column}>
+        <ReadBlock>
           {shown.length === 0 ? (
             <p className="text-[13px] leading-[2] text-fg-muted">
               Nothing written up for this one yet.
@@ -210,7 +203,7 @@ export default async function ProjectPage({
               <ReadMoreGate reason="Project" />
             </AccessProvider>
           )}
-        </div>
+        </ReadBlock>
       </article>
     </main>
   );

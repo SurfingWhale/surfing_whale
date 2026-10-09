@@ -24,6 +24,7 @@ import { FieldNote } from "./FieldNote";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ReadBlock, ReadNav, ReadSection, prose } from "@/app/components/Read";
 
 const TITLE = "15 minutes to coffee";
 const DESCRIPTION =
@@ -42,32 +43,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: ["/og-surfing-whale.jpg"] },
 };
 
-const column = "container mx-auto px-6 max-w-[680px]";
-const prose = "text-[13px] leading-[2] text-fg-body";
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-10 border-t border-border">
-      <div className={column}>
-        <div className="flex items-baseline gap-4 mb-4">
-          <span className="font-mono text-[11px] text-fg-muted">{number}</span>
-          <h2 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {title}
-          </h2>
-        </div>
-        <div className={`space-y-4 ${prose}`}>{children}</div>
-      </div>
-    </section>
-  );
-}
 
 /** A two-column list without a <table>'s styling problems at 13px. */
 function Rows({ head, rows }: { head: string[]; rows: string[][] }) {
@@ -111,19 +87,10 @@ export default function CoffeeAccessPage() {
     <main className="min-h-screen bg-bg text-fg">
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/coffee-access` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "15 minutes to coffee", path: "/work/coffee-access" }])} />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className={`${column} h-14 flex items-center`}>
-          <Link
-            href="/#project"
-            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
-          >
-            ← Work
-          </Link>
-        </div>
-      </nav>
+      <ReadNav share={{ url: `${SITE}/work/coffee-access`, title: TITLE }} />
 
       <article className="py-16">
-        <div className={column}>
+        <ReadBlock>
           <CaseHeader
             scale="display"
             kicker="Field note · October 2025"
@@ -136,9 +103,9 @@ export default function CoffeeAccessPage() {
               { label: "Built with", value: "Python, Leaflet" },
             ]}
           />
-        </div>
+        </ReadBlock>
 
-        <Section number="01" title="The question">
+        <ReadSection number="01" title="The question">
           <p>
             Two things have been growing side by side in the commuter belt
             south of Jakarta: fast-format coffee chains, and mid-market
@@ -154,9 +121,9 @@ export default function CoffeeAccessPage() {
             estates rather than the traffic, that is a claim about who the
             format is for.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="02" title="The note itself">
+        <ReadSection number="02" title="The note itself">
           <EmbedFrame
             image="/work/coffee/isochrone-tomoro.jpg"
             alt="Isochrone map of Jabodetabek: around twenty-eight Tomoro Coffee branches, each with 5, 10 and 15-minute drive-time bands shading from pale to deep red over a CARTO basemap."
@@ -184,9 +151,9 @@ export default function CoffeeAccessPage() {
               ["Everything else residential", "OpenStreetMap residential tags"],
             ]}
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="03" title="What the map showed">
+        <ReadSection number="03" title="What the map showed">
           <p>
             Three things, and they are worth stating rather than leaving in
             the note for a reader to find.
@@ -223,9 +190,9 @@ export default function CoffeeAccessPage() {
             afford to travel in — so mapping where the coffee is turns out to
             be a way of mapping who has time to spare.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="04" title="Where this stops">
+        <ReadSection number="04" title="Where this stops">
           <p>
             These are preliminary findings and they should be read as such.
             They are patterns read off an overlay, not counts: no share of
@@ -248,9 +215,9 @@ export default function CoffeeAccessPage() {
             public-transport layer yet — which is awkward, because the third
             finding is precisely a claim about transport.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="05" title="What would finish it">
+        <ReadSection number="05" title="What would finish it">
           <p>
             Counting, first: the share of housing inside the ten-minute band
             per zone, so the first finding becomes a number rather than an
@@ -263,9 +230,9 @@ export default function CoffeeAccessPage() {
             follows it. And an interactive map, so the overlay can be examined
             instead of described.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="06" title="Related">
+        <ReadSection number="06" title="Related">
           <p>
             The same isochrone method, applied to padel courts rather than
             coffee, is the{" "}
@@ -278,11 +245,9 @@ export default function CoffeeAccessPage() {
             in the list of other work — same city, same technique, a different
             thing being placed.
           </p>
-        </Section>
+        </ReadSection>
 
-        <div className={column}>
-          <ShareRow url={`${SITE}/work/coffee-access`} title={TITLE} />
-        </div>
+        <ShareRow url={`${SITE}/work/coffee-access`} title={TITLE} />
       </article>
     </main>
   );

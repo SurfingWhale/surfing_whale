@@ -13,6 +13,7 @@ import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { prose, ReadBlock, ReadNav, ReadSection } from "@/app/components/Read";
 
 const TITLE = "A ledger that behaves like a product";
 const DESCRIPTION =
@@ -90,27 +91,6 @@ function Screen({
   );
 }
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-10 border-t border-border">
-      <div className="flex items-baseline gap-4 mb-4">
-        <span className="font-mono text-[11px] text-fg-muted">{number}</span>
-        <h2 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-          {title}
-        </h2>
-      </div>
-      <div className="space-y-4 text-[13px] leading-[2] text-fg-body">{children}</div>
-    </section>
-  );
-}
 
 
 // A finding worth reading as a unit rather than as prose — used for the audit,
@@ -142,69 +122,64 @@ export default function FinanceDashboardCaseStudy() {
     <main className="min-h-screen bg-bg text-fg">
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/finance-dashboard` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "A ledger that behaves like a product", path: "/work/finance-dashboard" }])} />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className="container mx-auto px-6 h-14 flex items-center max-w-[680px]">
-          <Link
-            href="/"
-            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
-          >
-            ← Back
-          </Link>
-        </div>
-      </nav>
+      <ReadNav href="/" label="Back" share={{ url: `${SITE}/work/finance-dashboard`, title: TITLE }} />
 
-      <article className="container mx-auto px-6 py-16 max-w-[680px]">
-        <header className="mb-6">
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-            Case study
-          </p>
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            A ledger that behaves like a product
-          </h1>
-          <p className="text-[13px] leading-[2] text-fg-body mt-4 max-w-[560px]">
-            A personal finance dashboard built on real double-entry accounting —
-            a 112-account general ledger, monthly financial statements, a
-            built-in Indonesian tax estimator, and prorate budgeting against
-            working days. Researched against 1,050 app-store reviews, then
-            audited as its own separate pass.
-          </p>
+      <article className="py-16">
+        <ReadBlock className="mb-6">
+          <header>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
+              Case study
+            </p>
+            <h1 className="read-h1">
+              A ledger that behaves like a product
+            </h1>
+            <p className={`${prose} mt-4 max-w-[560px]`}>
+              A personal finance dashboard built on real double-entry accounting —
+              a 112-account general ledger, monthly financial statements, a
+              built-in Indonesian tax estimator, and prorate budgeting against
+              working days. Researched against 1,050 app-store reviews, then
+              audited as its own separate pass.
+            </p>
 
-          <div className="flex flex-wrap gap-2 mt-6">
-            {[
-              "React 19",
-              "Vite",
-              "Tailwind",
-              "Firebase Auth",
-              "Firestore",
-              "Modal.com",
-              "Double-entry accounting",
-            ].map((tag) => (
-              <span
-                key={tag}
-                className="text-[11px] px-3 py-1 border border-border rounded-full text-fg-secondary"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+            <div className="flex flex-wrap gap-2 mt-6">
+              {[
+                "React 19",
+                "Vite",
+                "Tailwind",
+                "Firebase Auth",
+                "Firestore",
+                "Modal.com",
+                "Double-entry accounting",
+              ].map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[11px] px-3 py-1 border border-border rounded-full text-fg-secondary"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
 
-          <a
-            href={LIVE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-8 text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
-          >
-            View the live dashboard
-          </a>
-        </header>
+            <a
+              href={LIVE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-8 text-[13px] font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200"
+            >
+              View the live dashboard
+            </a>
+          </header>
+        </ReadBlock>
 
-        <Screen
-          src={SCREENS[0].src}
-          alt={SCREENS[0].alt}
-          caption={SCREENS[0].caption}
-        />
+        <ReadBlock>
+          <Screen
+            src={SCREENS[0].src}
+            alt={SCREENS[0].alt}
+            caption={SCREENS[0].caption}
+          />
+        </ReadBlock>
 
-        <Section number="01" title="Starting from reviews, not features">
+        <ReadSection number="01" title="Starting from reviews, not features">
           <p>
             I did not begin with a feature list. I began by reading{" "}
             <span className="text-fg">1,050 Google Play reviews</span> — 600
@@ -260,9 +235,9 @@ export default function FinanceDashboardCaseStudy() {
             </Link>
             .
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="02" title="Why a general ledger, not categories">
+        <ReadSection number="02" title="Why a general ledger, not categories">
           <p>
             Spending rolls up through GL accounts rather than a flat category
             list, so a single expense carries both its account and its group —
@@ -297,9 +272,9 @@ export default function FinanceDashboardCaseStudy() {
             The positioning I wrote for that segment: a complete financial
             system for people who want to <em>understand</em>, not just record.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="03" title="Prorate against working days">
+        <ReadSection number="03" title="Prorate against working days">
           <p>
             The allocation model divides available liquid funds across{" "}
             <span className="text-fg">working days</span>, not calendar days.
@@ -329,9 +304,9 @@ export default function FinanceDashboardCaseStudy() {
             means the one screen built on a general ledger is the one screen
             not using it. That is written down as the next thing to fix.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="04" title="Forecasting">
+        <ReadSection number="04" title="Forecasting">
           <p>
             The dashboard projects an end-of-month balance from the current
             spending pattern and flags the result when liquid funds are on track
@@ -359,9 +334,9 @@ export default function FinanceDashboardCaseStudy() {
             instinct. A projected number that will not say where it came from
             is a number nobody should act on.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="05" title="Rekap Finansial — learning the pattern from a competitor">
+        <ReadSection number="05" title="Rekap Finansial — learning the pattern from a competitor">
           <p>
             Each month resolves to a persona —{" "}
             <span className="text-fg">Sang Penikmat #SiRoyal</span> for a month
@@ -403,9 +378,9 @@ export default function FinanceDashboardCaseStudy() {
             that answers &ldquo;what should I do next&rdquo; rather than
             &ldquo;what did I do.&rdquo;
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="06" title="Getting data in, and keeping it trustworthy">
+        <ReadSection number="06" title="Getting data in, and keeping it trustworthy">
           <p>
             Bank statements arrive as PDFs, so a FastAPI parser running on
             Modal.com reads them and drops the results into a{" "}
@@ -419,9 +394,9 @@ export default function FinanceDashboardCaseStudy() {
             figures in the banking app — the step that keeps the ledger
             trustworthy rather than merely tidy.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="07" title="Auditing my own build">
+        <ReadSection number="07" title="Auditing my own build">
           <p>
             On 15 May 2026 I ran a security and code audit of the codebase as
             its own separate pass, with an auditor&apos;s brief rather than a
@@ -501,9 +476,9 @@ export default function FinanceDashboardCaseStudy() {
             <span className="font-mono">KFC</span> against{" "}
             <span className="font-mono">FKC</span> as a 100% match.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="08" title="Reviewing my own interface, and losing">
+        <ReadSection number="08" title="Reviewing my own interface, and losing">
           <p>
             Two weeks later I did the same thing to the UI: a written self-review
             against CatatYu, a competitor whose product is far simpler than
@@ -555,9 +530,9 @@ export default function FinanceDashboardCaseStudy() {
             assets, liabilities, capital and retained earnings, so the check
             reads as reassurance rather than an alarm you cannot act on.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="09" title="What is still open">
+        <ReadSection number="09" title="What is still open">
           <p>
             Both gaps the May review named have since closed: monthly budgeting
             by the prorate view, and debt by the planning sheet, which now
@@ -570,12 +545,10 @@ export default function FinanceDashboardCaseStudy() {
             would rather show them that way. The interesting part of this project
             was never that it works; it is that I wrote down where it did not.
           </p>
-        </Section>
+        </ReadSection>
 
 
-        <div className="container mx-auto px-6 max-w-[680px]">
-          <ShareRow url={`${SITE}/work/finance-dashboard`} title={TITLE} />
-        </div>
+        <ShareRow url={`${SITE}/work/finance-dashboard`} title={TITLE} />
       </article>
     </main>
   );

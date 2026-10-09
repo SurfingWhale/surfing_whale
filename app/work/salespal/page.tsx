@@ -58,6 +58,7 @@ import { Showreel } from "@/app/components/Showreel";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ReadBlock, ReadNav, ReadSection } from "@/app/components/Read";
 
 const TITLE = "The CRM opens with a form. This one opens with today.";
 const DESCRIPTION =
@@ -76,34 +77,9 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: ["/og-surfing-whale.jpg"] },
 };
 
-const column = "container mx-auto px-6 max-w-[680px]";
-const prose = "text-[13px] leading-[2] text-fg-body";
 const linkish =
   "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200";
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-10 border-t border-border">
-      <div className={column}>
-        <div className="flex items-baseline gap-4 mb-4">
-          <span className="font-mono text-[11px] text-fg-muted">{number}</span>
-          <h2 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {title}
-          </h2>
-        </div>
-        <div className={`space-y-4 ${prose}`}>{children}</div>
-      </div>
-    </section>
-  );
-}
 
 // Each shot carries its real pixel size, so the browser reserves the box from
 // the aspect ratio and the caption under it does not jump when the bytes land.
@@ -266,19 +242,10 @@ export default function SalesPalPage() {
     <main className="min-h-screen bg-bg text-fg">
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/salespal` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "SalesPal", path: "/work/salespal" }])} />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className={`${column} h-14 flex items-center`}>
-          <Link
-            href="/#project"
-            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
-          >
-            ← Work
-          </Link>
-        </div>
-      </nav>
+      <ReadNav share={{ url: `${SITE}/work/salespal`, title: TITLE }} />
 
       <article className="py-16">
-        <div className={column}>
+        <ReadBlock>
           <CaseHeader
             scale="display"
             kicker="Product · Sept–Oct 2026"
@@ -293,13 +260,13 @@ export default function SalesPalPage() {
               { label: "Span", value: "Late September to 9 October 2026 — 41 pull requests to main" },
             ]}
           />
-        </div>
+        </ReadBlock>
 
         {/* The film sits between the header and the first section, which is
             where the reader is still deciding whether to read. It is offered,
             not played: nothing below waits for it, and the poster is what the
             page actually costs unless somebody presses. */}
-        <div className={column}>
+        <ReadBlock>
           <Showreel
             src="/work/salespal/showreel"
             poster="/work/salespal/showreel-poster.webp"
@@ -317,9 +284,9 @@ export default function SalesPalPage() {
             <code className="font-mono text-[11px]">scripts/build-showreel.mjs</code>,
             in this site&rsquo;s faces rather than the app&rsquo;s.
           </Showreel>
-        </div>
+        </ReadBlock>
 
-        <Section number="01" title="The tools ask for data. The work is already in the chat.">
+        <ReadSection number="01" title="The tools ask for data. The work is already in the chat.">
           <p>
             What goes missing is never the name. It is the position — which one
             said &ldquo;I&rsquo;ll let you know&rdquo; three weeks ago, which
@@ -372,9 +339,9 @@ export default function SalesPalPage() {
             alt="The Profil block of an empty lead record. Instead of input fields it reads 'Belum diisi. Tarik dari chat WhatsApp, atau isi sendiri setelah chat pertama' above two buttons: a filled 'Tarik dari WhatsApp' and an outlined 'Isi manual'."
             caption="The whole inversion is in one block. Where a CRM puts a form, this puts an offer to read the chat — and typing it in by hand is the second button, not the first."
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="02" title="A home screen that gives an instruction">
+        <ReadSection number="02" title="A home screen that gives an instruction">
           <p>
             The first line is a sentence, not a number:{" "}
             <em>&ldquo;Ada 2 hal yang perlu ditindak hari ini.&rdquo;</em> Under
@@ -412,9 +379,9 @@ export default function SalesPalPage() {
             alt="The lead map: twelve leads plotted as dots, potential score along the bottom from 60 to 100 and deal value up the side from Rp 10 jt to Rp 25 jt, with the four quadrants labelled and counted. One dot is selected and shows a card reading 'Kedai Senja, 83 skor, Rp 12,5 jt' with buttons to open the lead or to chat. Beside it, a 'Kejar sekarang' list of the three leads in that quadrant."
             caption="The table above, drawn. Both axes are labelled with their real units, the quadrants carry their counts, and selecting a point gives the lead rather than a tooltip — the chart is a way into the record, not a picture of one."
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="03" title="A score that can be argued with">
+        <ReadSection number="03" title="A score that can be argued with">
           <p>
             The first version scored leads with a number nobody could question.
             It was replaced with five signals that each name their own weight —
@@ -467,9 +434,9 @@ export default function SalesPalPage() {
             of 60 and Rp 10 jt. One number, computed on open, used in five
             places and stored in none of them.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="04" title="Reading the chat without keeping it">
+        <ReadSection number="04" title="Reading the chat without keeping it">
           <p>
             A customer profile is built from a WhatsApp export — the{" "}
             <code className="font-mono text-[12px]">.txt</code> Android produces
@@ -516,9 +483,9 @@ export default function SalesPalPage() {
             alt="The same Profil block as in section 01, now filled: a brief reading '26 messages since 9 September. They reply in about 20 minutes, most active between 10 and 12. Their style is Singa — short, direct, focused on results. 2 questions still unanswered.' Underneath, a line reading 'Dari chat WhatsApp, 9 Okt' with a 'Tarik ulang' link."
             caption="The same block as section 01, after the parse. Four sentences where there was a form, with the date it was read and a link to read it again — and the chat it came from is still only on the phone."
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="05" title="Team permissions live in the database">
+        <ReadSection number="05" title="Team permissions live in the database">
           <p>
             Guild is the team mode: Leader, Officer, Member and Viewer, with a
             shared pipeline, a team report, an activity log, and a switch
@@ -547,9 +514,9 @@ export default function SalesPalPage() {
               tests are the picture.
             </p>
           </figure>
-        </Section>
+        </ReadSection>
 
-        <Section number="06" title="What else is in it">
+        <ReadSection number="06" title="What else is in it">
           <Rows
             head={["Part", "What it does"]}
             rows={[
@@ -584,9 +551,9 @@ export default function SalesPalPage() {
             alt="The floating navigation bar on a phone, over the leads list: five tabs — Beranda, Hunting, Leads, Jualan and Lainnya — with Leads selected, and a round chat button at the right edge."
             caption="Where the list above lives. Five tabs, within thumb reach: Hunting holds the templates, Jualan the quotations and invoices, Lainnya the reports and the team. The chat button is the one control that is always on screen, because the work is always in WhatsApp."
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="07" title="Every button, written down before it was built">
+        <ReadSection number="07" title="Every button, written down before it was built">
           <p>
             The design canvas is not five pictures of screens. It is fourteen
             artboards in four groups: the five screens, a map of where every
@@ -664,9 +631,9 @@ export default function SalesPalPage() {
             The canvas itself is private, so it is quoted here rather than
             linked. Nothing above is paraphrase: the row labels are its own.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="08" title="How it was checked">
+        <ReadSection number="08" title="How it was checked">
           <p>
             The order was canvas, then spec, then code, then audit — fourteen
             artboards to a PRD, six staged pull requests, a pass to make the
@@ -720,9 +687,9 @@ export default function SalesPalPage() {
             alt="Six stages in a row, each numbered: 01 Canvas, fourteen boards, five of them screens; 02 Spec, 96 rows, one per control; 03 Build, six pull requests staged; 04 Reconcile, one pass to make the visuals agree; 05 Audit, keyboard, errors, 12px and 320px reflow; 06 Check, 78 rows, six mandatory every deploy."
             caption="The order, as a still — the same six the film at the top of this page runs through. It is also the loop this site is built with, one project wide instead of one component wide."
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="09" title="See it">
+        <ReadSection number="09" title="See it">
           <p>
             <a
               href="https://salespal-alpha.vercel.app"
@@ -757,9 +724,9 @@ export default function SalesPalPage() {
             throughout and not linked, because both are private — a link a
             reader cannot open is worse than no link.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="10" title="Related">
+        <ReadSection number="10" title="Related">
           <p>
             The other thing on this site built around a question rather than a
             dataset is{" "}
@@ -768,11 +735,9 @@ export default function SalesPalPage() {
             </Link>{" "}
             — same instinct, a map instead of a pipeline.
           </p>
-        </Section>
+        </ReadSection>
 
-        <div className={column}>
-          <ShareRow url={`${SITE}/work/salespal`} title={TITLE} />
-        </div>
+        <ShareRow url={`${SITE}/work/salespal`} title={TITLE} />
       </article>
     </main>
   );

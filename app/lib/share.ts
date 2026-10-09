@@ -1,19 +1,32 @@
 // app/lib/share.ts
-// What both share rows do: the one at the foot of a written-up page
-// (ShareRow) and the one at the foot of the home page (FootShare). The url
-// always comes from SITE, never from the address bar — see ShareRow.
+// What every share control does: the row at the foot of a written-up page
+// (ShareRow), the Share button in its top bar (ShareButton) and the row at
+// the foot of the home page (FootShare). The url always comes from SITE,
+// never from the address bar — see ShareRow.
 
 /** The networks that take a link from the web, as plain links, so nothing of
- *  theirs loads until the visitor taps. */
-export function shareLinks(url: string, title: string) {
-  return [
-    { label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(`${title} — ${url}`)}` },
-    {
+ *  theirs loads until the visitor taps. Email is a mailto, not a network,
+ *  and the only one that does not leave for somebody else's site. */
+export function shareTargets(url: string, title: string) {
+  return {
+    whatsapp: { label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(`${title} — ${url}`)}` },
+    linkedin: {
       label: "LinkedIn",
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
     },
-  ];
+    x: {
+      label: "X",
+      href: `https://x.com/intent/post?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+    },
+    email: {
+      label: "Email",
+      href: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${title}\n\n${url}`)}`,
+    },
+  };
 }
+
+/** The address as it reads in a field: no scheme, no trailing slash. */
+export const bareUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
 // A copied link that silently did not copy is worse than no button. Three
 // levels: the modern API, the deprecated one it replaced, and — when the

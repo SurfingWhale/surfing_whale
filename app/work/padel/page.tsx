@@ -21,6 +21,7 @@ import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ReadBlock, ReadNav, ReadSection } from "@/app/components/Read";
 
 const TITLE = "Padel, and the moat nobody has dug";
 const DESCRIPTION =
@@ -39,34 +40,9 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: ["/og-surfing-whale.jpg"] },
 };
 
-const column = "container mx-auto px-6 max-w-[680px]";
-const prose = "text-[13px] leading-[2] text-fg-body";
 const linkish =
   "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200";
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-10 border-t border-border">
-      <div className={column}>
-        <div className="flex items-baseline gap-4 mb-4">
-          <span className="font-mono text-[11px] text-fg-muted">{number}</span>
-          <h2 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {title}
-          </h2>
-        </div>
-        <div className={`space-y-4 ${prose}`}>{children}</div>
-      </div>
-    </section>
-  );
-}
 
 /** Ranked bars. The number stays visible — the bar is the ranking, not the value. */
 function Bars({
@@ -161,19 +137,10 @@ export default function PadelPage() {
     <main className="min-h-screen bg-bg text-fg">
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/padel` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Padel, and the moat nobody has dug", path: "/work/padel" }])} />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className={`${column} h-14 flex items-center`}>
-          <Link
-            href="/#project"
-            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
-          >
-            ← Work
-          </Link>
-        </div>
-      </nav>
+      <ReadNav share={{ url: `${SITE}/work/padel`, title: TITLE }} />
 
       <article className="py-16">
-        <div className={column}>
+        <ReadBlock>
           <CaseHeader
             scale="display"
             kicker="Strategic snapshot · May 2026"
@@ -186,9 +153,9 @@ export default function PadelPage() {
               { label: "Reach", value: "OpenRouteService isochrones" },
             ]}
           />
-        </div>
+        </ReadBlock>
 
-        <Section number="01" title="The question underneath the boom">
+        <ReadSection number="01" title="The question underneath the boom">
           <p>
             Padel has been the fastest-growing sport in Indonesia for three or
             four years. That is the part everybody agrees on. The part nobody
@@ -207,9 +174,9 @@ export default function PadelPage() {
               ["Pondok Labu", "Given the gap is already filled, how does one court survive?"],
             ]}
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="02" title="Bintaro: 22 kelurahan as the unit">
+        <ReadSection number="02" title="Bintaro: 22 kelurahan as the unit">
           <p>
             The scope was drawn to be defensible rather than convenient: 22
             kelurahan across three kecamatan, spanning two provinces —
@@ -241,9 +208,9 @@ export default function PadelPage() {
             is not an opportunity. The weights are a judgement call, not a
             fitted parameter, and the ranking is only as good as that call.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="03" title="Where the gap actually is">
+        <ReadSection number="03" title="Where the gap actually is">
           <p>
             Across the 22 kelurahan there are {TOTAL_COURTS} courts serving{" "}
             {TOTAL_POP.toLocaleString("en-GB")} people. Plotted, the supply is
@@ -294,9 +261,9 @@ export default function PadelPage() {
             exactly the Tangerang Selatan kelurahan sitting at the bottom of
             that second list.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="04" title="Pondok Labu: the other side of the same map">
+        <ReadSection number="04" title="Pondok Labu: the other side of the same map">
           <p>
             A few kilometres east the question inverts. Sense Padel Margasatwa
             is not in a gap — it is in a saturated field. The map below is
@@ -322,9 +289,9 @@ export default function PadelPage() {
           >
             <ExecutiveSummary />
           </DocPreview>
-        </Section>
+        </ReadSection>
 
-        <Section number="05" title="One number the document does not sharpen">
+        <ReadSection number="05" title="One number the document does not sharpen">
           <p>
             The niche table is the part of that summary most likely to be
             misread, so here it is in plain arithmetic. The base is 41 reviews.{" "}
@@ -345,9 +312,9 @@ export default function PadelPage() {
             survivorship-biased in its footnote. This is that footnote, moved
             to where the number is.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="06" title="Method, sources and limits">
+        <ReadSection number="06" title="Method, sources and limits">
           <p>
             Google Maps scrape, May 2026: 142 venues located, of which 41
             reviews across 9 courts were classified. Distances by Haversine,
@@ -389,9 +356,9 @@ export default function PadelPage() {
               Bintaro gap map
             </a>
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="07" title="Related">
+        <ReadSection number="07" title="Related">
           <p>
             The same isochrone method applied to coffee rather than courts is{" "}
             <Link href="/work/coffee-access" className={linkish}>
@@ -399,11 +366,9 @@ export default function PadelPage() {
             </Link>{" "}
             — same city, same technique, a different thing being placed.
           </p>
-        </Section>
+        </ReadSection>
 
-        <div className={column}>
-          <ShareRow url={`${SITE}/work/padel`} title={TITLE} />
-        </div>
+        <ShareRow url={`${SITE}/work/padel`} title={TITLE} />
       </article>
     </main>
   );

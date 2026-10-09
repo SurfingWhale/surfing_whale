@@ -2110,3 +2110,68 @@ showing) the footer no longer fits under the page and drops into it. Its
 words were 523px tall this morning and are 593px now; SalesPal in the Work
 column is 35 of that, the other 35 came with the rest of today's commits.
 The phone's Share button is 0: taken off the page, the footer is still 593px.
+
+## 37. One layout for every reading page, and a share control people know — 2026-10-09
+
+Fauzy, reading a case study on a laptop: it *"shrinks like on mobile"* —
+and the standard format should not need explaining again for every page.
+
+### What it was
+
+Every reading page — six case studies, the finance research page, the
+Testament, a post, a photo essay, a Notion project page — carried its own
+`const column = "container mx-auto px-6 max-w-[680px]"`, its own `prose`
+(13px) and its own copy of `Section`. Measured at 1440px: a 632px column in
+the middle of the window, running text at 13px, a live map 632px wide. The
+brand book puts running copy at 15–17px and the site already had a desktop
+grid; these pages used neither, because each one had been copied from the
+one before.
+
+### What it is
+
+`app/components/Read.tsx` — `ReadNav`, `ReadBlock`, `ReadSection` — and one
+"Reading pages" block in `globals.css`. A page gets the layout by using
+those; no page sets a width or a body size of its own any more.
+
+| | phone | from 40rem | from 66rem |
+|---|---|---|---|
+| layout | the column, unchanged | the column (`.frame`, 720px) | the home page's 12 columns: number and title in the rail at 1–3, sticky; text at 4–10; figures to 12 |
+| running text | 13px | 15px | 16px, measure capped at 40rem |
+| section title | 15px | 17px | 18px, in the rail |
+| page title (`read-h1`) | 15px | 22px | 28px |
+
+Figures that are direct children of the text column (maps, screenshots,
+charts) widen from seven columns to nine — `calc(100% * 9/7 + 1.5rem * 2/7)`
+— and a capped screenshot keeps its own `max-width`. `BlockRenderer` (Notion
+blocks) still sets 13px itself because the project modal uses it too; the
+Notion project page gets the grid but not the larger type.
+
+### Share, again
+
+Fauzy read the words-only chips (§36) as uncommon and asked for the form
+people know. Now:
+
+- **Top bar:** *Share* on the right of every reading page (`ShareButton`).
+  On a touch screen it opens the system sheet; elsewhere a small menu — Copy
+  link, WhatsApp, Instagram, LinkedIn, X, Email, and *More…* where the
+  browser has a sheet. Escape and a click outside close it; focus returns.
+- **End of the page:** the address in a field with a solid *Copy link*, then
+  a row of 40px marks, then the reply line (`ShareRow`).
+- **Home footer:** the same marks as ink rings; a phone keeps its one
+  *Share* button beside *Leave a note*.
+
+§36 kept brand marks off the page on the ground that the brand book refuses
+a borrowed palette. It refuses the palette, not the mark: every glyph is drawn
+in `currentColor` (`ShareIcons.tsx`, Simple Icons CC0 and Lucide ISC), so the
+page's own grey is the only colour on it.
+
+### Checked
+
+Puppeteer against a local production build: eight reading pages at 390, 768,
+1100 and 1440 — no sideways scroll, one h1, no skipped heading level, body at
+13/15/16px, rail at x=24 from 66rem. The row, the top-bar menu (keyboard,
+Escape, outside click), the touch sheet with `navigator.share` stubbed, and
+the home footer all put `https://surfing-whale.vercel.app/…` on the clipboard
+or into the sheet. `verify-share.mjs` (Playwright, cloud only) still matches
+the new markup: Copy is the row's first button, the sheet button is the only
+one named *share*, Instagram is a button named *Instagram*.

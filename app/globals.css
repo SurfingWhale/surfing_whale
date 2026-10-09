@@ -990,6 +990,127 @@ html.intro-out .sw-intro-wave {
   padding-top: 3.5rem;
 }
 
+/* ---- Reading pages -------------------------------------------------------
+   Every page that is read top to bottom — the case studies, the Testament, a
+   post, a photo essay — uses one layout (app/components/Read.tsx), so a new
+   one gets it by using that rather than by copying a column width out of the
+   last one.
+
+   On a phone it is the column it always was. From 66rem it is the home
+   page's grid (.frame-split): twelve columns, a section's number and name in
+   the rail at columns 1–3, held in view while the section scrolls, the text
+   at 4–10, and a picture or a live map allowed out to column 12. Before
+   this, each page was a 680px column in the middle of the window with 13px
+   type — a phone page left on a desk. */
+.read-prose {
+  font-size: 13px;
+  line-height: 2;
+  color: var(--fg-body);
+}
+
+/* The brand book puts running copy at 15–17px; 13 was the phone's size
+   carried to every screen. */
+@media (min-width: 40rem) {
+  .read-prose {
+    font-size: 15px;
+    line-height: 1.9;
+  }
+}
+
+@media (min-width: 66rem) {
+  .read-prose {
+    font-size: 16px;
+    line-height: 1.85;
+  }
+}
+
+/* A line of running text stops at about seventy characters however wide
+   the column gets; tables, bars and pictures keep the whole width. */
+.read-prose > :is(p, ul, ol, blockquote) {
+  max-width: 40rem;
+}
+
+.read-section {
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.read-rail {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.read-title,
+.read-h1 {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.6;
+  color: var(--fg);
+}
+
+/* A title has to stay above the text it heads. At 15px it was the same size
+   as the body on a phone and would have been smaller than it from 40rem. */
+@media (min-width: 40rem) {
+  .read-title {
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .read-h1 {
+    font-size: 22px;
+    line-height: 1.35;
+  }
+}
+
+@media (min-width: 66rem) {
+  .read-h1 {
+    font-size: 28px;
+    line-height: 1.25;
+  }
+}
+
+@media (min-width: 66rem) {
+  .read-section {
+    padding-block: var(--space-5);
+  }
+
+  .read-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    align-items: start;
+  }
+
+  .read-grid > * {
+    grid-column: 4 / span 7;
+  }
+
+  .read-grid > .read-rail {
+    grid-column: 1 / span 3;
+    position: sticky;
+    top: 5rem;
+    display: block;
+    margin-bottom: 0;
+  }
+
+  .read-rail .read-title {
+    margin-top: var(--space-2);
+    max-width: 16rem;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  /* Nine columns from seven: 9/7 of the width plus 2/7 of a gutter. A map
+     or a screenshot is the evidence, and it was being read at the width of
+     a paragraph. A capped figure keeps its own max-width. */
+  .read-body > figure {
+    width: calc(100% * 9 / 7 + 1.5rem * 2 / 7);
+  }
+}
+
 /* ---- The page as a sheet over the footer ---------------------------------
    Everything above the footer sits on one sheet with the page colour behind
    it. The footer is pinned under it (sticky to the bottom of the window), so
@@ -1243,26 +1364,47 @@ html.intro-out .sw-intro-wave {
 .foot-share-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  font-size: 1.0625rem;
+  gap: var(--space-2);
 }
-/* Buttons and links alike read as the footer's other links: words in ink,
-   underlined under the pointer. */
-.foot-share-list button {
+/* Ink rings on the paper, in the same ink and wash as the note button,
+   filled with ink under the pointer. */
+.foot-share-list :is(a, button) {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: rgb(244 239 230 / 0.6);
   cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 4px;
-  transition: text-decoration-color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
 }
-.foot-share-list button:hover,
-.foot-share-list button:focus-visible {
-  text-decoration-color: currentColor;
+.site-footer .foot-share-list a {
+  text-decoration: none;
+}
+.foot-share-list :is(a, button):hover {
+  background: var(--sea-ink);
+  color: var(--sea-paper);
+}
+.foot-share-list svg {
+  width: 1.0625rem;
+  height: 1.0625rem;
+}
+.foot-share-said {
+  font-style: italic;
+  font-size: 0.9375rem;
 }
 
 /* A phone's share: one button that opens the system sheet, set beside the
    note button and the same height, so the footer gains no row. */
+.foot-sheet svg {
+  width: 1rem;
+  height: 1rem;
+}
 .foot-sheet {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   min-height: 2.75rem;
   padding: 0 1.1rem;
   border: 1px solid currentColor;

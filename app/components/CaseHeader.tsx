@@ -58,8 +58,8 @@ export function CaseHeader({
           <h1
             className={
               scale === "display"
-                ? "text-[34px] sm:text-[44px] font-medium tracking-[-0.03em] leading-[1.08] text-fg max-w-[8ch] sm:max-w-none"
-                : "text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg"
+                ? "text-[34px] sm:text-[44px] min-[66rem]:text-[56px] font-medium tracking-[-0.03em] leading-[1.08] text-fg max-w-[8ch] sm:max-w-none"
+                : "read-h1"
             }
           >
             {title}
@@ -83,7 +83,7 @@ export function CaseHeader({
 
       <div className="border-t border-border mt-6 pt-6">
         <div className="flex items-start justify-between gap-6">
-          <p className="text-[13px] leading-[1.9] text-fg max-w-[52ch]">{claim}</p>
+          <p className="text-[13px] sm:text-[15px] min-[66rem]:text-[18px] leading-[1.9] min-[66rem]:leading-[1.65] text-fg max-w-[52ch]">{claim}</p>
 
           <button
             type="button"

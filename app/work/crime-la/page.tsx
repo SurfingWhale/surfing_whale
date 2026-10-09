@@ -17,6 +17,7 @@ import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ReadBlock, ReadNav, ReadSection, prose } from "@/app/components/Read";
 
 const TITLE = "Reading Los Angeles by its crime reports";
 const DESCRIPTION =
@@ -35,34 +36,9 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: ["/og-surfing-whale.jpg"] },
 };
 
-const column = "container mx-auto px-6 max-w-[680px]";
-const prose = "text-[13px] leading-[2] text-fg-body";
 const linkish =
   "font-medium text-fg underline decoration-border-strong underline-offset-[3px] hover:decoration-[var(--accent-soft)] transition-colors duration-200";
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-10 border-t border-border">
-      <div className={column}>
-        <div className="flex items-baseline gap-4 mb-4">
-          <span className="font-mono text-[11px] text-fg-muted">{number}</span>
-          <h2 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {title}
-          </h2>
-        </div>
-        <div className={`space-y-4 ${prose}`}>{children}</div>
-      </div>
-    </section>
-  );
-}
 
 // Every chart carries its real pixel size. The browser turns width and height
 // into an aspect-ratio and reserves the box before the bytes arrive, so the
@@ -108,33 +84,26 @@ export default function CrimeLAPage() {
     <main className="min-h-screen bg-bg text-fg">
       <JsonLd data={articleGraph({ headline: TITLE, description: DESCRIPTION, url: `${SITE}/work/crime-la` })} />
       <JsonLd data={breadcrumbs([{ name: "Work", path: "/" }, { name: "Reading Los Angeles by its crime reports", path: "/work/crime-la" }])} />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className={`${column} h-14 flex items-center`}>
-          <Link
-            href="/#project"
-            className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300"
-          >
-            ← Work
-          </Link>
-        </div>
-      </nav>
+      <ReadNav share={{ url: `${SITE}/work/crime-la`, title: TITLE }} />
 
       <article className="py-16">
-        <header className={`${column} mb-6`}>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-            Early work · 2023
-          </p>
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {TITLE}
-          </h1>
-          <p className={`${prose} mt-4 max-w-[560px]`}>
-            The LAPD publishes every reported crime with a date, a location and
-            a victim. This was an early pass at it — load, clean, plot, and see
-            what the shape of the city looks like from the report log.
-          </p>
-        </header>
+        <ReadBlock className="mb-6">
+          <header>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
+              Early work · 2023
+            </p>
+            <h1 className="read-h1">
+              {TITLE}
+            </h1>
+            <p className={`${prose} mt-4 max-w-[560px]`}>
+              The LAPD publishes every reported crime with a date, a location and
+              a victim. This was an early pass at it — load, clean, plot, and see
+              what the shape of the city looks like from the report log.
+            </p>
+          </header>
+        </ReadBlock>
 
-        <Section number="01" title="Where the reports land">
+        <ReadSection number="01" title="Where the reports land">
           <p>
             The first question a dataset like this answers is the least
             interesting one, and it still has to be asked: where do the reports
@@ -152,9 +121,9 @@ export default function CrimeLAPage() {
             population, so this says where reports are filed, not where you are
             most likely to be a victim.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="02" title="Who appears in them">
+        <ReadSection number="02" title="Who appears in them">
           <Chart
             src="victim-ages"
             alt="Histogram of victim ages across the dataset."
@@ -171,9 +140,9 @@ export default function CrimeLAPage() {
             alt="Box plot of crime code distribution by area."
             caption="Crime codes by area — the spread, not the average."
           />
-        </Section>
+        </ReadSection>
 
-        <Section number="03" title="The Harbor, block by block">
+        <ReadSection number="03" title="The Harbor, block by block">
           <p>
             The map is the part worth keeping. Filtered to the Harbor area,
             grouped by exact coordinate, the thirty locations with the most
@@ -191,9 +160,9 @@ export default function CrimeLAPage() {
             several. The pins are real; the ranking between them is softer than
             it looks.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="04" title="A bug, left in">
+        <ReadSection number="04" title="A bug, left in">
           <p>
             One chart from the original run is worth keeping precisely because
             it is broken.
@@ -221,9 +190,9 @@ export default function CrimeLAPage() {
             missing data that arrives as a blank, because only one of the two
             survives a null check.
           </p>
-        </Section>
+        </ReadSection>
 
-        <Section number="05" title="What this is, honestly">
+        <ReadSection number="05" title="What this is, honestly">
           <p>
             This is 2023 work and it shows: it loads, cleans and plots, and it
             stops there. There is no question driving it, no denominator, and
@@ -252,11 +221,9 @@ export default function CrimeLAPage() {
             </a>
             .
           </p>
-        </Section>
+        </ReadSection>
 
-        <div className={column}>
-          <ShareRow url={`${SITE}/work/crime-la`} title={TITLE} />
-        </div>
+        <ShareRow url={`${SITE}/work/crime-la`} title={TITLE} />
       </article>
     </main>
   );

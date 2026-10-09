@@ -3,11 +3,11 @@
 // share a row share a height and end flush, whatever shapes they are — the
 // arrangement in the darkroom is the arrangement here.
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { prose, ReadBlock, ReadNav } from "@/app/components/Read";
 import { getEssay, listEssays } from "@/app/lib/darkroom";
 
 export const revalidate = 60;
@@ -55,42 +55,38 @@ export default async function EssayPage({ params }: Params) {
           type: "ImageGallery",
         })}
       />
-      <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-        <div className="container mx-auto px-6 h-14 flex items-center max-w-[680px]">
-          <Link href="/photo" className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300">
-            ← Darkroom
-          </Link>
-        </div>
-      </nav>
+      <ReadNav href="/photo" label="Darkroom" share={{ url: `${SITE}/photo/${slug}`, title: essay.title }} />
 
       <article className="py-16">
-        <header className="container mx-auto px-6 max-w-[680px] mb-12">
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
-            {essay.date
-              ? new Date(essay.date).toLocaleDateString("en-GB", {
-                  day: "numeric", month: "long", year: "numeric",
-                })
-              : "Photo essay"}
-          </p>
-          <h1 className="text-[15px] font-medium tracking-[-0.02em] leading-[1.6] text-fg">
-            {essay.title}
-          </h1>
-          {essay.subtitle && (
-            <p className="text-[13px] leading-[2] text-fg-body mt-4 max-w-[560px]">
-              {essay.subtitle}
+        <ReadBlock className="mb-12">
+          <header>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label mb-3">
+              {essay.date
+                ? new Date(essay.date).toLocaleDateString("en-GB", {
+                    day: "numeric", month: "long", year: "numeric",
+                  })
+                : "Photo essay"}
             </p>
-          )}
-        </header>
+            <h1 className="read-h1">
+              {essay.title}
+            </h1>
+            {essay.subtitle && (
+              <p className={`${prose} mt-4 max-w-[560px]`}>
+                {essay.subtitle}
+              </p>
+            )}
+          </header>
+        </ReadBlock>
 
         {essay.blocks.map((block, i) =>
           block.type === "text" ? (
-            <div key={i} className="container mx-auto px-6 max-w-[680px] py-6">
+            <ReadBlock key={i} text className="py-6">
               {block.value.split(/\n{2,}/).map((para, k) => (
-                <p key={k} className="text-[13px] leading-[2] text-fg-body max-w-[560px] mb-5 last:mb-0">
+                <p key={k} className="mb-5 last:mb-0">
                   {para}
                 </p>
               ))}
-            </div>
+            </ReadBlock>
           ) : (
             <div key={i} className="photo-row">
               {block.items.map((shot) => (
@@ -114,9 +110,7 @@ export default async function EssayPage({ params }: Params) {
           )
         )}
 
-        <div className="container mx-auto px-6 max-w-[680px]">
-          <ShareRow url={`${SITE}/photo/${slug}`} title={essay.title} />
-        </div>
+        <ShareRow url={`${SITE}/photo/${slug}`} title={essay.title} />
       </article>
     </main>
   );
