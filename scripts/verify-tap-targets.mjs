@@ -14,7 +14,7 @@
 // sibling beside it. Those are the ones a finger has to find on its own.
 import { chromium } from 'playwright';
 const PORT = process.argv[2] || '3477';
-const PAGES = ['/', '/photo', '/writing', '/testament', '/work/crime-la', '/work/padel', '/work/coffee-access', '/work/finance-dashboard'];
+const PAGES = ['/', '/photo', '/writing', '/testament', '/work/crime-la', '/work/padel', '/work/coffee-access', '/work/finance-dashboard', '/work/salespal'];
 const MIN = 24;
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });

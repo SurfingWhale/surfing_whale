@@ -23,6 +23,7 @@ const STATIC: { path: string; priority: number }[] = [
   { path: "/testament", priority: 0.7 },
   { path: "/work/finance-dashboard", priority: 0.7 },
   { path: "/work/finance-dashboard/research", priority: 0.5 },
+  { path: "/work/salespal", priority: 0.7 },
   { path: "/work/coffee-access", priority: 0.7 },
   { path: "/work/crime-la", priority: 0.7 },
   { path: "/work/padel", priority: 0.7 },

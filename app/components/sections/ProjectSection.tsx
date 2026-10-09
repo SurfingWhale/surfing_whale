@@ -69,6 +69,15 @@ const sheetsFrom = (srcs: string[], alt: string) =>
 // keyword added to be found.
 const WRITTEN_UP = [
     {
+        href: "/work/salespal",
+        title: "The CRM opens with a form. This one opens with today.",
+        subtitle: "Product · a PWA that reads the WhatsApp chat instead of asking for it",
+        sheets: sheetsFrom(
+            ["/work/sheets/salespal-1.jpg", "/work/sheets/salespal-2.jpg", "/work/sheets/salespal-3.jpg"],
+            "SalesPal: the home screen, the potential score, and a customer profile built from a chat export."
+        ),
+    },
+    {
         href: "/work/coffee-access",
         title: "15 minutes to coffee",
         subtitle: "Isochrone · drive-time bands against where people live",

@@ -29,6 +29,14 @@ const ROWS: WorkRow[] = [
     alt: "The finance dashboard's home screen.",
   },
   {
+    href: "/work/salespal",
+    title: "The CRM opens with a form. This one opens with today.",
+    short: "SalesPal",
+    year: "26",
+    method: "Product · a PWA that reads the WhatsApp chat instead of asking for it",
+    group: "Built",
+  },
+  {
     href: "/work/padel",
     title: "Padel, and the moat nobody has dug",
     short: "Padel",

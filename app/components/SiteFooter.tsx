@@ -16,6 +16,7 @@ type Item = { label: string; href: string; external?: boolean };
 
 const WORK: Item[] = [
   { label: "Finance dashboard", href: "/work/finance-dashboard" },
+  { label: "SalesPal", href: "/work/salespal" },
   { label: "Padel", href: "/work/padel" },
   { label: "Tomoro", href: "/work/coffee-access" },
   { label: "Crime LA", href: "/work/crime-la" },

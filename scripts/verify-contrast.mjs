@@ -1,4 +1,8 @@
-// Run: node scripts/verify-contrast.mjs <port-of-a-running-build>
+// Run: node scripts/verify-contrast.mjs <port-of-a-running-build> [path]
+//
+// `path` defaults to the home page. Pass one to check a case study — those
+// pages carry the same tokens but their own layout, and a page nobody points
+// this at is a page nobody has measured.
 //
 // Walks every visible text node in both themes, resolves whatever CSS colour
 // syntax it is written in, composites translucent ink over the background it
@@ -12,11 +16,15 @@
 //   it composites rgba text over its real background rather than over black.
 import { chromium } from 'playwright';
 const PORT=process.argv[2];
+const PATH=process.argv[3] || '/';
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
 for (const theme of ['light','dark']) {
   const ctx=await b.newContext({viewport:{width:430,height:900}});
   const p=await ctx.newPage();
-  await p.goto(`http://localhost:${PORT}/`,{waitUntil:'networkidle'});
+  await p.goto(`http://localhost:${PORT}${PATH}`,{waitUntil:'networkidle'});
+  // Walk the page so lazily-loaded figures and anything revealed on scroll is
+  // present before the colours are read.
+  await p.evaluate(async()=>{const s=innerHeight*0.8;for(let y=0;y<document.body.scrollHeight;y+=s){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,180));}window.scrollTo(0,0);});
   await p.evaluate(t=>document.documentElement.setAttribute('data-theme',t), theme);
   await p.waitForTimeout(600);
   const out = await p.evaluate(()=>{
