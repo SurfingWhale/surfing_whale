@@ -50,7 +50,13 @@ function databaseId() {
  * included in the returned shape, so it cannot leak through the public route.
  */
 export async function getApprovedNotes(): Promise<GuestNote[]> {
-  const res = await fetch(
+  // The read path runs during render, so an unreachable Notion must not throw
+  // out of it. Same reasoning as app/lib/notion.ts: publish nothing, keep the
+  // page up. The write paths below are left alone — a note that fails to save
+  // SHOULD surface as an error to the person who just wrote it.
+  let res: Response;
+  try {
+    res = await fetch(
     `https://api.notion.com/v1/databases/${databaseId()}/query`,
     {
       method: "POST",
@@ -62,7 +68,14 @@ export async function getApprovedNotes(): Promise<GuestNote[]> {
       }),
       cache: "no-store",
     }
-  );
+    );
+  } catch (err) {
+    console.error(
+      "Notion unreachable while reading guest notes:",
+      err instanceof Error ? err.message : String(err)
+    );
+    return [];
+  }
 
   if (!res.ok) {
     console.error("Notion guest notes read error:", await res.text());

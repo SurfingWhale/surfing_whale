@@ -1631,3 +1631,72 @@ page rather than the grid, that is where it is.
 
 Suite after: tap-targets, rhythm, hallo, photo-viewer ALL PASS; contrast 85
 nodes, 0 below AA, both themes.
+
+## 32. SalesPal, and a build that could not run — 2026-10-09
+
+### 32.1 The case study
+
+`/work/salespal`, written from the context document and the sixteen
+screenshots. Registered in the four places a case has to appear or it is an
+orphan: project folders, directory index, footer, sitemap.
+
+Two omissions are deliberate and stated on the page itself. The design canvas
+and the monthly-report walkthrough are still private, so they are described and
+not linked — linking a page the reader cannot open is worse than not mentioning
+it — and the `claude-config` repository is private, so its per-deploy checklist
+is quoted by its numbers. Threads Radar is listed as waiting on a Meta app
+review rather than as shipped, and every caption says the screenshots are a
+test account with sample data.
+
+Assets: 1.88 MB of PNG became 398 KB of webp; the three folder sheets are
+cropped from three different screens.
+
+### 32.2 A throwaway probe reproduced a bug this repo had already written down
+
+An ad-hoc contrast check reported the case page's back link at **1.08:1**. The
+page was fine; the probe was not. The sticky nav's background resolves to an
+`oklab()` string, and the probe's regex read its lightness and two opponent
+axes as red, green and blue.
+
+`scripts/verify-contrast.mjs` carries a comment at the top of the file warning
+about exactly this, because it was written after the same mistake reported
+every white-on-dark row in the work panel as 1.13:1. Writing a second,
+dumber checker beside a correct one is how a project ends up with two answers.
+
+So the probe was deleted and the real checker learned a path argument instead:
+`node scripts/verify-contrast.mjs <port> /work/salespal`. It walks the page
+first, so lazily-loaded figures are present when the colours are read. The new
+page measures 70 nodes, 0 below AA, both themes.
+
+### 32.3 The build could not complete, and it was nobody's recent change
+
+`next build` was failing before any of this:
+
+```
+Error occurred prerendering page "/"
+TypeError: fetch failed
+  cause: getaddrinfo ENOTFOUND api.notion.com
+```
+
+Confirmed against a clean HEAD with every change stashed — identical failure.
+Every Notion call in the repository already degraded politely when Notion
+**answered** badly: a 404 or a 401 logs and returns nothing. None of them
+handled Notion **not answering**, and a thrown transport error went up through
+the home page's render and killed the build.
+
+A portfolio that cannot be deployed while a third-party API is unreachable has
+someone else's uptime in its release process.
+
+`reach()` in `app/lib/notion.ts` now turns a transport failure into `null`,
+which every caller treats the way it already treats a bad response. The
+guest-notes **read** path is guarded the same way; the **write** paths are
+deliberately left alone, because a note that fails to save should surface as an
+error to the person who just wrote it.
+
+This is fail-closed: an unreachable Notion publishes nothing, so it can never
+cause a Restricted row to appear. And it is loud — the build log now carries
+`Notion unreachable: fetch failed` and then completes all 32 pages.
+
+Suite on a production build: tap-targets, rhythm, hallo, guest-note and intro
+ALL PASS; contrast 91 nodes on the home page and 70 on the case page, 0 below
+AA in both themes; SEO 0 blocking.

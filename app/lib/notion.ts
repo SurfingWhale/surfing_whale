@@ -161,8 +161,37 @@ export interface NotionProject {
      * so in the log. Only that error: an auth failure or a sharing problem must
      * keep failing, because retrying elsewhere would hide the real cause.
      */
-    async function queryProjects(databaseId: string) {
-    return fetch(
+
+/**
+ * fetch, but a transport failure is a value rather than an exception.
+ *
+ * Every call in this file already degrades politely when Notion ANSWERS
+ * badly — a 404 or a 401 logs and returns nothing. None of them handled
+ * Notion not answering at all, and the difference is not academic: a DNS
+ * failure threw out of `getProjects`, through the home page's render, and
+ * killed `next build` with "Error occurred prerendering page /". A portfolio
+ * that cannot be deployed while a third-party API is unreachable is a
+ * portfolio with someone else's uptime in its release process.
+ *
+ * `null` means "could not reach Notion", which every caller treats the way it
+ * already treats a bad response: log it, publish nothing. That is fail-closed
+ * — an unreachable Notion can never cause a Restricted row to appear, because
+ * nothing appears.
+ */
+async function reach(input: string, init?: RequestInit): Promise<Response | null> {
+  try {
+    return await fetch(input, init);
+  } catch (err) {
+    console.error(
+      "Notion unreachable:",
+      err instanceof Error ? err.message : String(err)
+    );
+    return null;
+  }
+}
+
+    async function queryProjects(databaseId: string): Promise<Response | null> {
+    return reach(
         `https://api.notion.com/v1/databases/${databaseId}/query`,
         {
         method: "POST",
@@ -191,6 +220,10 @@ export interface NotionProject {
     const configured = PROJECTS_DB();
     let res = await queryProjects(configured);
 
+    // Could not reach Notion at all. Nothing is published, and the build
+    // carries on with an empty project list rather than failing.
+    if (!res) return [];
+
     if (!res.ok) {
         const body = await res.text();
         const missing = res.status === 404 && body.includes("object_not_found");
@@ -201,8 +234,8 @@ export interface NotionProject {
             `${PROJECTS_DB_DEFAULT}. Update NOTION_DATABASE_ID to stop this.`
         );
         res = await queryProjects(PROJECTS_DB_DEFAULT);
-        if (!res.ok) {
-            console.error("Notion API error after fallback:", await res.text());
+        if (!res || !res.ok) {
+            console.error("Notion API error after fallback:", res ? await res.text() : "unreachable");
             return [];
         }
         } else {
@@ -372,7 +405,7 @@ export interface NotionProject {
     }
 
     export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {
-    const res = await fetch(
+    const res = await reach(
         `https://api.notion.com/v1/blocks/${pageId}/children?page_size=50`,
         {
         headers: {
@@ -387,7 +420,7 @@ export interface NotionProject {
         next: { revalidate: 60 },
         }
     );
-    if (!res.ok) return [];
+    if (!res || !res.ok) return [];
     const data = await res.json();
 
     return data.results.map((block: any): NotionBlock => {
