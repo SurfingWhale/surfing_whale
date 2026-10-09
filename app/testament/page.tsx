@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 import { TESTAMENT, testamentWords } from "@/app/data/testament";
 
 const DESCRIPTION =
@@ -63,6 +64,10 @@ export default function TestamentPage() {
             <p className={`${prose} mb-5`}>{text}</p>
           </div>
         ))}
+
+        <div className={column}>
+          <ShareRow url={`${SITE}/testament`} title={TESTAMENT.title} />
+        </div>
       </article>
     </main>
   );

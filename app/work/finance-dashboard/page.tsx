@@ -12,6 +12,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 
 const TITLE = "A ledger that behaves like a product";
 const DESCRIPTION =
@@ -571,6 +572,10 @@ export default function FinanceDashboardCaseStudy() {
           </p>
         </Section>
 
+
+        <div className="container mx-auto px-6 max-w-[680px]">
+          <ShareRow url={`${SITE}/work/finance-dashboard`} title={TITLE} />
+        </div>
       </article>
     </main>
   );

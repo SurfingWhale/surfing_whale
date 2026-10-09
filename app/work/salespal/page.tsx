@@ -57,6 +57,7 @@ import { CaseHeader } from "@/app/components/CaseHeader";
 import { Showreel } from "@/app/components/Showreel";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 
 const TITLE = "The CRM opens with a form. This one opens with today.";
 const DESCRIPTION =
@@ -768,6 +769,10 @@ export default function SalesPalPage() {
             — same instinct, a map instead of a pipeline.
           </p>
         </Section>
+
+        <div className={column}>
+          <ShareRow url={`${SITE}/work/salespal`} title={TITLE} />
+        </div>
       </article>
     </main>
   );

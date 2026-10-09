@@ -16,6 +16,7 @@ import Link from "next/link";
 import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 
 const TITLE = "Reading Los Angeles by its crime reports";
 const DESCRIPTION =
@@ -252,6 +253,10 @@ export default function CrimeLAPage() {
             .
           </p>
         </Section>
+
+        <div className={column}>
+          <ShareRow url={`${SITE}/work/crime-la`} title={TITLE} />
+        </div>
       </article>
     </main>
   );

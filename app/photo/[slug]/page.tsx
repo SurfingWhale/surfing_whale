@@ -7,6 +7,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 import { getEssay, listEssays } from "@/app/lib/darkroom";
 
 export const revalidate = 60;
@@ -112,6 +113,10 @@ export default async function EssayPage({ params }: Params) {
             </div>
           )
         )}
+
+        <div className="container mx-auto px-6 max-w-[680px]">
+          <ShareRow url={`${SITE}/photo/${slug}`} title={essay.title} />
+        </div>
       </article>
     </main>
   );

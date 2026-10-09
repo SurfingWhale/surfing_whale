@@ -1985,3 +1985,81 @@ Three things from that row are deliberately not here:
 superseded 19/19 including all six redirects; showreel 11/11; contrast 150
 nodes on the case page, 0 below AA in both themes; tap-targets, rhythm,
 headings, intro, hallo and guest-note ALL PASS.
+
+## 36. A share row at the foot of every finished page — 2026-10-09
+
+Fauzy asked for the thing Medium and its kind put at the end of a post: copy a
+link, pass it on. His reason was the right one — *"it helps and brings me real
+feedback for finished items"* — so the row carries a second half that most of
+those do not: a sentence saying where a reply can actually land.
+
+### Where, and why only there
+
+The foot of all nine written-up pages: six case studies, the Testament, and
+both post templates. Not the home page, and not the top of anything. The brand
+book's Refusals page turns down *"a call to action on the first screen"*,
+because a page that opens by asking for something is asking before it has shown
+anything. Someone who has read to the bottom has seen the whole thing.
+
+### The one bug every share button has
+
+`window.location.href`.
+
+It cannot be caught by looking at the page, because on the machine where it is
+written the address bar and the page's own address are the same string. It
+shows up later as a link in somebody's chat pointing at a Vercel preview
+deployment that asks a stranger to sign in, or at a branch URL deleted a week
+later, or at `localhost` during a demo.
+
+So the row takes its `url` as a prop, built on the server from `SITE` — the
+same constant the canonical tag and the sitemap use — and never reads the
+address bar.
+
+### `scripts/verify-share.mjs`
+
+Loads each page **from localhost on purpose**, presses Copy, and reads the
+clipboard back. It has to say `https://surfing-whale.vercel.app/…`.
+
+Proved against the bug: swapping `url` for `window.location.href` turns B red
+(`http://localhost:4361/work/salespal`) and C with it, while D, E and F stay
+green — which is the whole argument for the check. A looser test, one that
+confirmed the button exists and reacts, would have passed the bug.
+
+Also asserted: every outbound link carries that same address; the button
+reports *Copied* and an `aria-live` region announces it; standalone controls
+clear 24×24; the closing line names somewhere to reply; and — with
+`navigator.share` stubbed in, because this headless browser has none — the
+native share button appears and hands the sheet the canonical URL. Without that
+last one the feature could have been dead on every phone with the suite still
+green.
+
+### Two faults in the checker, found by running it
+
+1. **It raced its own subject.** The label returns to "Copy link" 2.4 seconds
+   after the press; the first version read it after two more Playwright round
+   trips and reported the button broken. Everything that depends on having just
+   pressed is now read in one `evaluate`, immediately. Same fault as the
+   greeting-plate stagger test in §27: an assertion racing the thing it asserts
+   about is a coin toss, not a check.
+2. **It counted inline links as tap targets.** The closing sentence holds two,
+   and WCAG 2.5.8 exempts links inside a sentence by name — the same over-count
+   `verify-tap-targets.mjs` documents. It now excludes any `<a>` inside a `<p>`.
+
+### No third-party glyphs
+
+WhatsApp and LinkedIn are named in words with the site's own arrow. A row of
+brand marks in their own colours would be the only place on the page belonging
+to someone else's palette, and the brand book refuses a second alphabet. The
+copy icon is two offset squares, drawn here.
+
+Copy itself has three levels: the clipboard API, the deprecated
+`execCommand` it replaced, and — where the page is served over plain http and
+neither is permitted — selecting the address so it can be copied by hand. A
+copy button that silently did not copy is worse than no button.
+
+### Suite
+
+share 8/8 on each of seven pages plus 3 for the stubbed native sheet;
+superseded, showreel, intro, hallo and guest-note ALL PASS; contrast 153 nodes
+on the case page and 12 on the Testament, 0 below AA in both themes;
+tap-targets and rhythm ALL PASS.

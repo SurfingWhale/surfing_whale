@@ -8,6 +8,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd, articleGraph } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 import { type Block, getPost, listPosts, readingMinutes } from "@/app/lib/writing";
 
 export const revalidate = 60;
@@ -180,6 +181,10 @@ export default async function PostPage({ params }: Params) {
             <Piece key={i} block={entry} />
           )
         )}
+
+        <div className={column}>
+          <ShareRow url={`${SITE}/writing/${slug}`} title={post.title} />
+        </div>
       </article>
     </main>
   );

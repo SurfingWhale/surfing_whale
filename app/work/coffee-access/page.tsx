@@ -23,6 +23,7 @@ import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { FieldNote } from "./FieldNote";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 
 const TITLE = "15 minutes to coffee";
 const DESCRIPTION =
@@ -278,6 +279,10 @@ export default function CoffeeAccessPage() {
             thing being placed.
           </p>
         </Section>
+
+        <div className={column}>
+          <ShareRow url={`${SITE}/work/coffee-access`} title={TITLE} />
+        </div>
       </article>
     </main>
   );

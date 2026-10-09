@@ -20,6 +20,7 @@ import { ExecutiveSummary } from "./ExecutiveSummary";
 import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 
 const TITLE = "Padel, and the moat nobody has dug";
 const DESCRIPTION =
@@ -399,6 +400,10 @@ export default function PadelPage() {
             — same city, same technique, a different thing being placed.
           </p>
         </Section>
+
+        <div className={column}>
+          <ShareRow url={`${SITE}/work/padel`} title={TITLE} />
+        </div>
       </article>
     </main>
   );

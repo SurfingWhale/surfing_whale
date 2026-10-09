@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
+import { ShareRow } from "@/app/components/ShareRow";
 
 const TITLE = "TrackerDoc";
 const DESCRIPTION =
@@ -219,6 +220,10 @@ export default function TrackerDocPage() {
             .
           </p>
         </Section>
+
+        <div className={column}>
+          <ShareRow url={`${SITE}/work/tracker-doc`} title={TITLE} />
+        </div>
       </article>
     </main>
   );
