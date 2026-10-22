@@ -68,6 +68,10 @@ export const articleGraph = (a: {
   datePublished?: string;
   dateModified?: string;
   type?: "Article" | "ImageGallery";
+  /** BCP 47. Defaults to the site's language; /work/dalrs is written in
+      Indonesian, and structured data that claims en-GB for it is simply
+      wrong about the page it describes. */
+  inLanguage?: string;
 }) => ({
   "@context": "https://schema.org",
   "@graph": [
@@ -85,7 +89,7 @@ export const articleGraph = (a: {
       author: { "@id": PERSON_ID },
       publisher: { "@id": PERSON_ID },
       isPartOf: { "@id": SITE_ID },
-      inLanguage: "en-GB",
+      inLanguage: a.inLanguage ?? "en-GB",
     },
   ],
 });

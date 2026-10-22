@@ -69,6 +69,15 @@ const sheetsFrom = (srcs: string[], alt: string) =>
 // keyword added to be found.
 const WRITTEN_UP = [
     {
+        href: "/work/dalrs",
+        title: "Tahu siapa memegang setiap barang, setiap saat",
+        subtitle: "Product · asset custody, hand-over with evidence, monthly reconciliation",
+        sheets: sheetsFrom(
+            ["/work/dalrs/app-dashboard.webp", "/work/dalrs/app-movements.webp", "/work/dalrs/app-reconciliation.webp"],
+            "DALRS: the dashboard, the hand-over screen, and a monthly reconciliation."
+        ),
+    },
+    {
         href: "/work/salespal",
         title: "The CRM opens with a form. This one opens with today.",
         subtitle: "Product · a PWA that reads the WhatsApp chat instead of asking for it",

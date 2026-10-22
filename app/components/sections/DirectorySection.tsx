@@ -29,6 +29,16 @@ const ROWS: WorkRow[] = [
     alt: "The finance dashboard's home screen.",
   },
   {
+    href: "/work/dalrs",
+    title: "Tahu siapa memegang setiap barang, setiap saat",
+    short: "DALRS",
+    year: "26",
+    method: "Product · asset custody, hand-over with evidence, monthly reconciliation",
+    group: "Built",
+    image: "/work/dalrs/app-dashboard.webp",
+    alt: "The DALRS dashboard: 36 assets, who holds them, and what needs attention.",
+  },
+  {
     href: "/work/salespal",
     title: "The CRM opens with a form. This one opens with today.",
     short: "SalesPal",

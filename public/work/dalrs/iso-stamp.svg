@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-22 -10 48 37" role="img" aria-label="Ikon isometrik: stamp"><title>Ikon isometrik: stamp</title><style>.f-top{fill:#fff}.f-left{fill:#e8eaee}.f-right{fill:#cfd3d9}
+.f-dark-top{fill:#3a3d43}.f-dark-left{fill:#24262b}.f-dark-right{fill:#15161a}
+.f-wood-top{fill:#e4e1da}.f-wood-left{fill:#cfcac0}.f-wood-right{fill:#b9b3a7}
+.edge{stroke:#000;stroke-width:1.3;stroke-linejoin:round}.thin{stroke-width:.9}
+.tape{stroke:#f5a623}.tape-shade{stroke:#e39612}.tape-fill{fill:#f5a623}
+.paper{fill:#fff;stroke:#000;stroke-width:1}
+.screen{fill:#15161a;stroke:#000;stroke-width:1}.screen-line{stroke:#f5a623;stroke-width:1.2}
+.vent{stroke:#000;stroke-width:.8;opacity:.5}
+.cable{fill:none;stroke:#000;stroke-width:1.4;opacity:.7}
+.ink{fill:#000}.soft{fill:#c7cbd1}
+.floor path{stroke:#c7cbd1;stroke-width:1;stroke-dasharray:2 5}
+.leader{stroke:#000;stroke-width:1;stroke-dasharray:3 3;fill:none}
+.iso-text{font:600 9px ui-monospace,Menlo,monospace;fill:#000}
+.slab-label{font-size:11px}
+/* text.on-dark, not .on-dark: the label on the dark slab carries both
+   .iso-text (fill #000) and .on-dark (fill #fff), two single-class rules of
+   equal weight, so whichever is written last wins. Flattening the stylesheet
+   moved .on-dark above .iso-text once and the Firestore label went black on
+   black. The element selector settles it by weight instead of by order. */
+text.on-dark{fill:#fff}
+.beam{fill:#f5a623;opacity:.28}
+.beam-line{stroke:#f5a623;stroke-width:1.5;opacity:.28}
+.rollers{stroke:#000;stroke-width:1;stroke-dasharray:2 6}
+.route{fill:none;stroke:#000;stroke-width:1.4;stroke-dasharray:6 6;opacity:.55}
+.pulse{fill:none;stroke:#f5a623;stroke-width:2;opacity:.45}
+.belt-item{opacity:1}.belt-item:not(:first-of-type){display:none}</style><path class="f-left edge thin" d="M-19.4 11.2L2.8 24.0L2.8 22.7L-19.4 9.9Z"/><path class="f-right edge thin" d="M22.2 12.8L2.8 24.0L2.8 22.7L22.2 11.5Z"/><path class="f-top edge thin" d="M0.0 -1.3L22.2 11.5L2.8 22.7L-19.4 9.9Z"/><path class="f-dark-left edge" d="M-7.6 10.3L2.1 15.9L2.1 10.3L-7.6 4.7Z"/><path class="f-dark-right edge" d="M10.4 11.1L2.1 15.9L2.1 10.3L10.4 5.5Z"/><path class="f-dark-top edge" d="M0.7 -0.1L10.4 5.5L2.1 10.3L-7.6 4.7Z"/><path class="f-dark-left edge" d="M-2.8 5.1L1.4 7.5L1.4 -2.1L-2.8 -4.5Z"/><path class="f-dark-right edge" d="M5.5 5.1L1.4 7.5L1.4 -2.1L5.5 -4.5Z"/><path class="f-dark-top edge" d="M1.4 -6.9L5.5 -4.5L1.4 -2.1L-2.8 -4.5Z"/></svg>
