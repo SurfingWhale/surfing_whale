@@ -10,11 +10,14 @@
     "build": "next build",
     "start": "next start",
     "brand-book": "node scripts/build-brand-book.mjs",
-    "showreel": "node scripts/build-showreel.mjs"
+    "showreel": "node scripts/build-showreel.mjs",
+    "reel": "node scripts/build-reel.mjs",
+    "reel:studio": "remotion studio app/remotion/index.ts"
   },
   "dependencies": {
     "@netlify/plugin-nextjs": "^5.15.9",
     "@notionhq/client": "^5.14.0",
+    "@remotion/player": "4.0.532",
     "@sparticuz/chromium": "^143.0.4",
     "@supabase/supabase-js": "^2.109.0",
     "dotenv": "^17.3.1",
@@ -24,9 +27,11 @@
     "next": "16.2.1",
     "puppeteer-core": "^24.40.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.532"
   },
   "devDependencies": {
+    "@remotion/cli": "4.0.532",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.37",
     "@types/react": "^19.2.14",

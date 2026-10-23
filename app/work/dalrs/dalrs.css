@@ -1,0 +1,103 @@
+/* app/work/dalrs/dalrs.css
+ *
+ * DALRS's own look, scoped to .dalrs — never to the page around it. The brief
+ * asked for Archivo and IBM Plex Mono "di dalam blok studi kasus", which is
+ * the right instinct: the case study quotes another product's voice, it does
+ * not adopt it. The page's headings, rules, labels and spacing stay Surfing
+ * Whale's, and come from Read.tsx like every other reading page.
+ *
+ * The faces are the same two files the film loads through staticFile(), so
+ * the <Player> and the prose around it cannot end up in different cuts of
+ * Archivo.
+ */
+@font-face {
+  font-family: "Archivo DALRS";
+  src: url("/work/dalrs/fonts/Archivo-latin.woff2") format("woff2");
+  font-weight: 400 800;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plex Mono DALRS";
+  src: url("/work/dalrs/fonts/IBMPlexMono-400-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plex Mono DALRS";
+  src: url("/work/dalrs/fonts/IBMPlexMono-600-latin.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+
+.dalrs {
+  --d-ink: #000;
+  --d-muted: #5b6068;
+  --d-line: #e3e5e9;
+  --d-surface: #f4f5f7;
+  --d-tape: #f5a623;
+}
+
+/* A quoted block: always DALRS's white ground, in either theme, because what
+   it shows is a product that has one appearance. It is framed so it reads as
+   a quotation rather than as this site changing colour. */
+.dalrs-quote {
+  background: #fff;
+  color: var(--d-ink);
+  border: 1px solid var(--d-line);
+  border-radius: 16px;
+  padding: clamp(18px, 4vw, 28px);
+  font-family: "Archivo DALRS", system-ui, sans-serif;
+}
+.dalrs-quote .lbl {
+  font-family: "Plex Mono DALRS", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--d-muted);
+}
+.dalrs-mono {
+  font-family: "Plex Mono DALRS", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The four evidence figures. The count-up is in the film; here they are at
+   rest, because a number that animates while somebody reads the sentence
+   under it is the thing the brand book calls motion in the corner of the eye. */
+.dalrs-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dalrs-stat {
+  /* The colour FIRST, then the gradient over it. A gradient is a background
+     image: with no background-color under it, anything that drops the image
+     — forced colours, a print stylesheet, an old renderer — leaves this text
+     on whatever the page is, which in the dark theme is #111 and gives
+     2.98:1. verify-contrast reads background-color and found exactly that. */
+  background-color: #fff;
+  background-image: linear-gradient(180deg, #fff, var(--d-surface));
+  border: 1px solid var(--d-line);
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+}
+.dalrs-stat b {
+  display: block;
+  font-family: "Plex Mono DALRS", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: clamp(26px, 6vw, 34px);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--d-ink);
+}
+.dalrs-stat span {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--d-muted);
+}
+@media (min-width: 40rem) { .dalrs-stats { grid-template-columns: repeat(4, 1fr); } }
+
+/* The amber is a marker, never a fill behind text: at 1.9:1 against white it
+   cannot carry type, so it is a rule and a dot and nothing else. */
+.dalrs-mark { color: var(--d-tape); }
+.dalrs-rule { height: 3px; background: var(--d-tape); border-radius: 2px; }

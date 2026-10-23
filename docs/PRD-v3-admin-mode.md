@@ -2195,3 +2195,124 @@ Checked under zoom, because `zoom` is where layouts quietly break: no
 sideways scroll at any width; the bar and the rail stay sticky; the Share
 menu opens under its button; and a click on the live map's zoom control
 inside its sandboxed iframe lands on the control at 1920 as at 1100.
+
+## 38. DALRS, and a film made with Remotion — 2026-10-22
+
+A case study for DALRS — asset custody, hand-over with evidence, monthly
+reconciliation — built from three sources: the repository `SurfingWhale/dalrs`
+at `a9a677e`, its design artifact, and screenshots taken from the app running
+locally. Route `/work/dalrs`, registered in all four places a page on this site
+has to be registered.
+
+### The page is in Indonesian, and that is the only one
+
+Every other page here is English. DALRS is an Indonesian product — its
+interface, its artifact and its documents are all in Indonesian — and
+translating *serah terima* and *BAST* would have been translating the subject.
+Asked and answered before a word was written: **Indonesia penuh.**
+
+So the `<article>` carries `lang="id"`, and `articleGraph` grew an optional
+`inLanguage` (default `en-GB`) because structured data claiming English for
+this page would simply be wrong about the page it describes.
+
+### What the brief asked for and did not get
+
+| Asked | Shipped | Why |
+|---|---|---|
+| `autoplay muted loop` | click to play, no loop, pauses off screen | Three of the five things the brand book lists under **Never** are exactly this element. The brief's own first instruction was to follow the repository's existing patterns, and `Showreel.tsx` is that pattern. |
+| "tap→frame ~40 ms" | the sentence saying it is **not measured** | `docs/native-audit.md` lists K7 under *"Not measured yet"*. A page whose whole argument is "this was measured" cannot carry a number nobody took. |
+
+Everything else is as asked, including the 1080×1350 cut for a social post.
+
+### The film
+
+Thirty seconds, six scenes, silent, at `app/remotion/`. Remotion pinned exact
+at **4.0.532** — 15 days old at install, the oldest release clearing the
+two-week bar. `npm run reel` renders both cuts and the poster.
+
+Two things the renderer needed that are not obvious:
+
+- **chrome-headless-shell, not Chrome.** Remotion asks for old headless, which
+  current Chrome has removed; the render dies with no frames at all. Playwright
+  ships `chrome-headless-shell`, which *is* that implementation, and
+  `scripts/build-reel.mjs` points at it.
+- **The faces, inside the composition.** The renderer runs in its own browser
+  with nothing of the page around it, so a composition that only *names*
+  Archivo renders in system-ui and nobody notices until the mp4 is watched.
+  `staticFile()` points at the same two woff2 files the page loads, so the
+  `<Player>` and the render cannot drift apart.
+
+A bug the first render caught: the count-up printed **"20.426,941"**. A
+count-up renders every intermediate number, and 20455 part-way through is
+20426.941 — which `toLocaleString('id-ID')` gives a thousands separator *and* a
+decimal comma. `Math.round` on the counts, not just on the final value.
+
+### The lazy import that was not lazy, and the three checks that missed it
+
+`ReelPlayer` first did `await import("@remotion/player")` inside its observer.
+That reads as lazy and is not: the build folded Remotion into the route's own
+bundle, so every visitor paid ~312 KB for a film whether they pressed or not,
+and nothing on screen looked different. `next/dynamic` with `ssr:false` around
+a module that holds nothing else (`ReelStage.tsx`) is what actually splits it.
+
+`scripts/verify-reel.mjs` took three attempts to measure this honestly:
+
+1. It matched request URLs against `/remotion/i`. Next hashes its chunk names,
+   so nothing ever matched and it reported "no remotion requests" either way.
+2. It counted bytes — and still called the import eager, three builds running,
+   because **every viewport it used put the figure inside the observer's 320px
+   margin**. The chunk was arriving during load because the figure was already
+   near, not because the split had failed. The split had never failed. A 100px
+   viewport puts the figure genuinely out of range, and the chunk then appears
+   exactly on approach: 237 KB on load, 549 KB after.
+3. Its "is it playing" check looked for a `<canvas>`. Remotion renders the
+   composition as ordinary DOM, so the selector found nothing, that check
+   failed, and the two after it passed by comparing `-1` to `-1`.
+
+Proved against the bug: importing `ReelStage` directly turns A red while B, C
+and D stay green.
+
+### Two faults the suite found in the page
+
+- **`verify-contrast`** flagged the four evidence figures at 2.98:1 in dark.
+  The card's background was `linear-gradient(...)` with no `background-color`
+  under it — a gradient is a background *image*, so anything that drops it
+  (forced colours, print, an old renderer) leaves that text on the page, which
+  in dark is `#111`. Colour first, gradient over it.
+- **`verify-tap-targets`** flagged `Enter Fullscreen` at 16×37 — Remotion's own
+  control, under 24×24. Replaced through its `renderFullscreenButton` render
+  prop, which is the supported way; Remotion still owns the click. The volume
+  control went at the same time: the film has no audio track, so a mute button
+  is one that does nothing sitting beside two that do.
+
+### Assets, all regenerated rather than redrawn
+
+The seven isometric SVGs come out of DALRS's own `apps/web/src/iso.ts` through
+a generator, with the rules from `landing.css` inlined — a file served as an
+`<img>` cannot reach a page's stylesheet, so a `<path class="f-top">` is
+unfilled anywhere but that app. The animated classes are inlined **at rest**:
+a CSS animation inside an `<img>`-loaded SVG does run, and the brand book bars
+anything that loops while somebody reads.
+
+One bug there is worth keeping: flattening the stylesheet moved `.on-dark`
+above `.iso-text`, two single-class rules of equal weight, and the
+`FIRESTORE · JAKARTA` label went black on black. `text.on-dark` settles it by
+weight instead of by source order.
+
+### A lost afternoon, recorded
+
+The first build of all of this was finished and verified when the container was
+reclaimed and rebuilt from a fresh clone. Everything uncommitted went with it —
+composition, page, assets, renders, checkers. Nothing was lost that had been
+pushed. The rebuild landed on a newer `main`, which had meanwhile replaced
+every page's private 680px column with `Read.tsx`; the page is built on that,
+which it would not have been otherwise.
+
+### Suite
+
+`verify-reel` 10/10; contrast 91 nodes, 0 below AA in both themes; tap-targets
+ALL PASS including `/work/dalrs`; share 8/8; SEO 1×h1, no level skipped, 13
+images with alt and dimensions. `verify-rhythm` reports two failures —
+`10px used 1x` at `app/components/ShareButton.tsx:99` and the five-step
+grouping range it causes — and both reproduce with this branch stashed, so
+they are on `main` and not from this change.
