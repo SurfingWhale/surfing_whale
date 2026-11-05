@@ -868,6 +868,44 @@ body:has(.photo-row) {
       background: var(--bg-muted);
     }
   }
+
+  /* Two people this material is actively worse for, and until now neither was
+     asked. `prefers-reduced-transparency` is set by somebody who has told
+     their system that see-through surfaces make text hard to read — which is
+     exactly what a tint over a moving backdrop does. `forced-colors` is a
+     high-contrast mode where the user's own palette replaces ours; a
+     translucent tint and a specular sweep there are decoration painted over
+     the colours they chose.
+     Both get the same answer: the same surface, solid, with the sweep and the
+     rim turned off. Not a different component — the layout, radius and
+     spacing are untouched. */
+  @media (prefers-reduced-transparency: reduce) {
+    .glass,
+    .glass-panel {
+      background: var(--bg);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    .glass::before,
+    .glass::after {
+      display: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .glass,
+    .glass-panel {
+      background: Canvas;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      border: 1px solid CanvasText;
+      box-shadow: none;
+    }
+    .glass::before,
+    .glass::after {
+      display: none;
+    }
+  }
 }
 
 /* ---- The opening ------------------------------------------------------
