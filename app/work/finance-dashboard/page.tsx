@@ -13,6 +13,7 @@ import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ProjectNotes } from "@/app/components/ProjectNotes";
 import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "A ledger that behaves like a product";
@@ -546,6 +547,16 @@ export default function FinanceDashboardCaseStudy() {
             was never that it works; it is that I wrote down where it did not.
           </p>
         </ReadSection>
+
+
+        {/* The Notion row this page replaced, read through the gate.
+
+
+            Renders nothing when nothing is cleared to show. */}
+
+
+        <ProjectNotes path="/work/finance-dashboard" number="10" />
+
 
 
         <ShareRow url={`${SITE}/work/finance-dashboard`} title={TITLE} />

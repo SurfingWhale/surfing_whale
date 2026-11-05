@@ -242,7 +242,26 @@ async function reach(input: string, init?: RequestInit): Promise<Response | null
         "/work/coffee-access",
     };
 
-    export async function getProjects(): Promise<NotionProject[]> {
+    /**
+     * SUPERSEDED read backwards: the page a reader is on, to the Notion row it
+     * replaced. Derived rather than typed out a second time — two hand-kept
+     * copies of the same mapping is a way to publish the wrong row's notes
+     * under the right page's heading.
+     */
+    const NOTES_FOR: Record<string, string> = Object.fromEntries(
+        Object.entries(SUPERSEDED).map(([slug, path]) => [path, slug])
+    );
+
+    /**
+     * Every row that passes the publishing gate — §3 of PUBLISHING-RULES, all
+     * three conditions — whether or not a hand-written page has replaced it.
+     *
+     * Split out from getProjects so the gate has exactly one implementation.
+     * A superseded row is still private content, and the page that replaced it
+     * now shows its notes (getProjectNotes below); two copies of a three-part
+     * safety check, one per caller, is how they drift.
+     */
+    export async function getPublishableRows(): Promise<NotionProject[]> {
     const configured = PROJECTS_DB();
     let res = await queryProjects(configured);
 
@@ -319,12 +338,20 @@ async function reach(input: string, init?: RequestInit): Promise<Response | null
         image: publicImage(page.properties.Image?.url ?? ""),
         date: page.properties.Date?.date?.start ?? "",
         subGroup: page.properties["Sub Group"]?.status?.name ?? "",
-    }))
-    // Dropped here rather than in the component that draws the cards, so that
-    // getProjectBySlug and isPublishableId drop them too. Filtering only the
-    // list left every superseded row still reachable at its own URL, which is
-    // the same duplicate one click further in.
-    .filter((p: NotionProject) => {
+    }));
+    }
+
+    /**
+     * The published list: every row that passes the gate, minus the ones a
+     * hand-written page has replaced.
+     *
+     * Dropped here rather than in the component that draws the cards, so that
+     * getProjectBySlug and isPublishableId drop them too. Filtering only the
+     * list left every superseded row still reachable at its own URL, which is
+     * the same duplicate one click further in.
+     */
+    export async function getProjects(): Promise<NotionProject[]> {
+    return (await getPublishableRows()).filter((p: NotionProject) => {
         if (!(p.slug in SUPERSEDED)) return true;
         console.warn(`Superseded "${p.title}": ${SUPERSEDED[p.slug]} is the page for this`);
         return false;
@@ -437,6 +464,43 @@ async function reach(input: string, init?: RequestInit): Promise<Response | null
     }
 
     return { blocks: out, withheld };
+    }
+
+    /**
+     * The working notes behind a page that was written by hand.
+     *
+     * Six of the case studies here replaced a Notion row rather than being
+     * generated from one, and that row is where the thinking stayed: the
+     * problem statement, the data sources, the pipeline, the method. The page
+     * is the finished argument; this is the workbench behind it.
+     *
+     * Every condition the published list applies applies here too, because it
+     * is the same function — getPublishableRows. A superseded row is not a
+     * cleared row; it is a row that happens not to be in the index, and
+     * Visibility still decides. Then storyOnly runs, so the Technical half and
+     * anything credential-shaped is dropped exactly as it is everywhere else.
+     *
+     * Returns null for: a path with no superseded row, a row that fails the
+     * gate, no NOTION_API_KEY, Notion unreachable, or nothing left after the
+     * split. The caller renders nothing at all in that case — the feature is
+     * fail-closed by construction, so a page without it looks like a page that
+     * never had it.
+     */
+    export async function getProjectNotes(
+    path: string
+    ): Promise<(PageContent & { title: string }) | null> {
+    const slug = NOTES_FOR[path];
+    if (!slug) return null;
+
+    const row = (await getPublishableRows().catch(() => [])).find(
+        (p) => p.slug === slug
+    );
+    if (!row) return null;
+
+    const content = storyOnly(await getPageBlocks(row.id).catch(() => []));
+    if (!content.blocks.length) return null;
+
+    return { ...content, title: row.title };
     }
 
     export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {

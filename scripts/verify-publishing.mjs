@@ -159,6 +159,67 @@ for (const name of ['Teknis', 'Environment Variables', 'Konfigurasi', 'Credentia
   check(r.blocks.length === 0, `"${name}" is recognised as a Technical heading`);
 }
 
+// ── getProjectNotes: the newest surface, and the one that cannot be tested
+//    against the real workspace from a container with no NOTION_API_KEY ─────
+//
+// The six written case studies now show the notes from the Notion row they
+// replaced. That path reaches Notion, so it is exercised here with a stubbed
+// fetch: the gate, the slug resolution and storyOnly are the real code, only
+// the network is fake. Without this the first run of a new publication
+// surface would be in production.
+const { getProjectNotes } = createRequire(import.meta.url)(join(OUT, 'notion.js'));
+
+const notionStub = ({ visibility = 'Public', tags = ['#Finished'] } = {}) => async (url) => {
+  const body = String(url).includes('/blocks/')
+    ? { results: [
+        { type: 'paragraph', paragraph: { rich_text: [{ plain_text: 'Gap score weights emptiness 0.6 and density 0.4.' }] } },
+        { type: 'heading_2', heading_2: { rich_text: [{ plain_text: 'Technical' }] } },
+        { type: 'paragraph', paragraph: { rich_text: [{ plain_text: 'The scraper schema, written while thinking out loud.' }] } },
+        { type: 'heading_2', heading_2: { rich_text: [{ plain_text: 'Catatan' }] } },
+        { type: 'paragraph', paragraph: { rich_text: [{ plain_text: 'Set env variable: export GMAPS_API_KEY="AIza..."' }] } },
+      ] }
+    : { results: [{
+        id: 'row-1',
+        icon: null,
+        properties: {
+          Name: { title: [{ plain_text: 'Padel Bintaro — Isochrone & Gap Analysis' }] },
+          Tags: { multi_select: tags.map((name) => ({ name })) },
+          Visibility: { select: { name: visibility } },
+          Citation: { rich_text: [] },
+          'Sub Group': { status: { name: 'CodingLearn' } },
+          Image: { url: '' },
+          URL: { url: '' },
+          Date: { date: { start: '2026-03-24' } },
+        },
+      }] };
+  return { ok: true, status: 200, json: async () => body, text: async () => JSON.stringify(body) };
+};
+
+console.log('\n── getProjectNotes: a cleared row reaches its page ─────────────');
+globalThis.fetch = notionStub();
+const notes = await getProjectNotes('/work/padel');
+check(!!notes, 'a publishable superseded row resolves from the page path');
+if (notes) {
+  const texts = notes.blocks.map((b) => b.text);
+  check(texts.some((t) => t?.includes('Gap score weights')), 'the story half publishes');
+  check(!texts.some((t) => t?.includes('thinking out loud')), 'the Technical half does not');
+  // The credential sits under "Catatan", which is NOT a Technical heading —
+  // so this is the net in §5 catching it, not the heading split.
+  check(!texts.some((t) => t?.includes('GMAPS_API_KEY')),
+    'a credential outside the Technical half is still withheld');
+  check(notes.withheld >= 2, 'the page can say how much was held back', `withheld ${notes.withheld}`);
+}
+
+console.log('\n── getProjectNotes: the gate still decides ─────────────────────');
+globalThis.fetch = notionStub({ visibility: 'Restricted' });
+check((await getProjectNotes('/work/padel')) === null, 'Visibility=Restricted yields nothing');
+globalThis.fetch = notionStub({ tags: [] });
+check((await getProjectNotes('/work/padel')) === null, 'a row without #Finished yields nothing');
+globalThis.fetch = notionStub();
+check((await getProjectNotes('/colophon')) === null, 'a page that supersedes nothing yields nothing');
+globalThis.fetch = async () => { throw new Error('network down'); };
+check((await getProjectNotes('/work/padel')) === null, 'Notion unreachable yields nothing, not a crash');
+
 rmSync(OUT, { recursive: true, force: true });
 console.log(fail ? `\n${fail} FAILED` : '\nall checks passed');
 process.exit(fail ? 1 : 0);

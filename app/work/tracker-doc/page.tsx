@@ -10,6 +10,7 @@ import Link from "next/link";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ProjectNotes } from "@/app/components/ProjectNotes";
 import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "TrackerDoc";
@@ -189,6 +190,13 @@ export default function TrackerDocPage() {
             .
           </p>
         </ReadSection>
+
+        {/* The Notion row this page replaced, read through the gate.
+
+            Renders nothing when nothing is cleared to show. */}
+
+        <ProjectNotes path="/work/tracker-doc" number="08" />
+
 
         <ShareRow url={`${SITE}/work/tracker-doc`} title={TITLE} />
       </article>

@@ -24,6 +24,7 @@ import { FieldNote } from "./FieldNote";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ProjectNotes } from "@/app/components/ProjectNotes";
 import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "15 minutes to coffee";
@@ -246,6 +247,13 @@ export default function CoffeeAccessPage() {
             thing being placed.
           </p>
         </ReadSection>
+
+        {/* The Notion row this page replaced, read through the gate.
+
+            Renders nothing when nothing is cleared to show. */}
+
+        <ProjectNotes path="/work/coffee-access" number="07" />
+
 
         <ShareRow url={`${SITE}/work/coffee-access`} title={TITLE} />
       </article>

@@ -2580,3 +2580,75 @@ will not resolve, so the checker compiles it to CommonJS in a temp directory
 and requires that. `tsc` exits non-zero on two `next: { revalidate }` options
 — Next's additions to `RequestInit`, absent from the stock lib types — so the
 exit code is ignored and the emitted file is what is verified.
+
+## 43. The notes behind each written page — 2026-11-05
+
+Six of the case studies here replaced a Notion row rather than being generated
+from one. `SUPERSEDED` drops those rows from the index so the same project is
+not listed twice — but the row is still where the thinking stayed: the problem
+statement, the data sources, the pipeline, the method, the task list. The page
+is the finished argument; the row is the workbench behind it.
+
+Those notes now appear at the foot of the page that replaced them.
+
+### What the content actually looks like
+
+The Padel row, read before any code was written: a project overview table, a
+problem statement with four dimensions and their metrics, 22 kelurahan across
+two provinces, a data-sources table with provenance per dataset, a nine-step
+pipeline, the file tree, a four-phase task list, and the gap-score formula. It
+also contains this line:
+
+```
+- [x] Set env variable: export GMAPS_API_KEY="AIza..."
+```
+
+Which is the point. His real notes *do* carry credential-shaped lines, and the
+line sits under a task list, not under a Technical heading.
+
+Dry-run through the real `storyOnly` before writing the feature:
+
+| Line | Verdict |
+| --- | --- |
+| `export GMAPS_API_KEY="AIza..."` | **withheld** |
+| "Dapetin Google Maps API Key (console.cloud.google.com)" | publishes |
+| gap_score formula, scope notes, DKI regulation context | publishes |
+
+Naming a key publishes; assigning one does not — the same discrimination §5
+makes for passwords, working correctly on content nobody wrote for a test.
+
+### One gate, two callers
+
+`getProjects` ran the three-condition gate and *then* dropped superseded rows.
+Reading a superseded row needs the gate without that last filter, and the
+tempting shortcut is a second copy of the check. That is how two copies drift
+until one of them is missing a condition.
+
+So the gate was split: `getPublishableRows` applies §3 and returns everything
+that passes; `getProjects` is that, minus superseded. `getProjectNotes` calls
+the same function. `NOTES_FOR` is derived from `SUPERSEDED` by inverting it
+rather than typed out again — two hand-kept copies of that mapping is a way to
+publish one row's notes under another row's heading.
+
+**Fail-closed by construction.** No superseded row, a row that fails the gate,
+no `NOTION_API_KEY`, Notion unreachable, nothing left after the split — all
+render nothing at all. Verified: this container has no key, and all six pages
+build and serve exactly as before, with no empty section where the notes would
+be.
+
+### Testing a surface that cannot be reached from here
+
+The happy path cannot be exercised in a container with no `NOTION_API_KEY`, so
+without something further the first real run of a new publication surface
+would have been in production.
+
+`verify-publishing.mjs` now stubs `globalThis.fetch` and exercises the real
+gate, the real slug resolution and the real `storyOnly` — only the network is
+fake. The case worth naming: the fixture puts a credential under a heading
+called **Catatan**, which is *not* a Technical heading, and it is still
+withheld. That is §5's net working independently of the heading split, which
+is the guarantee that actually matters.
+
+41 assertions, all passing. PUBLISHING-RULES gained §9 (every surface a row
+can reach a reader through) and §10 (the rules are tested, and how to prove it
+both ways).

@@ -58,6 +58,7 @@ import { SalesPalReelPlayer } from "@/app/components/SalesPalReelPlayer";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ProjectNotes } from "@/app/components/ProjectNotes";
 import { ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "The CRM opens with a form. This one opens with today.";
@@ -742,6 +743,13 @@ export default function SalesPalPage() {
             — same instinct, a map instead of a pipeline.
           </p>
         </ReadSection>
+
+        {/* The Notion row this page replaced, read through the gate.
+
+            Renders nothing when nothing is cleared to show. */}
+
+        <ProjectNotes path="/work/salespal" number="11" />
+
 
         <ShareRow url={`${SITE}/work/salespal`} title={TITLE} />
       </article>

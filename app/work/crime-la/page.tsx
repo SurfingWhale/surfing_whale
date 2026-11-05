@@ -17,6 +17,7 @@ import { EmbedFrame } from "@/app/components/EmbedFrame";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ProjectNotes } from "@/app/components/ProjectNotes";
 import { prose, ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "Reading Los Angeles by its crime reports";
@@ -222,6 +223,13 @@ export default function CrimeLAPage() {
             .
           </p>
         </ReadSection>
+
+        {/* The Notion row this page replaced, read through the gate.
+
+            Renders nothing when nothing is cleared to show. */}
+
+        <ProjectNotes path="/work/crime-la" number="06" />
+
 
         <ShareRow url={`${SITE}/work/crime-la`} title={TITLE} />
       </article>

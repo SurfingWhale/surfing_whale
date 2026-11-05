@@ -21,6 +21,7 @@ import { KELURAHAN, TOTAL_COURTS, TOTAL_POP, perCapita } from "./kelurahan";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
+import { ProjectNotes } from "@/app/components/ProjectNotes";
 import { ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
 
 const TITLE = "Padel, and the moat nobody has dug";
@@ -367,6 +368,13 @@ export default function PadelPage() {
             — same city, same technique, a different thing being placed.
           </p>
         </ReadSection>
+
+        {/* The Notion row this page replaced, read through the gate.
+
+            Renders nothing when nothing is cleared to show. */}
+
+        <ProjectNotes path="/work/padel" number="08" />
+
 
         <ShareRow url={`${SITE}/work/padel`} title={TITLE} />
       </article>

@@ -150,8 +150,56 @@ Ask. Do not publish, and do not quietly hide either — hiding a row Fauzy has
 cleared is also a decision that is not an agent's to make. State what was
 found, name the specific concern, and let him choose.
 
+## 9. The surfaces this applies to
+
+Every place a Notion row can reach a reader. Adding one means adding it here.
+
+| Surface | What it shows | Where the gate runs |
+| --- | --- | --- |
+| The project index | Rows that pass §3, minus superseded ones | `getProjects` |
+| `/work/p/<slug>` | One row's story half | `getProjectBySlug` + `storyOnly` |
+| `/api/notion/<id>` | Only ids the index publishes | `isPublishableId` |
+| **A written page's notes** | **The row a hand-written case study replaced** | **`getProjectNotes` + `storyOnly`** |
+
+The last one was added on 5 November 2026 and needs saying plainly, because it
+publishes rows the index deliberately hides.
+
+**A superseded row is not a cleared row.** It is a row that happens not to be
+in the index, because a hand-written page took its place. Its `Visibility`
+still decides, and `getProjectNotes` applies §3 in full by calling the same
+`getPublishableRows` the index calls — one implementation, two callers. The
+gate was split out from `getProjects` for exactly this reason: two copies of a
+three-part safety check, one per caller, is how they drift.
+
+`ProjectNotes` is a Server Component and must stay one, per §6.
+
+It is **fail-closed by construction**: no superseded row, a row that fails the
+gate, no `NOTION_API_KEY`, Notion unreachable, or nothing left after the split
+all render nothing at all. A page without notes looks like a page that never
+had them.
+
+## 10. The rules are tested
+
+`scripts/verify-publishing.mjs`, added 5 November 2026. Until then every rule
+in this document was implemented and none was tested — the only
+safety-critical code in the repository with no checker.
+
+Forty-one assertions against fixtures, nothing touching the real workspace. It
+checks both failure directions: that secrets are withheld, **and** that
+ordinary prose is not, because a gate that eats normal sentences gets loosened
+by whoever it annoys. §5's own examples are in there — "berbagi satu password"
+publishes, `password: hunter2` does not.
+
+Proved both ways. Emptying `SECRETS` turns 11 must-withhold checks red while
+all four must-publish checks stay green. Returning `false` from `isRestricted`
+turns all seven restriction checks red.
+
+Run it before changing anything in `app/lib/notion.ts`.
+
 ---
 
-*Enforced in `app/lib/notion.ts` (`isRestricted`, `storyOnly`, `publicImage`,
-`publicLink`) and `app/api/notion/[id]/route.ts`. Changing those files means
-changing this document first.*
+*Enforced in `app/lib/notion.ts` (`isRestricted`, `getPublishableRows`,
+`storyOnly`, `getProjectNotes`, `publicImage`, `publicLink`),
+`app/components/ProjectNotes.tsx` and `app/api/notion/[id]/route.ts`. Changing
+those files means changing this document first, and running
+`scripts/verify-publishing.mjs` after.*
