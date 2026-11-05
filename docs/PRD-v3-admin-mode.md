@@ -2522,3 +2522,61 @@ where `.read-rail` is `display: block` and the fault cannot occur.
 
 Fixed in the shared layout rather than per page. After: 34 section numbers
 across four pages, every one on a single line.
+
+## 42. The publishing gate finally has a test — 2026-11-05
+
+Asked to share more of the Notion notes onto the project pages, *kecuali
+rahasia kode api dll*. Before putting more of a private workspace through a
+public pipeline, the obvious question is whether the filter works. It had
+never been asked.
+
+`docs/PUBLISHING-RULES.md` was written after a row marked
+`INTERNAL / RESTRICTED — jangan di-publish ke portfolio website` went live for
+about three and a half hours on 2 September 2026. Everything in it was
+implemented — `isRestricted`, `storyOnly`, `publicImage`, `publicLink`. None
+of it was tested. **It was the only safety-critical code in the repository
+with no checker**, which is the exact inversion of where test effort should
+go: the reel player has ten checks and the thing that prevents a leak had
+zero.
+
+### What it checks
+
+Thirty-two assertions, all fixtures — nothing touches the real workspace.
+
+- **Restriction markers.** Title, tags, icon, Citation, Sub Group, in English
+  and Indonesian. Plus the one that matters most: a row with no readable
+  properties is withheld, because optional chaining would otherwise report
+  "no markers found" on a row nobody can read.
+- **Credentials.** Every prefix §5 names — `ntn_`, `sk-`, `ghp_`, `AKIA`,
+  `xox…` — plus env assignments, private key blocks, bearer tokens, quoted
+  passwords, and absolute paths off a personal machine.
+- **The handle allowlist.** A repo under another owner is withheld; one under
+  the allowlisted owner publishes.
+- **The Technical split**, including the aliases recognised without renaming:
+  Teknis, Environment Variables, Konfigurasi, Credential.
+
+### The half that is easy to forget
+
+A gate can fail by being too loose. It can also fail by being too tight —
+eating ordinary sentences until somebody loosens it out of annoyance, and then
+it is not a gate. So the file also asserts what **must** publish, taken
+straight from §5: *naming a password is not leaking one*, so "berbagi satu
+password" publishes while "password: hunter2" does not; a DAX assignment like
+`KALENDER =` is not an env var.
+
+No real credential is in the file. The fake tokens are assembled at run time
+from a prefix and a body, so no committed line is itself a credential-shaped
+string — this repository is public and GitHub scans it.
+
+### Proved both ways
+
+Emptying the `SECRETS` array turns **11 of the must-withhold checks red while
+all four must-publish checks stay green** — which is the signature of a gate
+that has stopped filtering rather than one that has changed shape. Returning
+`false` from the top of `isRestricted` turns all seven restriction checks red.
+
+`notion.ts` is TypeScript with extensionless imports, which Node's ESM loader
+will not resolve, so the checker compiles it to CommonJS in a temp directory
+and requires that. `tsc` exits non-zero on two `next: { revalidate }` options
+— Next's additions to `RequestInit`, absent from the stock lib types — so the
+exit code is ignored and the emitted file is what is verified.
