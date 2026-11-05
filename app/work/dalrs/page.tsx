@@ -21,7 +21,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CaseHeader } from "@/app/components/CaseHeader";
 import { ReadBlock, ReadNav, ReadPage, ReadSection } from "@/app/components/Read";
-import { ReelPlayer } from "@/app/components/ReelPlayer";
+import { DalrsReelPlayer } from "@/app/components/DalrsReelPlayer";
 import { ShareRow } from "@/app/components/ShareRow";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
@@ -149,7 +149,7 @@ export default function DalrsPage() {
         </ReadBlock>
 
         <ReadBlock>
-          <ReelPlayer
+          <DalrsReelPlayer
             poster="/work/dalrs/reel-poster.webp"
             posterSmall="/work/dalrs/reel-poster-960.webp"
             mp4="/work/dalrs/reel.mp4"
@@ -164,7 +164,7 @@ export default function DalrsPage() {
             <code className="font-mono text-[11px]">app/remotion/</code> dan
             berjalan langsung di React, bukan sebagai berkas video, jadi tetap
             tajam di lebar berapa pun. Tanpa suara.
-          </ReelPlayer>
+          </DalrsReelPlayer>
         </ReadBlock>
 
         <ReadSection number="01" title="Datanya ada. Yang tidak ada: siapa yang memegangnya sekarang.">

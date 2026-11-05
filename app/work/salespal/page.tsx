@@ -54,7 +54,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CaseHeader } from "@/app/components/CaseHeader";
-import { Showreel } from "@/app/components/Showreel";
+import { SalesPalReelPlayer } from "@/app/components/SalesPalReelPlayer";
 import { JsonLd, articleGraph, breadcrumbs } from "@/app/lib/schema";
 import { SITE } from "@/app/lib/site";
 import { ShareRow } from "@/app/components/ShareRow";
@@ -267,23 +267,29 @@ export default function SalesPalPage() {
             not played: nothing below waits for it, and the poster is what the
             page actually costs unless somebody presses. */}
         <ReadBlock>
-          <Showreel
-            src="/work/salespal/showreel"
-            poster="/work/salespal/showreel-poster.webp"
-            posterSmall="/work/salespal/showreel-poster-960.webp"
-            posterAlt="The film's title card: “Five screens. Every button written down.”, and under it “Fourteen artboards, 96 rows of specification, 41 merges. About two weeks.”"
-            seconds={15}
-            label="How SalesPal was built: canvas, spec, build, reconcile, audit, check — with the project's own figures."
+          <SalesPalReelPlayer
+            poster="/work/salespal/reel-poster.webp"
+            posterSmall="/work/salespal/reel-poster-960.webp"
+            mp4="/work/salespal/reel.mp4"
+            seconds={30}
+            label="A WhatsApp thread on the left — a price asked for, a reply promised, then nineteen days of silence — and on the right the lead record read out of it: who, what position, how long, how much."
           >
-            Fifteen seconds, the whole build in order: fourteen artboards,
-            ninety-six rows of specification, six staged pull requests, a pass
-            to make the visuals agree, the interface audit, and the 78-row
-            deploy check. The figures that land at the end are the ones in
-            section 08 below — 12 flows, 123 rules tests, 130 strings raised,
-            nothing left open. Generated frame by frame from{" "}
-            <code className="font-mono text-[11px]">scripts/build-showreel.mjs</code>,
-            in this site&rsquo;s faces rather than the app&rsquo;s.
-          </Showreel>
+            Thirty seconds, six scenes, and it argues the same thing this page
+            does rather than listing how it was made: a conversation that
+            already happened, the one button that reads it, the record that
+            assembles itself out of it, a score with its reasons printed next
+            to it, a home screen that names three jobs instead of drawing a
+            funnel, and the chat being let go of while what was lifted from it
+            stays. The figures on the end card are the ones section 08 states —
+            12 flows, 123 rules tests, 41 merges. Built with Remotion; the
+            composition is in{" "}
+            <code className="font-mono text-[11px]">app/remotion/salespal/</code>,
+            in this site&rsquo;s faces rather than the app&rsquo;s, and in the
+            app&rsquo;s own colours, sampled from its screenshots. It replaces a
+            fifteen-second film that was about the build — the artboards and the
+            merges — which is a fact about the making rather than a reason to
+            watch.
+          </SalesPalReelPlayer>
         </ReadBlock>
 
         <ReadSection number="01" title="The tools ask for data. The work is already in the chat.">

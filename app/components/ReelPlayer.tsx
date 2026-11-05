@@ -1,12 +1,19 @@
 "use client";
 // app/components/ReelPlayer.tsx
 //
-// The DALRS film, played by Remotion's own <Player> — the composition runs
-// live in React rather than as a video file, so it stays sharp at any width.
+// A film played by Remotion's own <Player> — the composition runs live in
+// React rather than as a video file, so it stays sharp at any width.
 //
-// THREE DEPARTURES FROM THE BRIEF, all the same reason. The brief asked for
-// "autoplay muted loop". This site's brand book lists three things under
-// Never, and all three are this element:
+// This component is the shell only: the poster, the press, the observers and
+// the caption. WHICH film it plays arrives as `stage`, and the words around it
+// as `strings`, because the two pages that use it are written in different
+// languages. See DalrsReelPlayer.tsx and SalesPalReelPlayer.tsx, which are
+// where the dynamic import lives — it has to sit in a client module, and the
+// pages themselves are server components.
+//
+// THREE DEPARTURES FROM THE ORIGINAL BRIEF, all the same reason. The brief
+// asked for "autoplay muted loop". This site's brand book lists three things
+// under Never, and all three are this element:
 //
 //   "An entrance that delays reading"            -> no autoplay
 //   "Anything that loops in the corner of the
@@ -19,25 +26,31 @@
 // IntersectionObserver — is that pattern, with eleven checks behind it.
 // Turning autoplay back on is one prop.
 //
-// The Player and the composition load only when the figure comes into view,
-// through next/dynamic — see ReelStage.tsx for why a bare import() was not
-// enough. Before that the page costs a 42 KB poster and no Remotion at all.
-// Under prefers-reduced-motion the poster is all there ever is, with the
-// rendered file offered as a link rather than played.
+// The Player and the composition load only when the figure comes into view —
+// see ReelStage.tsx for why a bare import() was not enough. Before that the
+// page costs a poster and no Remotion at all. Under prefers-reduced-motion the
+// poster is all there ever is, with the rendered file offered as a link.
 
-import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
+import type { ComponentType, RefAttributes } from "react";
 import type { PlayerRef } from "@remotion/player";
 
 const W = 1920;
 const H = 1080;
 
-// next/dynamic with ssr:false, not a bare import() in the effect. The bare one
-// looked lazy and was not — see the note at the top of ReelStage.tsx.
-const ReelStage = dynamic(() => import("./ReelStage"), { ssr: false });
+/** The words around the film. Both pages state the same things; they are not
+ *  written in the same language, so neither set can be the default. */
+export type ReelStrings = {
+  /** The press. Gets the length so "30" is not written twice. */
+  play: (seconds: number) => string;
+  /** Link text offered instead of the film under reduced motion. */
+  openFile: string;
+  /** The sentence after that link, explaining why it is a link. */
+  calmNote: string;
+};
 
 export function ReelPlayer({
-  poster, posterSmall, mp4, seconds, label, children,
+  poster, posterSmall, mp4, seconds, label, stage: Stage, strings, children,
 }: {
   poster: string;
   posterSmall?: string;
@@ -45,6 +58,9 @@ export function ReelPlayer({
   mp4: string;
   seconds: number;
   label: string;
+  /** The film, already wrapped in next/dynamic by the calling module. */
+  stage: ComponentType<RefAttributes<PlayerRef>>;
+  strings: ReelStrings;
   children: React.ReactNode;
 }) {
   const wrap = useRef<HTMLDivElement>(null);
@@ -103,7 +119,7 @@ export function ReelPlayer({
     <figure className="my-10" ref={wrap}>
       <div className="relative isolate overflow-hidden rounded-[2px] border border-border bg-white">
         <div className="relative aspect-video w-full">
-          {mounted && <ReelStage ref={player} />}
+          {mounted && <Stage ref={player} />}
           {!want && (
             // Over the Player, not instead of it: the still is what the page
             // shows until somebody asks for the film.
@@ -134,7 +150,7 @@ export function ReelPlayer({
                              text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-[#000]
                              shadow-[0_1px_3px_rgba(14,17,22,0.22)]">
               <span aria-hidden="true" className="block h-0 w-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-current" />
-              Putar · {seconds} dtk · tanpa suara
+              {strings.play(seconds)}
             </span>
           </button>
         )}
@@ -146,9 +162,9 @@ export function ReelPlayer({
           <>
             {" "}
             <a href={mp4} className="font-medium text-fg underline decoration-border-strong underline-offset-[3px]">
-              Buka filmnya sebagai berkas video
+              {strings.openFile}
             </a>{" "}
-            — animasinya dimatikan karena perangkat ini minta gerak seminimal mungkin.
+            {strings.calmNote}
           </>
         )}
       </figcaption>

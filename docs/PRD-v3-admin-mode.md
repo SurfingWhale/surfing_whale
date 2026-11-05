@@ -2316,3 +2316,107 @@ images with alt and dimensions. `verify-rhythm` reports two failures —
 `10px used 1x` at `app/components/ShareButton.tsx:99` and the five-step
 grouping range it causes — and both reproduce with this branch stashed, so
 they are on `main` and not from this change.
+
+## 39. SalesPal's film, made again with Remotion — 2026-10-29
+
+§33 put a fifteen-second film at the head of `/work/salespal`, generated frame
+by frame onto a canvas by `scripts/build-showreel.mjs`. This replaces it with a
+thirty-second Remotion film, on the same terms as DALRS's: click to play, no
+loop, pauses off screen, a 1080×1350 cut for a social post.
+
+### The film argues what the page argues
+
+The old one was about the **build** — fourteen artboards, ninety-six rows of
+specification, forty-one merges. Those are facts about the making. The page's
+own argument is an inversion: the position of a conversation already exists, in
+a chat nobody is going to re-type, so the record is *read out of it* rather
+than filled in. That is what the new film shows, in six scenes — the thread,
+the one button, the record assembling itself, a score with its reasons printed
+beside it, a home screen that names three jobs instead of drawing a funnel, and
+the chat being let go of while what was lifted from it stays.
+
+The build figures did not disappear; they are the end card. A number of
+artboards is a reason to trust the thing, not a reason to watch it.
+
+### Its own look, taken rather than invented
+
+| | DALRS | SalesPal |
+|---|---|---|
+| Ground | white | `#f3f5f7` |
+| Accent | amber `#f5a623` | blue `#005eb0` |
+| Display | Archivo | Oswald |
+| Language | isometric warehouse | flat interface |
+
+SalesPal's colours were **sampled from its own screenshots** in
+`public/work/salespal/` rather than guessed: `#f3f5f7` is 36% of every screen,
+and `#005eb0` is the logo mark's only colour. The faces are *this site's* —
+Oswald, Plus Jakarta Sans, Geist Mono — which is what the previous film used
+and said so in its caption. The app's own faces are not in this repository and
+a film that guessed at them would be claiming something it cannot show.
+
+**A trap worth writing down.** The obvious place to get those three woff2 files
+is `.next/static/media/`, where a build has already cached them. They are
+`next/font` **subsets** — Plus Jakarta Sans came out at 1,716 bytes. Shipped,
+the film would have rendered tofu for every character the site does not
+currently use, and the first place anyone would have seen it is the mp4. The
+files now in `public/work/salespal/fonts/` are the full latin subsets, 21–27 KB
+each, fetched from Google Fonts at build time and committed — so nothing leaves
+for a font CDN at runtime.
+
+### One shell, two films
+
+`ReelPlayer.tsx` was written for DALRS and had its composition and its
+Indonesian wired into it. It is now the shell only — poster, press, observers,
+caption — and takes `stage` and `strings`. The two pages are in different
+languages, so neither set of words can be the default.
+
+The dynamic import did **not** move into it. There are two stage modules,
+`ReelStage.tsx` and `SalesPalStage.tsx`, and two four-line wrappers that name
+one each. A single module importing both compositions would hand a reader of
+`/work/dalrs` SalesPal's film in the same chunk, which is the exact failure
+`verify-reel.mjs` check A exists to catch.
+
+`scripts/build-reel.mjs` is now a table of films rather than one hard-coded
+path: `npm run reel` renders every film, `npm run reel -- salespal` renders one.
+
+### Three faults, all found by looking at a render rather than at the code
+
+**The thread and the record were different people.** The chat was headed
+*Budi — PT Harum Jaya*; the record it produced read *Ibu Sari — PT Harum
+Jaya*. Nothing failed, nothing warned, and the whole point of the scene is that
+the second is read out of the first.
+
+**The film was drawn at 1:1 inside a 1920 frame.** The storyboard box was
+1000×700 floating in the middle of it, so interface text set at 14px stayed
+14px — and the page scales 1920 down into a 680px column, which put that text
+on screen at about five pixels. It was perfectly legible in the 1920px still I
+was checking it in, and illegible everywhere a reader would actually meet it.
+The box is now a coordinate system that scales to fit whatever frame it is
+rendered into: ×1.45 for the page's cut, ×1.02 for the social one.
+
+**Fixing that broke two things the smaller version had hidden.** The scene
+label sat at `top: -40` — *outside* the box — which at 1:1 was merely odd and
+at ×1.45 put it above the frame's own top edge, sliced off in every scene. And
+the taller text ran the last chat bubble underneath the two buttons pinned to
+the bottom of the phone. The box now carries a `HEADER` band that the label
+lives inside, and the phone is tall enough for its own contents.
+
+The lesson is the one §38 already paid for once: a still is the only thing that
+shows this, and it has to be looked at at full size. A storyboard thumbnail
+hid DALRS's end-label collision, and a 1920px still hid this one by being
+bigger than the place the film is shown.
+
+### What is left behind
+
+`/work/salespal` was the only page using `Showreel.tsx`, so that component, the
+`scripts/build-showreel.mjs` engine, its two reel configs and
+`verify-showreel.mjs` now have no page to run against. They are kept rather
+than deleted: `scripts/reels/surfing-whale.mjs` is a written-but-never-rendered
+reel for the site itself, and `npm run showreel` still regenerates the old
+SalesPal film if it is ever wanted back. The four rendered files it produced —
+`showreel.mp4`, `showreel.webm` and two posters, 920 KB — are removed, because
+nothing reads them and this repository is public.
+
+The 4:5 cut fills about 59% of its frame vertically, letterboxed top and
+bottom, exactly as DALRS's does. Filling it properly needs a second
+arrangement rather than a second scale, which is a separate piece of work.
