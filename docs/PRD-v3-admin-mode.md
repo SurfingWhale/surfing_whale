@@ -2420,3 +2420,55 @@ nothing reads them and this repository is public.
 The 4:5 cut fills about 59% of its frame vertically, letterboxed top and
 bottom, exactly as DALRS's does. Filling it properly needs a second
 arrangement rather than a second scale, which is a separate piece of work.
+
+## 40. The work stage had no behaviour on a phone — 2026-11-05
+
+Fauzy sent a photograph of `/` on his phone: seven project names in the stage,
+a counter reading **01 / 04**, the line at the foot describing the *first*
+row, and every row below the first greyed out in a ramp down the list. Three
+faults, one cause.
+
+`WorkStage` moved `active` on `onMouseEnter` and `onFocus`. Neither happens on
+a touch screen — a tap on a `<Link>` navigates rather than focusing it — so
+`active` was 0 from first paint until the page was left. The counter, the
+backdrop and the method line all read from it.
+
+The third fault is the one worth recording. `.work-row` gates its opacity ramp
+behind `@media (hover: hover) and (pointer: fine)`, with a comment saying
+exactly why: *"on touch nothing moves `active`, so the ramp would freeze on the
+first row and leave everything below it permanently faded."* `.stage-row` did
+not. The reasoning had been written down once and applied to one of the two
+components that needed it.
+
+### What a phone gets instead of hover
+
+The honest analogue of "the row the pointer is on" is "the row you have
+scrolled to". Where `(hover: none)` matches, the stage now drives `active` from
+scroll position: an IntersectionObserver across the middle of the screen is the
+trigger, and on each callback every row is measured so the one nearest the
+centre wins — which behaves when two rows straddle the line and when the stage
+is scrolled past entirely. No new control, no extra tap, and the counter, the
+backdrop and the foot line all come alive together.
+
+`.stage-row` is now gated like `.work-row`, plus a `[data-stage-live]` rule so
+the ramp returns once the component is driving `active` itself.
+
+### The check that was testing nothing
+
+`verify-stage.mjs` asserts the three visible consequences, and its first check
+is a **guard**: the emulated profile must really report `(hover: none)`, or
+every assertion after it is about a case that is not being exercised.
+
+Check 2 was wrong in its first version. It scrolled to the last row and
+asserted that row was lit — but scrolling is what *makes* a row active, so its
+`--row-dim` is 1 whether the CSS is gated or not. It passed against the
+un-gated stylesheet and was really checks 3 and 4 a third time. It now runs
+with **javascript off**, which is the state the gating actually exists for, and
+against the old CSS it reports `6 row(s) at 0.69, 0.60, 0.52, 0.52, 0.52,
+0.52` — the ramp in the photograph, measured.
+
+Proved both ways: reverting the component turns 3 and 4 red; reverting the
+stylesheet turns 2 red.
+
+SalesPal's row also had no `image` or `backdrop`, so the stage showed nothing
+behind it. It now uses the film's poster frame and its 960px cut.

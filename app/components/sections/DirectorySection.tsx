@@ -45,6 +45,14 @@ const ROWS: WorkRow[] = [
     year: "26",
     method: "Product · a PWA that reads the WhatsApp chat instead of asking for it",
     group: "Built",
+    // The film's poster frame, which is already the one image that states what
+    // the product does: the thread on the left, the record read out of it on
+    // the right. The 960px cut is the stage's backdrop for the same reason the
+    // others use one — it is blurred and scrimmed there, so full resolution is
+    // bytes nobody sees.
+    image: "/work/salespal/reel-poster.webp",
+    backdrop: "/work/salespal/reel-poster-960.webp",
+    alt: "A WhatsApp thread beside the lead record read out of it: who, what position, how long, how much.",
   },
   {
     href: "/work/padel",

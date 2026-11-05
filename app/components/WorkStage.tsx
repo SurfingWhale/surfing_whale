@@ -19,12 +19,69 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { WorkRow } from "./WorkIndex";
 
 export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
   const [active, setActive] = useState(0);
+  // Touch mode. False on the server and on the first client paint, so the two
+  // agree; the effect below turns it on only where there is no pointer.
+  const [touch, setTouch] = useState(false);
+  const listRef = useRef<HTMLUListElement>(null);
   const shown = rows[active] ?? rows[0];
+
+  // WHAT HOVER DOES ON A PHONE: nothing. `active` moves on mouseenter and on
+  // focus, and a tap on a <Link> navigates rather than focusing it, so on a
+  // touch screen this component sat on row 0 for ever — the counter read
+  // 01 / 04 beside a list of seven, the backdrop never changed, and the line
+  // at the foot described the first row while the reader looked at the fifth.
+  //
+  // The honest analogue of "the row the pointer is on" is "the row you have
+  // scrolled to". The observer is only a cheap trigger; on each callback every
+  // row is measured and the one nearest the middle of the screen wins, which
+  // behaves correctly when two rows straddle the line and when the stage is
+  // scrolled past entirely.
+  useEffect(() => {
+    if (!window.matchMedia("(hover: none)").matches) return;
+    setTouch(true);
+
+    const items = Array.from(
+      listRef.current?.querySelectorAll<HTMLElement>("[data-stage-row]") ?? []
+    );
+    if (!items.length) return;
+
+    let frame = 0;
+    const pick = () => {
+      frame = 0;
+      const mid = window.innerHeight / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      items.forEach((el, i) => {
+        const r = el.getBoundingClientRect();
+        const d = Math.abs(r.top + r.height / 2 - mid);
+        if (d < bestDist) { bestDist = d; best = i; }
+      });
+      setActive((a) => (a === best ? a : best));
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(pick); };
+
+    const io = new IntersectionObserver(schedule, {
+      // A band across the middle of the screen. Entering or leaving it is what
+      // wakes the measurement; the measurement itself ignores the band.
+      rootMargin: "-45% 0px -45% 0px",
+    });
+    items.forEach((el) => io.observe(el));
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    pick();
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   const groups = useMemo(() => {
     const out: { name: string; items: { row: WorkRow; i: number }[] }[] = [];
@@ -44,7 +101,10 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
   return (
     // Full-bleed at every size, and a full screen tall on a wide one — the
     // reference gives its index the whole viewport, and so does this.
-    <div className="relative overflow-hidden bg-[#101418] min-[66rem]:min-h-[calc(100svh-3.5rem)] min-[66rem]:flex min-[66rem]:flex-col">
+    <div
+      data-stage-live={touch ? "" : undefined}
+      className="relative overflow-hidden bg-[#101418] min-[66rem]:min-h-[calc(100svh-3.5rem)] min-[66rem]:flex min-[66rem]:flex-col"
+    >
       {/* Every backdrop is mounted at once and cross-faded by opacity. Swapping
           one img's src remounts it: the browser drops the old pixels, fetches
           the new ones and paints white in between, which reads as a flash
@@ -98,19 +158,20 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
             {label} <span className="text-white/40">›</span>{" "}
             <span className="text-white">{here?.name}</span>
           </p>
-          <p className="text-[11px] font-mono tabular-nums text-white/70 shrink-0">
+          <p data-stage-count className="text-[11px] font-mono tabular-nums text-white/70 shrink-0">
             {String(posInGroup).padStart(2, "0")} /{" "}
             {String(here?.items.length ?? 0).padStart(2, "0")}
           </p>
         </div>
 
-        <ul className="min-[66rem]:max-w-[56rem]">
+        <ul ref={listRef} className="min-[66rem]:max-w-[56rem]">
           {rows.map((row, i) => {
             const live = i === active;
             return (
               <li key={row.href}>
                 <Link
                   href={row.href}
+                  data-stage-row
                   onMouseEnter={() => setActive(i)}
                   onFocus={() => setActive(i)}
                   className="stage-row group block py-2 sm:py-2"
@@ -163,7 +224,10 @@ export function WorkStage({ rows, label }: { rows: WorkRow[]; label: string }) {
           })}
         </ul>
 
-        <p className="mt-7 min-[66rem]:mt-auto min-[66rem]:pt-7 text-[11px] leading-[1.7] text-white/60 max-w-[46ch]">
+        <p
+          data-stage-method
+          className="mt-7 min-[66rem]:mt-auto min-[66rem]:pt-7 text-[11px] leading-[1.7] text-white/60 max-w-[46ch]"
+        >
           {shown?.method}
         </p>
       </div>

@@ -645,8 +645,23 @@ body:has(.photo-row) {
      rather than being typed into a component. */
   .stage-row {
     --stage-accent: #c8f169;
-    opacity: var(--row-dim, 1);
     transition: opacity 300ms var(--ease-out);
+  }
+
+  /* The ramp, on the same terms as .work-row below: only where something is
+     actually moving `active`. This rule used to be unconditional, and on a
+     phone — where hover never fires — it faded every row under the first one
+     to 0.52 and left it there, which is exactly the failure the note under
+     .work-row describes. The fix had been made in one component and not the
+     other. [data-stage-live] is set by WorkStage once it is driving `active`
+     from scroll position, so touch gets the ramp back, correctly. */
+  @media (hover: hover) and (pointer: fine) {
+    .stage-row {
+      opacity: var(--row-dim, 1);
+    }
+  }
+  [data-stage-live] .stage-row {
+    opacity: var(--row-dim, 1);
   }
 
   /* The work index dims the rows around the one being read. Pointer-only:
