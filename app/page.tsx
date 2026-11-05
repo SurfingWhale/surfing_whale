@@ -1,5 +1,6 @@
 // app/page.tsx — Server Component, NO "use client"
 import { HeroSection } from "./components/sections/HeroSection";
+import { LangToggle } from "./components/LangToggle";
 import ProjectSectionWrapper from "./components/sections/ProjectSectionWrapper";
 import { DirectorySection } from "./components/sections/DirectorySection";
 import { CVSection } from "./components/sections/CVSection";
@@ -83,6 +84,7 @@ export default async function Home() {
             {/* Decided in the browser, not baked into the document — see the
                 note in AdminEntry. */}
             <AdminLink className="hidden sm:block text-[13px] font-medium text-fg-body hover:text-fg transition-colors duration-200 mr-3" />
+            <LangToggle />
             <ThemeToggle />
             <MobileNav links={navLinks} />
           </div>

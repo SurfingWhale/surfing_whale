@@ -23,6 +23,7 @@
 // the page's own ink (ShareIcons), so nothing on the page borrows a palette.
 
 import Link from "next/link";
+import { useUI } from "@/app/components/useLang";
 import { useEffect, useState } from "react";
 import { bareUrl, openSheet, shareTargets } from "@/app/lib/share";
 import { useCopyLink } from "./useCopyLink";
@@ -76,6 +77,7 @@ export function ShareRow({
   /** The line under the row. Defaults to the one every page carries. */
   note?: React.ReactNode;
 }) {
+  const ui = useUI();
   const { copy, onCopy, onInstagram, aids } = useCopyLink(url, title);
   // navigator.share does not exist on most desktops, and rendering a button
   // that depends on it would differ between the server and the browser —
@@ -96,7 +98,7 @@ export function ShareRow({
             id="share-head"
             className="text-[11px] font-medium uppercase tracking-[0.14em] leading-[1.5] text-fg-label"
           >
-            Share
+            {ui.share}
           </h2>
         </div>
 
@@ -112,7 +114,7 @@ export function ShareRow({
                          text-[13px] font-medium hover:opacity-90 transition-opacity duration-200"
             >
               {copy === "done" && <CheckIcon className="w-3.5 h-3.5" />}
-              {copy === "done" ? "Copied" : copy === "manual" ? "Press ⌘C" : "Copy link"}
+              {copy === "done" ? ui.copied : copy === "manual" ? ui.pressToCopy : ui.copyLink}
             </button>
           </div>
 
@@ -137,8 +139,8 @@ export function ShareRow({
                 type="button"
                 onClick={() => openSheet(url, title)}
                 className={mark}
-                aria-label="Share with another app"
-                title="More"
+                aria-label={ui.shareOther}
+                title={ui.more}
               >
                 <MoreIcon />
               </button>

@@ -10,6 +10,8 @@
 // When it does not fit (a short phone held sideways), it drops back into the
 // page and scrolls like any other block.
 import Link from "next/link";
+import { useUI } from "@/app/components/useLang";
+import { LangToggle } from "@/app/components/LangToggle";
 import { useEffect, useRef, useState } from "react";
 import { FootShare, ShareSheetButton } from "./FootShare";
 
@@ -57,6 +59,7 @@ function Column({ title, items }: { title: string; items: Item[] }) {
 }
 
 export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; hasDarkroom: boolean }) {
+  const ui = useUI();
   const ref = useRef<HTMLElement>(null);
   const [art, setArt] = useState(false);
 
@@ -162,7 +165,7 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path fill="currentColor" d="M3 5h18v14H3V5Zm2 2v.4l7 4.6 7-4.6V7H5Zm14 2.8-7 4.6-7-4.6V17h14V9.8Z" />
                 </svg>
-                <a href="#contact">Write to me</a>
+                <a href="#contact">{ui.writeToMe}</a>
               </li>
             </ul>
           </div>
@@ -172,12 +175,12 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
           <Column title="About" items={ABOUT} />
 
           <div className="foot-hello">
-            <h2 className="foot-head">Say hello</h2>
+            <h2 className="foot-head">{ui.sayHello}</h2>
             <p className="foot-note">
               Leave a note on the wall for whoever reads this next.
             </p>
             <a href="#guest-notes" className="foot-cta">
-              <span>Leave a note</span>
+              <span>{ui.leaveNote}</span>
               <span aria-hidden="true" className="foot-cta-arrow">→</span>
             </a>
             <ShareSheetButton />
@@ -192,7 +195,7 @@ export function SiteFooter({ hasWriting, hasDarkroom }: { hasWriting: boolean; h
           <div className="foot-base">
             <span>© {year} Muhammad Fauzy</span>
             <span aria-hidden="true" className="foot-sep">|</span>
-            <a href="#">Back to top ↑</a>
+            <a href="#">{ui.backToTop}</a>
           </div>
         </div>
       </div>

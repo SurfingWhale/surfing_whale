@@ -13,7 +13,6 @@
 // On a phone it is the single column it always was. From 66rem it is the
 // home page's twelve columns: the rail at 1–3, the text at 4–10, pictures
 // out to 12.
-import Link from "next/link";
 import { ShareButton } from "./ShareButton";
 
 /** Running text. Its size steps up with the screen (globals.css). */
@@ -26,27 +25,10 @@ export function ReadPage({ children }: { children: React.ReactNode }) {
   return <main className="read-page min-h-screen bg-bg text-fg">{children}</main>;
 }
 
-export function ReadNav({
-  href = "/#project",
-  label = "Work",
-  share,
-}: {
-  href?: string;
-  label?: string;
-  /** The page's own address and title, from SITE — never the address bar. */
-  share?: { url: string; title: string };
-}) {
-  return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-      <div className="frame h-14 flex items-center justify-between">
-        <Link href={href} className="text-[13px] text-fg-secondary hover:text-fg transition-colors duration-300">
-          ← {label}
-        </Link>
-        {share && <ShareButton url={share.url} title={share.title} />}
-      </div>
-    </nav>
-  );
-}
+// ReadNav now lives in its own file so it can be a client component: its
+// label is interface text and switches with the interface language. Re-
+// exported here so every page's import keeps working.
+export { ReadNav } from "@/app/components/ReadNav";
 
 /** A block in the text column with nothing in the rail: a page's header, a
  *  run of paragraphs on a page without numbered sections. */

@@ -2652,3 +2652,52 @@ is the guarantee that actually matters.
 41 assertions, all passing. PUBLISHING-RULES gained §9 (every surface a row
 can reach a reader through) and §10 (the rules are tested, and how to prove it
 both ways).
+
+## 44. An EN/ID switch for the chrome, and nothing else — 2026-11-05
+
+Asked for a translate mode. The scope was the decision worth making, and it
+was made before any code: **the interface switches, the writing does not.**
+
+`/work/dalrs` is in Indonesian because DALRS is an Indonesian product and
+§38 settled that translating *serah terima* and *BAST* would have been
+translating the subject. The brand book's voice page is explicit that it was
+extracted from copy that is live, "so the book cannot describe a voice the
+site does not have" — and running that copy through a second language would
+flatten exactly what it describes. A runtime machine translation would have
+been the fastest thing to build and the most expensive thing to own.
+
+So this switches what a reader clicks, not what he wrote.
+
+### An external store, not a provider
+
+A context provider would have to wrap the whole tree in `layout.tsx`, which
+makes every page the child of a client boundary for the sake of a dozen
+labels. The chrome that needs the language — the share row, the footer, the
+reading nav — is already client, and those are separate islands.
+`useSyncExternalStore` lets each subscribe on its own.
+
+It is also the right primitive for the hydration problem. The server has no
+`localStorage`, so `getServerSnapshot` returns `"en"`, the first client render
+matches it exactly, and React re-renders with the stored value afterwards.
+Reading `localStorage` during render is the mismatch `ReelPlayer` already has
+a comment about. `getSnapshot` caches, because returning a fresh string on
+every call makes React loop.
+
+`ReadNav` moved out of `Read.tsx` into its own client file. `Read.tsx` also
+exports `ReadPage`, `ReadBlock` and `ReadSection`, which wrap the body of
+every case study; `"use client"` on that file would have pushed all of it
+across the boundary for two words in a nav bar.
+
+### The check that matters is the one about scope
+
+`verify-lang.mjs` asserts the switch works, persists, and reverses. It also
+samples the first paragraph of the article before and after, and asserts it
+is **byte-identical**. That check is the feature's definition, not a detail —
+if it ever goes red, the thing has stopped being an interface switch.
+
+Check 1 is a guard: a control of at least 24×24 has to exist, or "the text did
+not change" would read as a pass on a page with no toggle at all.
+
+Proved against the bug: removing the `localStorage` write turns check 4 red
+and check 6 red behind it, while 1, 2, 3 and 5 stay green — in-session
+switching still works, which is exactly the shape of a persistence fault.
