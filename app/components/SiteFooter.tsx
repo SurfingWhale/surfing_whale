@@ -29,6 +29,7 @@ const ABOUT: Item[] = [
   { label: "About", href: "#CV" },
   { label: "Activity", href: "#activity" },
   { label: "Contact", href: "#contact" },
+  { label: "Colophon", href: "/colophon" },
   { label: "Kaggle", href: "https://www.kaggle.com/muhammadfauzy43/code", external: true },
 ];
 

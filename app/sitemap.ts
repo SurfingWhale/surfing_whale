@@ -29,6 +29,7 @@ const STATIC: { path: string; priority: number }[] = [
   { path: "/work/crime-la", priority: 0.7 },
   { path: "/work/padel", priority: 0.7 },
   { path: "/work/tracker-doc", priority: 0.7 },
+  { path: "/colophon", priority: 0.6 },
 ];
 
 // A date that is not a date tells a crawler nothing and can get a whole entry

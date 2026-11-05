@@ -2472,3 +2472,53 @@ stylesheet turns 2 red.
 
 SalesPal's row also had no `image` or `backdrop`, so the stage showed nothing
 behind it. It now uses the film's poster frame and its 960px cut.
+
+## 41. A colophon, and a number that broke in half — 2026-11-05
+
+Asked how the site reads as *him* rather than as a portfolio, and whether to
+add stack icons. The answer to the icons is no, and it is already written in
+the brand book: **Specific — prefers a number to an adjective. Never
+"beautifully crafted".** A row of framework logos is an adjective drawn
+instead of written, and it is the single most interchangeable element in the
+genre. His own Notion review had already made the same call about skill
+percentages: replace *Python 90%* with project-based proof.
+
+So nothing was added to claim ability. `/colophon` was added to make the claim
+checkable instead.
+
+### What the page is
+
+Seven rules the repository already follows, each stated with the specific
+failure that produced it, by file and by number: the check that looked for a
+`<canvas>` Remotion does not render and let the two checks after it pass by
+comparing −1 to −1; the 312 KB folded into a route bundle with nothing visible
+on screen; the measurement that was not taken and was written as not taken;
+the film checked at a size nobody sees it at; the rule written down once and
+applied once.
+
+Nothing on it is an opinion. Every figure in it was re-derived before it
+shipped — 20 checkers in `scripts/`, 40 entries in this file, and 14px scaled
+from a 1920 frame into a 680px column is 4.96px, which the page calls "roughly
+five pixels".
+
+The back link goes to `/`, not to the work index: this is a page about how the
+site is made, not one of the studies in it. `/work/dalrs` was also added to
+`verify-share.mjs`, which had never covered it although it carries a ShareRow.
+
+### The bug the screenshot found
+
+Looking at the render at 390px — the discipline §40 exists to enforce — the
+section number in the rail was **breaking across two lines**: a stray `0`
+above a stray `1`.
+
+`.read-rail` is a flex row of the number and the title. The number had no
+`flex-shrink: 0`, so a long title squeezed it until two digits would not fit.
+It is not a new fault and it is not confined to the new page. Measured at
+390px: **three of the four numbers on `/work/dalrs`**, one on
+`/work/salespal`, two on `/colophon`.
+
+Both pages had shipped that way, and both had been looked at — on a desktop,
+where `.read-rail` is `display: block` and the fault cannot occur.
+
+Fixed in the shared layout rather than per page. After: 34 section numbers
+across four pages, every one on a single line.

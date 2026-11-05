@@ -22,7 +22,8 @@ const PORT = process.argv[2];
 const PATHS = process.argv[3]
   ? [process.argv[3]]
   : ['/work/salespal', '/work/padel', '/work/coffee-access', '/work/crime-la',
-     '/work/finance-dashboard', '/work/tracker-doc', '/testament'];
+     '/work/finance-dashboard', '/work/tracker-doc', '/testament',
+     '/work/dalrs', '/colophon'];
 const CANON = /^https:\/\/[a-z0-9.-]+\.[a-z]{2,}\//;
 
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });

@@ -1095,6 +1095,17 @@ html.intro-out .sw-intro-wave {
   margin-bottom: var(--space-3);
 }
 
+/* The section number is exactly two digits and must never be squeezed. As a
+   flex child with no basis it shrinks when the title beside it is long, and
+   "01" breaks across two lines in the rail — which reads as a stray 0 above a
+   stray 1. Measured at 390px before this rule: three of the four numbers on
+   /work/dalrs were wrapping, one on /work/salespal, two on /colophon. Above
+   the breakpoint .read-rail is display:block, so this does nothing there. */
+.read-rail > span:first-child {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .read-title,
 .read-h1 {
   font-size: 15px;
